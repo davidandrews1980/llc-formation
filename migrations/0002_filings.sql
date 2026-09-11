@@ -1,0 +1,28 @@
+create table if not exists filings (
+  id serial primary key,
+  user_id text not null,
+  state_code text not null default 'MI',
+  entity_name text not null default '',
+  name_ending text not null default 'LLC',
+  purpose text not null default '',
+  management text not null default 'member',
+  duration text not null default 'perpetual',
+  effective text not null default 'upon_filing',
+  principal_street text not null default '',
+  principal_city text not null default '',
+  principal_state text not null default '',
+  principal_zip text not null default '',
+  agent_name text not null default '',
+  agent_street text not null default '',
+  agent_city text not null default '',
+  agent_state text not null default '',
+  agent_zip text not null default '',
+  organizer_name text not null default '',
+  organizer_email text not null default '',
+  members_json text not null default '[]',
+  step integer not null default 1,
+  packet_notes text not null default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists filings_user_id_idx on filings (user_id);
