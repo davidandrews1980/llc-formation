@@ -26,8 +26,9 @@ import {
   type FilingPatch,
 } from "@/lib/server/llc";
 import { NAME_ENDINGS, US_STATES, stateByCode } from "@/lib/states";
+import { FORMATION_ADDONS, stripeCheckoutUrl } from "@/lib/stripe";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, Printer } from "lucide-react";
+import { ArrowLeft, ExternalLink, Printer } from "lucide-react";
 
 export const Route = createFileRoute("/llc/$id")({ component: FilingPage });
 
@@ -40,6 +41,7 @@ const STEPS = [
   "Members",
   "Management",
   "Packet",
+  "Pay",
 ] as const;
 
 function FilingPage() {
@@ -157,7 +159,7 @@ function FilingInner() {
   }
 
   const f = local;
-  const step = Math.min(8, Math.max(1, f.step));
+  const step = Math.min(9, Math.max(1, f.step));
   const st = stateByCode(f.stateCode);
 
   return (
@@ -227,9 +229,10 @@ function FilingInner() {
             drafting={draft.isPending}
           />
         ) : null}
+        {step === 9 ? <PayStep f={f} typicalFee={st?.fee} /> : null}
       </div>
 
-      {step < 8 ? (
+      {step < 9 ? (
         <div className="no-print mt-6 flex justify-between">
           <Button
             variant="ghost"
@@ -242,7 +245,7 @@ function FilingInner() {
         </div>
       ) : (
         <div className="no-print mt-6">
-          <Button variant="ghost" onClick={() => persist({ step: 7 })}>
+          <Button variant="ghost" onClick={() => persist({ step: 8 })}>
             Back
           </Button>
         </div>
@@ -740,3 +743,67 @@ function PrintBundle({ f }: { f: Filing }) {
     </div>
   );
 }
+
+function PayStep({
+  f,
+  typicalFee,
+}: {
+  f: Filing;
+  typicalFee?: number;
+}) {
+  const openPay = (key: (typeof FORMATION_ADDONS)[number]["key"]) => {
+    const href = stripeCheckoutUrl(key, {
+      filingId: f.id,
+      email: f.organizerEmail || undefined,
+    });
+    window.open(href, "_blank", "noopener,noreferrer");
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="font-display text-3xl tracking-tight">Pay what you use</h2>
+        <p className="mt-2 text-sm leading-relaxed text-muted">
+          The packet is free. State filing is a pass-through — you type the
+          exact state charge on the next screen. Everything else is optional.
+          Stripe takes the card. John Gault & Sons shows on the statement.
+        </p>
+        {typicalFee ? (
+          <p className="mt-3 text-sm text-muted">
+            Typical {f.stateCode} articles fee is about ${typicalFee}. Confirm
+            the live amount on the state portal before you pay.
+          </p>
+        ) : null}
+      </div>
+      <ul className="space-y-3">
+        {FORMATION_ADDONS.map((addon) => (
+          <li
+            key={addon.key}
+            className="flex flex-col gap-3 rounded-[var(--radius-md)] border border-border bg-elevated p-4 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div className="min-w-0">
+              <p className="font-medium">
+                {addon.title}
+                {addon.required ? (
+                  <span className="ml-2 text-[0.65rem] uppercase tracking-[0.14em] text-muted">
+                    Pass-through
+                  </span>
+                ) : null}
+              </p>
+              <p className="mt-1 text-sm leading-relaxed text-muted">{addon.blurb}</p>
+              <p className="mt-1 text-sm tabular-nums text-fg">{addon.price}</p>
+            </div>
+            <Button
+              variant={addon.required ? "primary" : "secondary"}
+              onClick={() => openPay(addon.key)}
+            >
+              Pay
+              <ExternalLink className="size-4" />
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
