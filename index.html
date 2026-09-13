@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Pathway Formation — LLC filing desk</title>
+<meta name="description" content="Prepare articles of organization. Pay the state what the state charges. Pathway Devs files."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --paper:#f3efe6;--paper-2:#e8e1d2;--cream:#fbf8f1;--ink:#161b1e;--ink-soft:#2a3238;
+  --pine:#2c4a3e;--pine-2:#3d6354;--mist:#6b6560;--line:#d5ccbc;--danger:#8f2d2d;
+  --shadow:0 0 0 1px rgba(22,27,30,.06),0 1px 2px -1px rgba(22,27,30,.06),0 2px 4px rgba(22,27,30,.04);
+}
+*{box-sizing:border-box}html,body{margin:0;background:var(--paper);color:var(--ink);font-family:Figtree,system-ui,sans-serif;line-height:1.55;min-height:100%}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;letter-spacing:-.02em;line-height:1.15;font-weight:500;margin:0}
+a{color:inherit}button,select,input,textarea{font:inherit}button{cursor:pointer}
+.wrap{max-width:72rem;margin:0 auto;padding:0 1rem}
+.top{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 0}
+.brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;font-family:Fraunces,serif;font-size:1.15rem}
+.mark{width:1.6rem;height:1.6rem;border-radius:999px;background:var(--pine);color:var(--paper);display:grid;place-items:center;font-size:.7rem;font-weight:700}
+.nav{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+.nav a,.ghost, .btn, .chip{display:inline-flex;align-items:center;justify-content:center;border:0;text-decoration:none}
+.nav a{padding:.4rem .7rem;color:var(--mist);font-size:.875rem}
+.nav a:hover,.nav a.on{color:var(--ink)}
+.btn{height:2.75rem;padding:0 1.15rem;border-radius:.5rem;background:var(--ink);color:var(--paper);font-weight:500}
+.btn:hover{background:#000}.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.paper{background:var(--paper);color:var(--ink)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.btn.pine{background:var(--pine)}
+.hero{background:var(--ink);color:var(--paper);padding:4rem 0}
+.hero p.k{letter-spacing:.18em;text-transform:uppercase;font-size:.7rem;color:rgba(251,248,241,.55);margin:0}
+.hero h1{font-size:clamp(2.1rem,6vw,3.6rem);margin-top:1rem;max-width:18ch}
+.hero .lede{margin-top:1.4rem;max-width:36rem;color:rgba(251,248,241,.75);font-size:1.05rem}
+.row{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.8rem}
+.card{background:var(--cream);border-radius:.75rem;box-shadow:var(--shadow);padding:1.25rem}
+.ink-card{background:var(--ink-soft);border-radius:.9rem;padding:1.4rem;color:var(--paper)}
+.grid{display:grid;gap:1rem}.g2{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.g4{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.kicker{letter-spacing:.18em;text-transform:uppercase;font-size:.7rem;color:var(--mist);margin:0}
+.mist{color:var(--mist)}.small{font-size:.875rem}.tiny{font-size:.75rem}
+section.pad{padding:3.5rem 0}
+.price{font-variant-numeric:tabular-nums}
+.steps{display:flex;flex-wrap:wrap;gap:.4rem;margin:1.4rem 0 0}
+.steps button{border:0;border-radius:999px;padding:.3rem .7rem;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;background:var(--paper-2);color:var(--mist)}
+.steps button.on{background:var(--ink);color:var(--paper)}.steps button.done{background:rgba(44,74,62,.15);color:var(--pine)}
+.field{display:flex;flex-direction:column;gap:.35rem;font-size:.875rem}
+.field span{color:var(--mist);font-size:.75rem;letter-spacing:.04em;text-transform:uppercase}
+input,select,textarea{height:2.7rem;border:0;border-radius:.45rem;background:var(--paper);box-shadow:var(--shadow);padding:0 .75rem;color:var(--ink)}
+textarea{height:auto;min-height:6rem;padding:.75rem;resize:vertical}
+.banner{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;background:var(--ink);color:var(--paper);border-radius:.5rem;padding:.85rem 1rem;margin-bottom:1.4rem}
+.filing{background:var(--ink);color:var(--paper);border-radius:.6rem;padding:1.2rem 1.15rem;margin-top:1.4rem}
+.filing h3{font-size:2rem}
+.dl{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1.1rem;font-size:.875rem}
+.dl div span{display:block;color:rgba(251,248,241,.5);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase}
+.quick{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.6rem}
+.chip{height:2.6rem;padding:0 .85rem;border-radius:.5rem;background:var(--paper);color:var(--ink);box-shadow:var(--shadow);font-size:.875rem}
+.chip.on{background:var(--ink);color:var(--paper)}
+.lock{height:2.7rem;border-radius:.45rem;background:var(--paper-2);display:flex;align-items:center;justify-content:space-between;padding:0 .75rem;font-size:.875rem}
+.foot{border-top:1px solid var(--line);background:var(--cream);padding:2.5rem 0;margin-top:3rem;font-size:.875rem;color:var(--mist)}
+.sticky{position:sticky;bottom:0;background:rgba(243,239,230,.94);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:.8rem 0;margin-top:1.5rem}
+.warn{color:var(--danger)}
+.ok{color:var(--pine)}
+table{width:100%;border-collapse:collapse;font-size:.875rem}
+th,td{text-align:left;padding:.65rem .4rem;border-bottom:1px solid var(--line)}
+th{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mist);font-weight:500}
+.badge{display:inline-block;border-radius:999px;padding:.15rem .55rem;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;background:var(--paper-2)}
+.badge.due{background:#f3e2c7;color:#8a5a1a}.badge.paid{background:#dce8e1;color:var(--pine)}.badge.filed{background:var(--ink);color:var(--paper)}
+@media(max-width:720px){.dl{grid-template-columns:1fr}.hero{padding:2.5rem 0}h1{font-size:2rem!important}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const STATES = [{"code": "AL", "name": "Alabama", "feeCents": 20000, "expediteCents": 5000, "document": "Certificate of Formation", "agency": "AL Secretary of State", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "1–3 business days", "notes": "Name reservation is required before filing."}, {"code": "AK", "name": "Alaska", "feeCents": 25000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "AK DCCED (Corporations)", "annualCents": 10000, "annualCadence": "biennial", "annualDue": "January 2", "processing": "5–7 business days", "notes": "Biennial report $100."}, {"code": "AZ", "name": "Arizona", "feeCents": 5000, "expediteCents": 3500, "document": "Articles of Organization", "agency": "AZ Corporation Commission (eCorp)", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "5–10 business days", "notes": "No annual report for a standard LLC."}, {"code": "AR", "name": "Arkansas", "feeCents": 4500, "expediteCents": 5000, "document": "Certificate of Organization", "agency": "AR Secretary of State", "annualCents": 15000, "annualCadence": "annual", "annualDue": "May 1", "processing": "5–7 business days", "notes": "Online $45 / paper $50. Franchise tax $150/yr."}, {"code": "CA", "name": "California", "feeCents": 7000, "expediteCents": 35000, "document": "Articles of Organization (LLC-1)", "agency": "CA Secretary of State (bizfile)", "annualCents": 80000, "annualCadence": "annual", "annualDue": "15th day of 4th month", "processing": "Same day online", "notes": "$70 to file. $800 franchise tax is due in year one, plus a $20 Statement of Information within 90 days."}, {"code": "CO", "name": "Colorado", "feeCents": 5000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "CO Secretary of State", "annualCents": 2500, "annualCadence": "annual", "annualDue": "Anniversary month", "processing": "3–5 business days", "notes": "Online only. Periodic report $25."}, {"code": "CT", "name": "Connecticut", "feeCents": 12000, "expediteCents": 5000, "document": "Certificate of Organization", "agency": "CT Secretary of the State", "annualCents": 8000, "annualCadence": "annual", "annualDue": "April 1", "processing": "15–20 business days", "notes": "Annual report $80."}, {"code": "DE", "name": "Delaware", "feeCents": 11000, "expediteCents": 5000, "document": "Certificate of Formation", "agency": "DE Division of Corporations", "annualCents": 30000, "annualCadence": "annual", "annualDue": "June 1", "processing": "Same day", "notes": "$110 to file. Annual LLC tax $300 (no report). 1-hour and 24-hour expedite available."}, {"code": "DC", "name": "District of Columbia", "feeCents": 9900, "expediteCents": 10000, "document": "Articles of Organization (DLC-1)", "agency": "DC DLCP (CorpOnline)", "annualCents": 30000, "annualCadence": "biennial", "annualDue": "April 1", "processing": "5–7 business days", "notes": "Biennial report $300."}, {"code": "FL", "name": "Florida", "feeCents": 12500, "expediteCents": 5000, "document": "Articles of Organization", "agency": "FL Dept. of State (Sunbiz)", "annualCents": 13875, "annualCadence": "annual", "annualDue": "May 1", "processing": "2–3 business days", "notes": "$100 filing + $25 registered-agent designation. Annual report $138.75."}, {"code": "GA", "name": "Georgia", "feeCents": 10000, "expediteCents": 10000, "document": "Articles of Organization", "agency": "GA Secretary of State (eCorp)", "annualCents": 5000, "annualCadence": "annual", "annualDue": "April 1", "processing": "2–5 business days", "notes": "Online $100. Annual registration $50."}, {"code": "HI", "name": "Hawaii", "feeCents": 5000, "expediteCents": 2500, "document": "Articles of Organization (LLC-1)", "agency": "HI DCCA (Hawaii Business Express)", "annualCents": 1500, "annualCadence": "annual", "annualDue": "End of anniversary quarter", "processing": "1–2 business days", "notes": "Annual report about $15."}, {"code": "ID", "name": "Idaho", "feeCents": 10000, "expediteCents": 4000, "document": "Certificate of Organization", "agency": "ID Secretary of State (SOSBiz)", "annualCents": 0, "annualCadence": "annual", "annualDue": "Last day of anniversary month", "processing": "Same day", "notes": "Annual report required, $0 filing fee."}, {"code": "IL", "name": "Illinois", "feeCents": 15000, "expediteCents": 5000, "document": "Articles of Organization (LLC-5.5)", "agency": "IL Secretary of State", "annualCents": 7500, "annualCadence": "annual", "annualDue": "Month before anniversary", "processing": "1–2 business days", "notes": "Annual report $75."}, {"code": "IN", "name": "Indiana", "feeCents": 9500, "expediteCents": 2500, "document": "Articles of Organization", "agency": "IN Secretary of State (INBiz)", "annualCents": 3200, "annualCadence": "biennial", "annualDue": "End of anniversary month", "processing": "1–2 business days", "notes": "Biennial business entity report ~$32 online."}, {"code": "IA", "name": "Iowa", "feeCents": 5000, "expediteCents": 5000, "document": "Certificate of Organization", "agency": "IA Secretary of State", "annualCents": 3000, "annualCadence": "biennial", "annualDue": "April 1 (odd years)", "processing": "1 business day", "notes": "Biennial report $30 online."}, {"code": "KS", "name": "Kansas", "feeCents": 16000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "KS Secretary of State", "annualCents": 5000, "annualCadence": "annual", "annualDue": "April 15", "processing": "1–2 business days", "notes": "Online fee near $85–$165 depending on portal. Annual $50."}, {"code": "KY", "name": "Kentucky", "feeCents": 4000, "expediteCents": 4000, "document": "Articles of Organization", "agency": "KY Secretary of State", "annualCents": 1500, "annualCadence": "annual", "annualDue": "June 30", "processing": "5–10 business days", "notes": "Lowest standard filing fee in the U.S."}, {"code": "LA", "name": "Louisiana", "feeCents": 10000, "expediteCents": 3000, "document": "Articles of Organization", "agency": "LA Secretary of State (geauxBIZ)", "annualCents": 3500, "annualCadence": "annual", "annualDue": "Anniversary date", "processing": "2–4 business days", "notes": "Annual report ~$35."}, {"code": "ME", "name": "Maine", "feeCents": 17500, "expediteCents": 5000, "document": "Certificate of Formation (MLLC-6)", "agency": "ME Secretary of State", "annualCents": 8500, "annualCadence": "annual", "annualDue": "June 1", "processing": "5–7 business days", "notes": "Annual report $85."}, {"code": "MD", "name": "Maryland", "feeCents": 10000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "MD SDAT", "annualCents": 30000, "annualCadence": "annual", "annualDue": "April 15", "processing": "3–5 business days", "notes": "Personal property return / annual report $300."}, {"code": "MA", "name": "Massachusetts", "feeCents": 50000, "expediteCents": 50000, "document": "Certificate of Organization", "agency": "MA Secretary of the Commonwealth", "annualCents": 50000, "annualCadence": "annual", "annualDue": "Anniversary date", "processing": "1–2 business days", "notes": "Highest standard LLC filing fee in the U.S. Annual $500."}, {"code": "MI", "name": "Michigan", "feeCents": 5000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "MI LARA, Corporations Division", "annualCents": 2500, "annualCadence": "annual", "annualDue": "February 15", "processing": "3–5 business days", "notes": "$50 to file. Annual statement $25."}, {"code": "MN", "name": "Minnesota", "feeCents": 15500, "expediteCents": 5000, "document": "Articles of Organization", "agency": "MN Secretary of State", "annualCents": 0, "annualCadence": "annual", "annualDue": "December 31", "processing": "3–5 business days", "notes": "Annual renewal required, $0 fee."}, {"code": "MS", "name": "Mississippi", "feeCents": 5000, "expediteCents": 4000, "document": "Certificate of Formation", "agency": "MS Secretary of State", "annualCents": 0, "annualCadence": "annual", "annualDue": "April 15", "processing": "2–4 business days", "notes": "Annual report required, typically $0."}, {"code": "MO", "name": "Missouri", "feeCents": 5000, "expediteCents": 2000, "document": "Articles of Organization", "agency": "MO Secretary of State", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "3–5 business days", "notes": "Online $50. No annual report for a standard LLC."}, {"code": "MT", "name": "Montana", "feeCents": 3500, "expediteCents": 2000, "document": "Articles of Organization", "agency": "MT Secretary of State", "annualCents": 2000, "annualCadence": "annual", "annualDue": "April 15", "processing": "3–5 business days", "notes": "Cheapest standard filing fee. Annual report often $20."}, {"code": "NE", "name": "Nebraska", "feeCents": 10000, "expediteCents": 5000, "document": "Certificate of Organization", "agency": "NE Secretary of State", "annualCents": 1300, "annualCadence": "biennial", "annualDue": "April 1 (odd years)", "processing": "2–4 business days", "notes": "Biennial report ~$13–$25."}, {"code": "NV", "name": "Nevada", "feeCents": 42500, "expediteCents": 12500, "document": "Articles of Organization", "agency": "NV Secretary of State", "annualCents": 35000, "annualCadence": "annual", "annualDue": "End of anniversary month", "processing": "1–2 business days", "notes": "Typical initial outlay: $75 articles + $150 initial list + $200 state business license."}, {"code": "NH", "name": "New Hampshire", "feeCents": 10000, "expediteCents": 5000, "document": "Certificate of Formation", "agency": "NH Secretary of State (QuickStart)", "annualCents": 10000, "annualCadence": "annual", "annualDue": "April 1", "processing": "3–5 business days", "notes": "Annual report $100."}, {"code": "NJ", "name": "New Jersey", "feeCents": 12500, "expediteCents": 5000, "document": "Certificate of Formation", "agency": "NJ Treasury (DORES)", "annualCents": 7500, "annualCadence": "annual", "annualDue": "Anniversary month", "processing": "1–3 business days", "notes": "Annual report $75."}, {"code": "NM", "name": "New Mexico", "feeCents": 5000, "expediteCents": 15000, "document": "Articles of Organization", "agency": "NM Secretary of State", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "5–7 business days", "notes": "Online only. No annual report."}, {"code": "NY", "name": "New York", "feeCents": 20000, "expediteCents": 7500, "document": "Articles of Organization", "agency": "NY Department of State", "annualCents": 900, "annualCadence": "biennial", "annualDue": "Anniversary month", "processing": "3–5 business days", "notes": "Publication in two newspapers is required within 120 days — budget extra, especially in NYC."}, {"code": "NC", "name": "North Carolina", "feeCents": 12500, "expediteCents": 10000, "document": "Articles of Organization", "agency": "NC Secretary of State", "annualCents": 20000, "annualCadence": "annual", "annualDue": "April 15", "processing": "5–7 business days", "notes": "Annual report $200."}, {"code": "ND", "name": "North Dakota", "feeCents": 13500, "expediteCents": 5000, "document": "Articles of Organization", "agency": "ND Secretary of State (FirstStop)", "annualCents": 5000, "annualCadence": "annual", "annualDue": "November 15", "processing": "3–5 business days", "notes": "Annual report $50."}, {"code": "OH", "name": "Ohio", "feeCents": 9900, "expediteCents": 10000, "document": "Articles of Organization", "agency": "OH Secretary of State", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "2–4 business days", "notes": "No annual report for a standard LLC."}, {"code": "OK", "name": "Oklahoma", "feeCents": 10000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "OK Secretary of State", "annualCents": 2500, "annualCadence": "annual", "annualDue": "Anniversary", "processing": "3–5 business days", "notes": "Annual certificate $25."}, {"code": "OR", "name": "Oregon", "feeCents": 10000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "OR Secretary of State", "annualCents": 10000, "annualCadence": "annual", "annualDue": "Anniversary", "processing": "1–3 business days", "notes": "Annual report $100."}, {"code": "PA", "name": "Pennsylvania", "feeCents": 12500, "expediteCents": 10000, "document": "Certificate of Organization", "agency": "PA Department of State", "annualCents": 700, "annualCadence": "annual", "annualDue": "April 15", "processing": "5–7 business days", "notes": "Decennial report $70 every 10 years in addition to tax filings."}, {"code": "RI", "name": "Rhode Island", "feeCents": 15000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "RI Department of State", "annualCents": 5000, "annualCadence": "annual", "annualDue": "November 1", "processing": "3–5 business days", "notes": "Annual report $50."}, {"code": "SC", "name": "South Carolina", "feeCents": 11000, "expediteCents": 2500, "document": "Articles of Organization", "agency": "SC Secretary of State", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "2–4 business days", "notes": "No annual report for a standard LLC. Tax returns still apply."}, {"code": "SD", "name": "South Dakota", "feeCents": 15000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "SD Secretary of State", "annualCents": 5000, "annualCadence": "annual", "annualDue": "First day of anniversary month", "processing": "2–4 business days", "notes": "Annual report $50."}, {"code": "TN", "name": "Tennessee", "feeCents": 30000, "expediteCents": 10000, "document": "Articles of Organization", "agency": "TN Secretary of State (TNBEAR)", "annualCents": 30000, "annualCadence": "annual", "annualDue": "April 1", "processing": "3–5 business days", "notes": "$50 per member, $300 minimum / $3,000 maximum. Quote uses the $300 floor."}, {"code": "TX", "name": "Texas", "feeCents": 30000, "expediteCents": 2500, "document": "Certificate of Formation", "agency": "TX Secretary of State (SOSDirect)", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "5–7 business days", "notes": "No SOS annual report. Franchise tax still applies if above the no-tax-due threshold."}, {"code": "UT", "name": "Utah", "feeCents": 5900, "expediteCents": 7500, "document": "Certificate of Organization", "agency": "UT Division of Corporations", "annualCents": 1800, "annualCadence": "annual", "annualDue": "Anniversary month", "processing": "3–5 business days", "notes": "Annual renewal ~$18."}, {"code": "VT", "name": "Vermont", "feeCents": 15500, "expediteCents": 5000, "document": "Articles of Organization", "agency": "VT Secretary of State", "annualCents": 4500, "annualCadence": "annual", "annualDue": "April 15", "processing": "3–5 business days", "notes": "Annual report $45."}, {"code": "VA", "name": "Virginia", "feeCents": 10000, "expediteCents": 10000, "document": "Articles of Organization", "agency": "VA SCC (CIS)", "annualCents": 5000, "annualCadence": "annual", "annualDue": "Last day of anniversary month", "processing": "1–3 business days", "notes": "Annual registration $50."}, {"code": "WA", "name": "Washington", "feeCents": 20000, "expediteCents": 5000, "document": "Certificate of Formation", "agency": "WA Secretary of State (CCFS)", "annualCents": 6000, "annualCadence": "annual", "annualDue": "End of anniversary month", "processing": "2–4 business days", "notes": "Online $200. Annual report $60."}, {"code": "WV", "name": "West Virginia", "feeCents": 10000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "WV Secretary of State", "annualCents": 2500, "annualCadence": "annual", "annualDue": "July 1", "processing": "3–5 business days", "notes": "Annual report $25."}, {"code": "WI", "name": "Wisconsin", "feeCents": 13000, "expediteCents": 2500, "document": "Articles of Organization", "agency": "WI DFI", "annualCents": 2500, "annualCadence": "annual", "annualDue": "End of anniversary quarter", "processing": "5–7 business days", "notes": "Online $130. Annual report $25."}, {"code": "WY", "name": "Wyoming", "feeCents": 10000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "WY Secretary of State (WyoBiz)", "annualCents": 6000, "annualCadence": "annual", "annualDue": "First day of anniversary month", "processing": "1–3 business days", "notes": "Annual report $60."}];
+const BY = Object.fromEntries(STATES.map(s => [s.code, s]));
+const QUICK = ["CA","DE","FL","MI","NV","NY","TX","WY"];
+const STEPS = ["State","Name","Office","Agent","Members","Company","Add-ons","Review"];
+const P = {ein:9900, oaPage:200, oaFree:3, reminders:9900, expSvc:10000, command:1000, website:2000};
+const money = c => "$" + (c/100).toLocaleString("en-US", {minimumFractionDigits: c%100?2:0, maximumFractionDigits:2});
+const uid = () => Math.random().toString(36).slice(2,8);
+const load = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch { return d; } };
+const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+function stateFee(code, n) {
+  if (code === "TN") return Math.min(300000, Math.max(30000, Math.max(1,n)*5000));
+  return BY[code]?.feeCents || 0;
+}
+function quote(s) {
+  const st = BY[s.stateCode]; if (!st) return null;
+  const members = s.members.length;
+  const fee = stateFee(s.stateCode, members);
+  const expSt = s.expedited ? st.expediteCents : 0;
+  const expSv = s.expedited ? P.expSvc : 0;
+  const ein = s.ein ? P.ein : 0;
+  const oa = Math.max(0, s.oaPages - P.oaFree) * P.oaPage;
+  const rem = s.reminders ? P.reminders : 0;
+  const cmd = s.command ? P.command : 0;
+  const web = s.website ? P.website : 0;
+  const due = fee + expSt + expSv + ein + oa + rem + cmd + web;
+  return {st, fee, expSt, expSv, ein, oa, rem, cmd, web, due};
+}
+function canNext() {
+  if (draft.step===1) return draft.llcName.trim().length>=3;
+  if (draft.step===2) return !!(draft.principal.street && draft.principal.city && draft.principal.zip);
+  if (draft.step===3) return !!(draft.ra.name && draft.ra.street && draft.ra.city && draft.ra.zip);
+  if (draft.step===4) return draft.members.every(m=>m.name.trim()) && !!draft.organizer.trim();
+  return true;
+}
+
+function annualLabel(st) {
+  if (st.annualCadence === "none") return "No SOS annual report";
+  return money(st.annualCents) + " " + st.annualCadence;
+}
+
+function blank() {
+  return {
+    step: 0, stateCode: "MI", llcName: "", purpose: "",
+    biz: "consulting", management: "member",
+    principal: {street:"", city:"", state:"MI", zip:""},
+    mailingSame: true, mailing: {street:"", city:"", state:"MI", zip:""},
+    ra: {name:"", street:"", city:"", state:"MI", zip:""},
+    members: [{name:"", title:"Member", street:"", city:"", state:"MI", zip:"", ownership:100}],
+    organizer: "", expedited: false, ein: true, oaPages: 3,
+    reminders: true, command: true, website: false
+  };
+}
+
+let draft = Object.assign(blank(), load("pf-live-draft", {}));
+if (!BY[draft.stateCode]) draft.stateCode = "MI";
+let session = load("pf-live-session", {name:"", role:"customer"});
+let orders = load("pf-live-orders", []);
+let queue = load("pf-live-queue", []);
+
+function persist() {
+  save("pf-live-draft", draft);
+  save("pf-live-session", session);
+  save("pf-live-orders", orders);
+  save("pf-live-queue", queue);
+}
+
+function route() {
+  const h = (location.hash || "#/").replace(/^#/, "") || "/";
+  const [path, qs] = h.split("?");
+  const q = Object.fromEntries(new URLSearchParams(qs || ""));
+  return {path: path || "/", q};
+}
+function go(path) { location.hash = path; }
+
+function applyState(code) {
+  if (!BY[code]) return;
+  const prev = draft.stateCode;
+  draft.stateCode = code;
+  draft.principal.state = code;
+  draft.mailing.state = code;
+  draft.ra.state = code;
+  draft.members = draft.members.map(m => ({...m, state: (!m.state || m.state === prev) ? code : m.state}));
+  persist();
+  const r = route();
+  if (r.path === "/form") {
+    const qs = new URLSearchParams(r.q);
+    qs.set("state", code);
+    location.hash = "/form?" + qs.toString();
+  }
+  render();
+}
+
+function header(dark) {
+  const r = route().path;
+  return `<header style="${dark ? "background:var(--ink);color:var(--paper)" : ""}">
+    <div class="wrap top">
+      <a class="brand" href="#/"><span class="mark">P</span> Pathway Formation</a>
+      <nav class="nav">
+        <a href="#/form" class="${r.startsWith("/form")?"on":""}">Wizard</a>
+        <a href="#/fees" class="${r==="/fees"?"on":""}">Fees</a>
+        <a href="#/learn" class="${r==="/learn"?"on":""}">Guides</a>
+        <a href="#/app" class="${r.startsWith("/app")?"on":""}">Desk</a>
+        <a href="#/admin" class="${r.startsWith("/admin")?"on":""}">Admin</a>
+        ${session.name ? `<span class="tiny mist">${esc(session.name)}</span>` : `<a href="#/login">Sign in</a>`}
+      </nav>
+    </div>
+  </header>`;
+}
+function footer() {
+  return `<footer class="foot"><div class="wrap grid g3">
+    <div><p style="font-family:Fraunces,serif;font-size:1.2rem;color:var(--ink)">Pathway Formation</p>
+      <p>Articles, an operating agreement, and a desk. No legal advice. No tax advice. No surprise add-ons on the state fee.</p></div>
+    <div><p class="kicker">On the site</p>
+      <p><a href="#/form">Formation wizard</a><br/><a href="#/fees">50-state fees</a><br/><a href="#/app">Customer desk</a><br/><a href="#/admin">Admin desk</a></p></div>
+    <div><p class="kicker">Not legal advice</p>
+      <p>We prepare packets and file what you ask us to file. State fees change. Confirm on the official portal before you pay.</p></div>
+  </div></footer>`;
+}
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+
+function home() {
+  const cheap = [...STATES].sort((a,b)=>a.feeCents-b.feeCents).slice(0,4);
+  return header(true) + `<section class="hero"><div class="wrap grid" style="grid-template-columns:minmax(0,1.3fr) minmax(0,.9fr);gap:2.5rem">
+    <div>
+      <p class="k">Pathway Devs · Formation desk</p>
+      <h1>Make the company official. Keep the fees honest.</h1>
+      <p class="lede">The wizard prepares your articles. You pay the state what the state charges. We file. No registered-agent upsell, no legal-advice theater, no “next-day” promise we cannot keep.</p>
+      <div class="row">
+        <a class="btn paper" href="#/form">Start the wizard</a>
+        <a class="btn ghost" href="#/fees" style="color:var(--paper);box-shadow:inset 0 0 0 1px rgba(251,248,241,.25)">50-state fee table</a>
+      </div>
+    </div>
+    <aside class="ink-card">
+      <p class="tiny" style="letter-spacing:.14em;text-transform:uppercase;color:rgba(251,248,241,.5)">Formation, itemized</p>
+      ${[["Articles of organization","Free + state fee"],["Operating agreement","$0 through 3 pages"],["EIN assistance","$99"],["Expedite (no date promised)","State + $100"],["Command desk","$10 / month"],["Compliance reminders","$99 / year"]].map(([k,v])=>`<div style="display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid rgba(251,248,241,.1);padding:.7rem 0"><span style="color:rgba(251,248,241,.8)">${k}</span><span class="price">${v}</span></div>`).join("")}
+      <p class="tiny" style="margin-top:1rem;color:rgba(251,248,241,.5)">Michigan files at $50. Montana at $35. Massachusetts at $500. We do not mark those up.</p>
+    </aside>
+  </div></section>
+  <section class="pad"><div class="wrap">
+    <p class="kicker">How it works</p>
+    <h2 style="font-size:2rem;margin-top:.4rem">Three steps. Then the desk.</h2>
+    <div class="grid g3" style="margin-top:1.6rem">
+      ${[["01","Answer the wizard","State, name, address, your own registered agent, members."],["02","Pay only what is real","State fee, pass-through. Optional EIN, extra OA pages, reminders, expedite. The articles themselves are free."],["03","We file. You keep the vault.","The packet lands on the admin desk. You get the documents, the calendar, and a $10 Command plan."]].map(([n,t,d])=>`<div class="card"><p style="font-family:Fraunces,serif;font-size:1.6rem;color:var(--pine)">${n}</p><h3 style="margin-top:.6rem">${t}</h3><p class="small mist">${d}</p></div>`).join("")}
+    </div>
+  </div></section>
+  <section style="background:var(--cream)"><div class="wrap pad">
+    <p class="kicker">On the menu</p>
+    <h2 style="font-size:2rem;margin:.4rem 0 1.4rem">In. Out. Priced in the open.</h2>
+    <div class="grid g2">
+      ${[["Articles + operating agreement","Wizard prepares the packet. Simple OA is free through three pages, then $2 a page. You name your own registered agent — we do not sell that seat."],["EIN, banks, and the desk","$99 to prepare the EIN. Command desk is $10/month: vault, simple books, invoices, and partner links."],["Reminders, not compliance work","$99 a year puts annual reports, quarterly estimates, and year-end on a calendar. We will not file your taxes or your annual report."],["What we will not do","No legal advice. No tax advice. No virtual mailbox (Form 1583). No logos. No “next-day filing” claims. Expedite means we prioritize — not a guaranteed date."]].map(([t,b])=>`<div class="card"><h3>${t}</h3><p class="small mist" style="margin-top:.5rem">${b}</p></div>`).join("")}
+    </div>
+  </div></section>
+  <section class="pad"><div class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:end;gap:1rem"><h2 style="font-size:2rem">Cheapest states to file, this year</h2><a href="#/fees" class="small" style="color:var(--pine)">Full table</a></div>
+    <div class="grid g4" style="margin-top:1.4rem">
+      ${cheap.map(s=>`<a class="card" href="#/form?state=${s.code}" style="text-decoration:none"><p class="kicker">${s.code}</p><p style="font-family:Fraunces,serif;font-size:1.3rem;margin-top:.3rem">${s.name}</p><p class="price" style="margin-top:.8rem;font-weight:600">${money(s.feeCents)}</p><p class="tiny mist">${s.processing}</p></a>`).join("")}
+    </div>
+  </div></section>` + footer();
+}
+
+function inp(label, key, extra="") {
+  return `<label class="field"><span>${label}</span><input ${extra} value="${esc(key)}" /></label>`;
+}
+
+function wizard() {
+  const r = route();
+  if (r.q.state && BY[r.q.state] && r.q.state !== draft.stateCode) {
+    applyState(r.q.state);
+    return "";
+  }
+  const st = BY[draft.stateCode];
+  const q = quote(draft);
+  const can = () => {
+    if (draft.step===1) return draft.llcName.trim().length>=3;
+    if (draft.step===2) return draft.principal.street && draft.principal.city && draft.principal.zip;
+    if (draft.step===3) return draft.ra.name && draft.ra.street && draft.ra.city && draft.ra.zip;
+    if (draft.step===4) return draft.members.every(m=>m.name.trim()) && draft.organizer.trim();
+    return true;
+  };
+  const locked = (name, code) => `<div class="field"><span>State</span><div class="lock">${esc(name)} · ${code} <button class="tiny" type="button" data-act="back-state" style="border:0;background:none;color:var(--pine);text-decoration:underline">Change</button></div></div>`;
+
+  let body = "";
+  if (draft.step>0) {
+    body += `<div class="banner"><p>Filing in <strong>${esc(st.name)}</strong> <span style="opacity:.65">· ${money(q.fee)} · ${esc(st.agency)}</span></p><button class="tiny" data-act="back-state" style="background:none;border:0;color:rgba(251,248,241,.85);text-decoration:underline">Change state</button></div>`;
+  }
+  if (draft.step===0) {
+    body += `<h2 style="font-size:1.7rem">Where is the company?</h2>
+      <p class="small mist">File where you live and work unless you have a specific reason not to. Pick a state — the fee, agency, document, and every later address field follow it.</p>
+      <div class="filing" id="filing-card" data-filing-state="${st.code}">
+        <p class="tiny" style="letter-spacing:.12em;text-transform:uppercase;opacity:.5">Filing in</p>
+        <h3>${esc(st.name)}</h3>
+        <p class="small" style="opacity:.8">${money(q.fee)} state fee · ${esc(st.processing)} · ${esc(st.agency)}</p>
+        <div class="dl">
+          <div><span>Document</span>${esc(st.document)}</div>
+          <div><span>Agency</span>${esc(st.agency)}</div>
+          <div><span>Typical processing</span>${esc(st.processing)}</div>
+          <div><span>Ongoing</span>${esc(annualLabel(st))}</div>
+          <div><span>Office / agent state</span>${esc(st.name)}</div>
+          <div><span>State filing fee</span>${money(q.fee)}</div>
+        </div>
+        <p class="small" style="opacity:.65;margin-top:1rem">${esc(st.notes)}</p>
+      </div>
+      <label class="field" style="margin-top:1.3rem"><span>Filing state</span>
+        <select id="filing-state">${STATES.map(s=>`<option value="${s.code}" ${s.code===st.code?"selected":""}>${s.name} — ${money(s.feeCents)}</option>`).join("")}</select>
+      </label>
+      <p class="kicker" style="margin-top:1.1rem">Quick picks</p>
+      <div class="quick">${QUICK.map(c=>{const s=BY[c]; return `<button class="chip ${c===st.code?"on":""}" data-state="${c}">${s.name} <span class="mist">${money(s.feeCents)}</span></button>`;}).join("")}</div>`;
+  }
+  if (draft.step===1) {
+    body += `<h2 style="font-size:1.7rem">Name the company</h2>
+      <p class="small mist">${esc(st.name)} will see <strong>${esc(st.document)}</strong>. We do not check the state’s database live — confirm availability on the portal before you pay.</p>
+      <label class="field" style="margin-top:1.2rem"><span>Legal name</span><input id="llcName" value="${esc(draft.llcName)}" placeholder="North Lotz Holdings LLC"/></label>`;
+  }
+  if (draft.step===2) {
+    body += `<h2 style="font-size:1.7rem">Principal office</h2>
+      <p class="small mist">Street address in ${esc(st.name)}. The state on this filing is locked to the one you picked.</p>
+      <div class="grid g2" style="margin-top:1.2rem">
+        <label class="field" style="grid-column:1/-1"><span>Street</span><input id="p-street" value="${esc(draft.principal.street)}"/></label>
+        <label class="field"><span>City</span><input id="p-city" value="${esc(draft.principal.city)}"/></label>
+        ${locked(st.name, st.code)}
+        <label class="field"><span>ZIP</span><input id="p-zip" value="${esc(draft.principal.zip)}"/></label>
+      </div>
+      <label class="small" style="display:flex;gap:.5rem;align-items:center;margin-top:1rem"><input type="checkbox" id="mail-same" ${draft.mailingSame?"checked":""}/> Mailing address is the same</label>
+      ${draft.mailingSame?"":`<div class="grid g2" style="margin-top:1rem">
+        <label class="field" style="grid-column:1/-1"><span>Mailing street</span><input id="m-street" value="${esc(draft.mailing.street)}"/></label>
+        <label class="field"><span>City</span><input id="m-city" value="${esc(draft.mailing.city)}"/></label>
+        ${locked(st.name, st.code)}
+        <label class="field"><span>ZIP</span><input id="m-zip" value="${esc(draft.mailing.zip)}"/></label>
+      </div>`}`;
+  }
+  if (draft.step===3) {
+    body += `<h2 style="font-size:1.7rem">Your registered agent</h2>
+      <p class="small mist">We do not sell a registered-agent seat. Name a person or company with a street address in ${esc(st.name)}. A P.O. box will not do.</p>
+      <div class="grid g2" style="margin-top:1.2rem">
+        <label class="field" style="grid-column:1/-1"><span>Agent name</span><input id="ra-name" value="${esc(draft.ra.name)}"/></label>
+        <label class="field" style="grid-column:1/-1"><span>Street</span><input id="ra-street" value="${esc(draft.ra.street)}"/></label>
+        <label class="field"><span>City</span><input id="ra-city" value="${esc(draft.ra.city)}"/></label>
+        ${locked(st.name, st.code)}
+        <label class="field"><span>ZIP</span><input id="ra-zip" value="${esc(draft.ra.zip)}"/></label>
+      </div>
+      <button class="btn ghost" data-act="copy-office" style="margin-top:1rem">Use the principal office and first member</button>`;
+  }
+  if (draft.step===4) {
+    body += `<h2 style="font-size:1.7rem">Members</h2>
+      <p class="small mist">Ownership should total 100. ${st.code==="TN"?"Tennessee charges $50 per member, $300 minimum.":""}</p>
+      ${draft.members.map((m,i)=>`<div class="card" style="margin-top:1rem">
+        <div class="grid g2">
+          <label class="field"><span>Name</span><input data-mem="${i}" data-k="name" value="${esc(m.name)}"/></label>
+          <label class="field"><span>Title</span><input data-mem="${i}" data-k="title" value="${esc(m.title)}"/></label>
+          <label class="field"><span>Ownership %</span><input type="number" data-mem="${i}" data-k="ownership" value="${m.ownership}"/></label>
+          ${locked(BY[m.state]?.name || st.name, m.state || st.code)}
+        </div>
+        ${draft.members.length>1?`<button class="tiny" data-act="del-mem" data-i="${i}" style="margin-top:.6rem;border:0;background:none;color:var(--danger)">Remove</button>`:""}
+      </div>`).join("")}
+      <button class="btn ghost" data-act="add-mem" style="margin-top:1rem">Add a member</button>
+      <label class="field" style="margin-top:1rem"><span>Organizer</span><input id="organizer" value="${esc(draft.organizer)}" placeholder="Usually the first member"/></label>`;
+  }
+  if (draft.step===5) {
+    body += `<h2 style="font-size:1.7rem">Company</h2>
+      <label class="field"><span>Purpose</span><textarea id="purpose">${esc(draft.purpose)}</textarea></label>
+      <label class="field" style="margin-top:1rem"><span>Management</span>
+        <select id="mgmt"><option value="member" ${draft.management==="member"?"selected":""}>Member-managed</option><option value="manager" ${draft.management==="manager"?"selected":""}>Manager-managed</option></select>
+      </label>`;
+  }
+  if (draft.step===6) {
+    const tog = (id, on, title, price) => `<label class="card" style="display:flex;gap:.8rem;align-items:flex-start;cursor:pointer">
+      <input type="checkbox" id="${id}" ${on?"checked":""} style="margin-top:.3rem"/>
+      <div><strong>${title}</strong><p class="small mist">${price}</p></div></label>`;
+    body += `<h2 style="font-size:1.7rem">Add-ons</h2>
+      <div class="grid" style="margin-top:1rem">
+        ${tog("ein", draft.ein, "EIN assistance", "$99 — we prepare the SS-4 packet")}
+        ${tog("exp", draft.expedited, "Expedite handling", money(st.expediteCents) + " state fee + $100. We prioritize. No date promised.")}
+        ${tog("rem", draft.reminders, "Compliance reminders", "$99 / year. We will not file your reports.")}
+        ${tog("cmd", draft.command, "Command desk", "$10 / month — vault, books, partners")}
+        ${tog("web", draft.website, "Website / domain / email", "$20 / month")}
+        <label class="field"><span>Operating agreement pages</span><input type="number" min="3" max="40" id="oa" value="${draft.oaPages}"/><span class="tiny mist">First 3 free, then $2/page</span></label>
+      </div>`;
+  }
+  if (draft.step===7) {
+    const lines = [
+      [st.name + " state filing fee", q.fee],
+      draft.expedited ? [st.name + " state expedite", q.expSt] : null,
+      draft.expedited ? ["Expedite handling", q.expSv] : null,
+      draft.ein ? ["EIN assistance", q.ein] : null,
+      q.oa ? ["Extra OA pages", q.oa] : null,
+      draft.reminders ? ["Reminders (year 1)", q.rem] : null,
+      draft.command ? ["Command desk (first month)", q.cmd] : null,
+      draft.website ? ["Website (first month)", q.web] : null,
+    ].filter(Boolean);
+    body += `<h2 style="font-size:1.7rem">Review</h2>
+      <p class="small mist">${esc(draft.llcName || "(unnamed)")} · ${esc(st.document)} · ${esc(st.agency)}</p>
+      <div class="card" style="margin-top:1rem">
+        ${lines.map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--line)"><span>${esc(k)}</span><span class="price">${money(v)}</span></div>`).join("")}
+        <div style="display:flex;justify-content:space-between;padding:.8rem 0 0;font-weight:600"><span>Due today</span><span class="price">${money(q.due)}</span></div>
+      </div>
+      <p class="small mist" style="margin-top:1rem">Stripe charges cards on the full server deploy. Tonight this live page records the order on your desks so you can walk the whole product. Nothing is sent to a state until you mark it filed in Admin.</p>
+      <p class="warn small" id="order-err"></p>
+      <button class="btn" data-act="place" style="margin-top:.8rem">Place the order · ${money(q.due)}</button>`;
+  }
+
+  const nextLabels = ["Continue to name","Continue to office","Continue to agent","Continue to members","Continue to company","Continue to add-ons","Continue to review"];
+  return header(false) + `<main class="wrap" style="padding:2.4rem 0 6rem" data-filing-state="${st.code}" data-wizard-step="${draft.step}">
+    <div class="grid" style="grid-template-columns:minmax(0,1.6fr) minmax(16rem,.8fr);gap:2rem">
+      <div>
+        <p class="kicker">Formation wizard</p>
+        <h1 style="font-size:2rem;margin-top:.4rem">Articles of organization</h1>
+        <p class="small mist">Preparation is free. You pay the state fee — ${money(q.fee)} in ${esc(st.name)}.</p>
+        <ol class="steps">${STEPS.map((l,i)=>`<li><button data-go="${i}" class="${i===draft.step?"on":i<draft.step?"done":""}">${i+1}. ${l}</button></li>`).join("")}</ol>
+        <div class="card" style="margin-top:1.4rem">${body}</div>
+        <div class="sticky wrap" style="max-width:none;display:flex;justify-content:space-between;gap:.6rem">
+          <button class="btn ghost" data-act="back" ${draft.step===0?"disabled":""}>Back</button>
+          ${draft.step<7?`<button class="btn" data-act="next">${nextLabels[draft.step]}</button>`:""}
+        </div>
+      </div>
+      <aside>
+        <div class="card" style="position:sticky;top:1rem">
+          <p class="kicker">Due today</p>
+          <p style="font-family:Fraunces,serif;font-size:2.2rem;margin:.3rem 0">${money(q.due)}</p>
+          <p class="tiny mist">Filing in ${esc(st.name)}</p>
+          <div class="small" style="margin-top:1rem">
+            <div style="display:flex;justify-content:space-between"><span>State fee</span><span class="price">${money(q.fee)}</span></div>
+            ${q.ein?`<div style="display:flex;justify-content:space-between"><span>EIN</span><span>${money(q.ein)}</span></div>`:""}
+            ${q.cmd?`<div style="display:flex;justify-content:space-between"><span>Command (mo 1)</span><span>${money(q.cmd)}</span></div>`:""}
+            ${q.rem?`<div style="display:flex;justify-content:space-between"><span>Reminders</span><span>${money(q.rem)}</span></div>`:""}
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>` + footer();
+}
+
+function fees() {
+  return header(false)+`<main class="wrap pad"><p class="kicker">50 states</p><h1 style="font-size:2rem">What the state charges</h1>
+    <p class="small mist">Pass-through. We do not mark these up.</p>
+    <div style="overflow:auto;margin-top:1.4rem"><table><thead><tr><th>State</th><th>Fee</th><th>Document</th><th>Agency</th><th>Processing</th><th></th></tr></thead><tbody>
+    ${STATES.map(s=>`<tr><td>${s.name}</td><td class="price">${money(s.feeCents)}</td><td>${esc(s.document)}</td><td>${esc(s.agency)}</td><td>${esc(s.processing)}</td><td><a href="#/form?state=${s.code}" style="color:var(--pine)">File here</a></td></tr>`).join("")}
+    </tbody></table></div></main>`+footer();
+}
+
+function learn() {
+  return header(false)+`<main class="wrap pad" style="max-width:46rem">
+    <p class="kicker">Guides</p><h1 style="font-size:2.2rem">What we will not do</h1>
+    <p class="mist">It stays because it is true.</p>
+    <ul class="small" style="line-height:1.8">
+      <li>No legal advice. No tax advice. No CPA substitute.</li>
+      <li>No virtual mailbox, no Form 1583, no “we are your registered agent” upsell.</li>
+      <li>No logos, no brand kits, no “next-day filing” claims.</li>
+      <li>Expedite means we prioritize the packet. It is not a guaranteed date.</li>
+      <li>We will not file your annual report or your taxes. Reminders only.</li>
+      <li>Banks are affiliates with a hard disclaimer — we cannot make them say yes.</li>
+    </ul>
+    <p class="small mist">An LLC that exists only as a PDF on a laptop will not help you. Keep the books. Keep the calendar.</p>
+    <a class="btn" href="#/form" style="margin-top:1rem">Start the wizard</a>
+  </main>`+footer();
+}
+
+function desk() {
+  const mine = orders;
+  return header(false)+`<main class="wrap pad">
+    <p class="kicker">Customer desk</p><h1 style="font-size:2rem">Command</h1>
+    <p class="small mist">Documents, reminders, and the partners we can actually send you to. $10 a month covers this desk.</p>
+    <div class="grid g3" style="margin-top:1.4rem">
+      <div class="card"><p class="kicker">Orders</p><p style="font-family:Fraunces,serif;font-size:2rem">${mine.length}</p></div>
+      <div class="card"><p class="kicker">Due</p><p style="font-family:Fraunces,serif;font-size:2rem">${money(mine.filter(o=>o.status!=="paid").reduce((a,o)=>a+o.due,0))}</p></div>
+      <div class="card"><p class="kicker">Paid</p><p style="font-family:Fraunces,serif;font-size:2rem">${money(mine.filter(o=>o.status==="paid").reduce((a,o)=>a+o.due,0))}</p></div>
+    </div>
+    <div style="margin-top:1.4rem">${mine.length?mine.map(o=>`<div class="card" style="margin-bottom:.7rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+      <div><strong>${esc(o.llcName)}</strong><p class="tiny mist">${esc(o.stateName)} · ${esc(o.document)} · ${money(o.due)}</p></div>
+      <div><span class="badge ${o.status}">${o.status}</span>
+        ${o.status!=="paid"?`<button class="btn" data-pay="${o.id}" style="height:2.2rem;margin-left:.5rem">Mark paid (demo)</button>`:""}
+      </div></div>`).join(""):`<div class="card mist">No formations yet. <a href="#/form" style="color:var(--pine)">Open the wizard</a>.</div>`}</div>
+  </main>`+footer();
+}
+
+function admin() {
+  const open = queue.filter(q=>q.status!=="filed" && q.status!=="cancelled").length;
+  const filed = queue.filter(q=>q.status==="filed").length;
+  const rev = orders.filter(o=>o.status==="paid").reduce((a,o)=>a+o.due,0);
+  return header(false)+`<main class="wrap pad">
+    <p class="kicker">Admin desk</p><h1 style="font-size:2rem">What needs a human</h1>
+    <p class="small mist">Filings, EIN packets, website builds. Status changes here are what the customer sees.</p>
+    <div class="grid g4" style="margin-top:1.2rem">
+      <div class="card"><p class="kicker">Open work</p><p style="font-family:Fraunces,serif;font-size:2rem">${open}</p></div>
+      <div class="card"><p class="kicker">Filed</p><p style="font-family:Fraunces,serif;font-size:2rem">${filed}</p></div>
+      <div class="card"><p class="kicker">Collected</p><p style="font-family:Fraunces,serif;font-size:2rem">${money(rev)}</p></div>
+      <div class="card"><p class="kicker">Orders</p><p style="font-family:Fraunces,serif;font-size:2rem">${orders.length}</p></div>
+    </div>
+    <div class="card" style="margin-top:1.2rem"><h3>Stripe</h3>
+      <p class="small mist">Checkout is built on the full server app. This live page records the order so the desks work tonight. To charge cards you still paste the Stripe secret key and webhook signing secret on the host that runs the server.</p>
+    </div>
+    <h3 style="margin-top:1.6rem">Queue</h3>
+    ${queue.length?queue.map(q=>`<div class="card" style="margin-top:.6rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+      <div><strong>${esc(q.llcName)}</strong><p class="tiny mist">${esc(q.kind)} · ${esc(q.stateName)} · ${q.status}</p></div>
+      <div>
+        <select data-q="${q.id}">${["received","in_progress","filed","cancelled"].map(s=>`<option ${s===q.status?"selected":""}>${s}</option>`).join("")}</select>
+      </div></div>`).join(""):`<p class="mist">Queue is empty. Place an order from the wizard.</p>`}
+  </main>`+footer();
+}
+
+function login() {
+  return header(false)+`<main class="wrap pad" style="max-width:28rem">
+    <p class="kicker">Sign in</p><h1 style="font-size:2rem">The desk is local tonight</h1>
+    <p class="small mist">This live GitHub page stores your name in this browser. The full server uses real accounts.</p>
+    <label class="field"><span>Name</span><input id="nm" value="${esc(session.name)}" placeholder="David"/></label>
+    <label class="small" style="display:flex;gap:.5rem;margin-top:1rem"><input type="checkbox" id="as-admin"/> Admin desk access</label>
+    <button class="btn" data-act="signin" style="margin-top:1rem">Continue</button>
+  </main>`+footer();
+}
+
+function harvest() {
+  const g = id => document.getElementById(id);
+  if (g("llcName")) draft.llcName = g("llcName").value;
+  if (g("p-street")) draft.principal = {...draft.principal, street:g("p-street").value, city:g("p-city").value, zip:g("p-zip").value, state:draft.stateCode};
+  if (g("mail-same")) draft.mailingSame = g("mail-same").checked;
+  if (g("m-street")) draft.mailing = {...draft.mailing, street:g("m-street").value, city:g("m-city").value, zip:g("m-zip").value, state:draft.stateCode};
+  if (g("ra-name")) draft.ra = {name:g("ra-name").value, street:g("ra-street").value, city:g("ra-city").value, zip:g("ra-zip").value, state:draft.stateCode};
+  document.querySelectorAll("[data-mem]").forEach(el => {
+    const i = +el.dataset.mem, k = el.dataset.k;
+    if (!draft.members[i]) return;
+    draft.members[i][k] = k==="ownership" ? Number(el.value||0) : el.value;
+  });
+  if (g("organizer")) draft.organizer = g("organizer").value;
+  if (g("purpose")) draft.purpose = g("purpose").value;
+  if (g("mgmt")) draft.management = g("mgmt").value;
+  if (g("ein")) draft.ein = g("ein").checked;
+  if (g("exp")) draft.expedited = g("exp").checked;
+  if (g("rem")) draft.reminders = g("rem").checked;
+  if (g("cmd")) draft.command = g("cmd").checked;
+  if (g("web")) draft.website = g("web").checked;
+  if (g("oa")) draft.oaPages = Math.max(3, Number(g("oa").value||3));
+  persist();
+}
+
+function placeOrder() {
+  harvest();
+  if (draft.llcName.trim().length < 3) { const e=document.getElementById("order-err"); if(e) e.textContent="Name the company first."; return; }
+  const st = BY[draft.stateCode];
+  const q = quote(draft);
+  const id = uid();
+  const order = {
+    id, llcName: draft.llcName.trim(), stateCode: draft.stateCode, stateName: st.name,
+    document: st.document, agency: st.agency, due: q.due, status: "due",
+    created: new Date().toISOString(), draft: JSON.parse(JSON.stringify(draft))
+  };
+  orders.unshift(order);
+  queue.unshift({id, llcName: order.llcName, kind: "filing", stateName: st.name, status: "received"});
+  if (draft.ein) queue.unshift({id: id+"-ein", llcName: order.llcName, kind: "ein", stateName: st.name, status: "received"});
+  persist();
+  go("/app?placed="+id);
+}
+
+function bind() {
+  const app = document.getElementById("app");
+  app.addEventListener("change", (e) => {
+    const t = e.target;
+    if (t.id === "filing-state") { applyState(t.value); return; }
+    if (t.id === "mail-same") { harvest(); render(); return; }
+    if (t.dataset.q) {
+      const item = queue.find(x => x.id === t.dataset.q);
+      if (item) { item.status = t.value; persist(); render(); }
+      return;
+    }
+    harvest();
+    if (["ein","exp","rem","cmd","web","oa"].includes(t.id)) render();
+  });
+  app.addEventListener("input", (e) => {
+    if (e.target.id === "filing-state") return;
+    harvest();
+  });
+  app.addEventListener("click", (e) => {
+    const b = e.target.closest("button, [data-state], [data-pay]");
+    if (!b) return;
+    if (b.dataset.state) { applyState(b.dataset.state); return; }
+    if (b.dataset.go !== undefined) {
+      const i = +b.dataset.go;
+      harvest();
+      if (i <= draft.step) draft.step = i;
+      persist(); render(); return;
+    }
+    if (b.dataset.pay) {
+      const o = orders.find(x => x.id === b.dataset.pay);
+      if (o) { o.status = "paid"; persist(); render(); }
+      return;
+    }
+    const act = b.dataset.act;
+    if (act === "back-state") { draft.step = 0; persist(); render(); }
+    if (act === "back") { harvest(); draft.step = Math.max(0, draft.step-1); persist(); render(); }
+    if (act === "next") { harvest(); if (!canNext()) return; draft.step = Math.min(7, draft.step+1); persist(); render(); }
+    if (act === "add-mem") { harvest(); draft.members.push({name:"", title:"Member", street:"", city:"", state:draft.stateCode, zip:"", ownership:0}); persist(); render(); }
+    if (act === "del-mem") { harvest(); draft.members.splice(+b.dataset.i,1); persist(); render(); }
+    if (act === "copy-office") {
+      draft.ra = {name: draft.members[0]?.name || draft.organizer, street: draft.principal.street, city: draft.principal.city, state: draft.stateCode, zip: draft.principal.zip};
+      persist(); render();
+    }
+    if (act === "place") placeOrder();
+    if (act === "signin") {
+      session.name = document.getElementById("nm").value.trim() || "Guest";
+      session.role = document.getElementById("as-admin").checked ? "admin" : "customer";
+      persist(); go(session.role==="admin"?"/admin":"/app");
+    }
+  });
+}
+
+function render() {
+  const {path} = route();
+  const root = document.getElementById("app");
+  let html = "";
+  if (path === "/" || path === "") html = home();
+  else if (path.startsWith("/form")) html = wizard();
+  else if (path.startsWith("/fees")) html = fees();
+  else if (path.startsWith("/learn")) html = learn();
+  else if (path.startsWith("/app")) html = desk();
+  else if (path.startsWith("/admin")) html = admin();
+  else if (path.startsWith("/login")) html = login();
+  else html = home();
+  root.innerHTML = html;
+}
+
+window.addEventListener("hashchange", render);
+bind();
+render();
+</script>
+</body>
+</html>
