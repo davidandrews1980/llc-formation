@@ -89,7 +89,10 @@ function LlcInner() {
               >
                 <p className="truncate font-medium text-fg">{legalName(f)}</p>
                 <p className="text-xs text-muted">
-                  {st?.name ?? f.stateCode} · step {f.step} of 8
+                  {st?.name ?? f.stateCode} · step {f.step} of 9
+                  {f.payments.length
+                    ? ` · ${f.payments.length} paid`
+                    : ""}
                 </p>
               </Link>
               <Button

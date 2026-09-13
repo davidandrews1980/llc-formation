@@ -4,6 +4,15 @@ import { getSql } from "@/lib/db";
 import { parseMembers, type Member } from "@/lib/members";
 import { US_STATES } from "@/lib/states";
 
+export type FilingPayment = {
+  addonKey: string;
+  amountCents: number;
+  email: string;
+  status: string;
+  createdAt: string;
+  stripeSessionId: string;
+};
+
 export type Filing = {
   id: number;
   stateCode: string;
@@ -29,6 +38,7 @@ export type Filing = {
   packetNotes: string;
   createdAt: string;
   updatedAt: string;
+  payments: FilingPayment[];
 };
 
 type FilingRow = {
@@ -84,12 +94,53 @@ function mapFiling(r: FilingRow): Filing {
     packetNotes: r.packet_notes,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
+    payments: [],
   };
 }
 
 export type FilingPatch = Partial<
-  Omit<Filing, "id" | "createdAt" | "updatedAt" | "members">
+  Omit<Filing, "id" | "createdAt" | "updatedAt" | "members" | "payments">
 > & { members?: Member[] };
+
+type PaymentRow = {
+  filing_id: number;
+  addon_key: string;
+  amount_cents: number;
+  email: string;
+  status: string;
+  created_at: string;
+  stripe_session_id: string;
+};
+
+async function paymentsFor(
+  sql: Awaited<ReturnType<typeof getSql>>,
+  ids: number[],
+): Promise<Map<number, FilingPayment[]>> {
+  const map = new Map<number, FilingPayment[]>();
+  if (!ids.length) return map;
+  const rows = await sql.query<PaymentRow>(
+    `select filing_id, addon_key, amount_cents, email, status, created_at, stripe_session_id
+     from filing_payments where filing_id = any($1::int[])`,
+    [ids],
+  );
+  for (const r of rows) {
+    const list = map.get(r.filing_id) ?? [];
+    list.push({
+      addonKey: r.addon_key,
+      amountCents: Number(r.amount_cents) || 0,
+      email: r.email,
+      status: r.status,
+      createdAt: r.created_at,
+      stripeSessionId: r.stripe_session_id,
+    });
+    map.set(r.filing_id, list);
+  }
+  return map;
+}
+
+function withPayments(f: Filing, map: Map<number, FilingPayment[]>): Filing {
+  return { ...f, payments: map.get(f.id) ?? [] };
+}
 
 export const listFilings = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
@@ -98,7 +149,8 @@ export const listFilings = createServerFn({ method: "GET" })
     const rows = await sql<FilingRow>`
       select * from filings where user_id = ${context.userId} order by updated_at desc
     `;
-    return rows.map(mapFiling);
+    const paid = await paymentsFor(sql, rows.map((r) => r.id));
+    return rows.map((r) => withPayments(mapFiling(r), paid));
   });
 
 export const createFiling = createServerFn({ method: "POST" })
@@ -123,7 +175,7 @@ export const getFiling = createServerFn({ method: "GET" })
     const rows = await sql<FilingRow>`
       select * from filings where id = ${id} and user_id = ${context.userId}
     `;
-    return rows[0] ? mapFiling(rows[0]) : null;
+    return rows[0] ? withPayments(mapFiling(rows[0]), await paymentsFor(sql, [id])) : null;
   });
 
 export const saveFiling = createServerFn({ method: "POST" })
@@ -245,4 +297,147 @@ Write 6–10 short numbered sections covering: formation, purpose, members and u
       where id = ${id} and user_id = ${context.userId}
     `;
     return { ok: true as const, text };
+  });
+
+export type ClientRow = {
+  filingId: number;
+  entityName: string;
+  nameEnding: string;
+  stateCode: string;
+  organizerName: string;
+  organizerEmail: string;
+  email: string;
+  paidAt: string;
+  totalCents: number;
+  serviceStatus: string;
+  serviceNotes: string;
+  items: { addonKey: string; amountCents: number }[];
+};
+
+export const SERVICE_STATUSES = ["paid", "working", "filed", "done"] as const;
+
+function operatorEmails(): string[] {
+  const raw =
+    process.env.OPERATOR_EMAIL ??
+    "david.andrews@students.maestrocollege.edu,ulfhedhinn@pathwaysunite.com,dpandrews1980@gmail.com";
+  return raw
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+export const listClients = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    const sql = await getSql();
+    const me = await sql.query<{ email: string }>(
+      `select email from "user" where id = $1`,
+      [context.userId],
+    );
+    const email = (me[0]?.email ?? "").toLowerCase();
+    const isOperator = operatorEmails().includes(email) || context.userId === "dev-user";
+
+    type JoinRow = {
+      filing_id: number;
+      entity_name: string;
+      name_ending: string;
+      state_code: string;
+      organizer_name: string;
+      organizer_email: string;
+      service_status: string;
+      service_notes: string;
+      addon_key: string;
+      amount_cents: number;
+      paid_at: string;
+      email: string;
+    };
+
+    const sqlText = `select
+             f.id as filing_id,
+             f.entity_name,
+             f.name_ending,
+             f.state_code,
+             f.organizer_name,
+             f.organizer_email,
+             f.service_status,
+             f.service_notes,
+             p.addon_key,
+             p.amount_cents,
+             p.created_at as paid_at,
+             p.email
+           from filing_payments p
+           join filings f on f.id = p.filing_id
+           where p.status = 'paid'${isOperator ? "" : " and f.user_id = $1"}
+           order by p.created_at desc`;
+    const rows = isOperator
+      ? await sql.query<JoinRow>(sqlText)
+      : await sql.query<JoinRow>(sqlText, [context.userId]);
+
+    const byFiling = new Map<number, ClientRow>();
+    for (const r of rows) {
+      const id = Number(r.filing_id);
+      const existing = byFiling.get(id);
+      const item = {
+        addonKey: r.addon_key,
+        amountCents: Number(r.amount_cents) || 0,
+      };
+      if (existing) {
+        existing.items.push(item);
+        existing.totalCents += item.amountCents;
+        if (r.paid_at > existing.paidAt) existing.paidAt = r.paid_at;
+        continue;
+      }
+      byFiling.set(id, {
+        filingId: id,
+        entityName: r.entity_name,
+        nameEnding: r.name_ending,
+        stateCode: r.state_code,
+        organizerName: r.organizer_name,
+        organizerEmail: r.organizer_email,
+        email: r.email,
+        paidAt: r.paid_at,
+        totalCents: item.amountCents,
+        serviceStatus: r.service_status || "paid",
+        serviceNotes: r.service_notes || "",
+        items: [item],
+      });
+    }
+
+    return {
+      operator: isOperator,
+      clients: [...byFiling.values()].sort((a, b) =>
+        a.paidAt < b.paidAt ? 1 : -1,
+      ),
+    };
+  });
+
+export const updateOrder = createServerFn({ method: "POST" })
+  .validator((input: { filingId: number; status?: string; notes?: string }) => input)
+  .middleware([authMiddleware])
+  .handler(async ({ context, data }) => {
+    const sql = await getSql();
+    const me = await sql.query<{ email: string }>(
+      `select email from "user" where id = $1`,
+      [context.userId],
+    );
+    const email = (me[0]?.email ?? "").toLowerCase();
+    const isOperator =
+      operatorEmails().includes(email) || context.userId === "dev-user";
+    if (!isOperator) throw new Error("Not the operator");
+    if (data.status && !SERVICE_STATUSES.includes(data.status as (typeof SERVICE_STATUSES)[number])) {
+      throw new Error("Bad status");
+    }
+    if (data.status) {
+      await sql.query(
+        `update filings set service_status = $1, updated_at = now() where id = $2`,
+        [data.status, data.filingId],
+      );
+    }
+    if (data.notes !== undefined) {
+      await sql.query(
+        `update filings set service_notes = $1, updated_at = now() where id = $2`,
+        [data.notes, data.filingId],
+      );
+    }
+    return { ok: true as const };
   });

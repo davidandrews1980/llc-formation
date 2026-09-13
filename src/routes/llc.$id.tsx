@@ -26,9 +26,10 @@ import {
   type FilingPatch,
 } from "@/lib/server/llc";
 import { NAME_ENDINGS, US_STATES, stateByCode } from "@/lib/states";
-import { FORMATION_ADDONS, stripeCheckoutUrl } from "@/lib/stripe";
+import { FORMATION_ADDONS } from "@/lib/stripe";
+import { startCheckout } from "@/lib/server/checkout";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, ExternalLink, Printer } from "lucide-react";
+import { ArrowLeft, Check, ExternalLink, Printer } from "lucide-react";
 
 export const Route = createFileRoute("/llc/$id")({ component: FilingPage });
 
@@ -83,6 +84,16 @@ function FilingInner() {
       latest.current = q.data;
     }
   }, [q.data]);
+
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search);
+    if (p.get("paid")) {
+      toast.success("Paid. This packet is a client now.");
+      void qc.invalidateQueries({ queryKey: ["filing", filingId] });
+      void qc.invalidateQueries({ queryKey: ["filings"] });
+      void qc.invalidateQueries({ queryKey: ["clients"] });
+    }
+  }, [filingId, qc]);
 
   const save = useMutation({
     mutationFn: (patch: FilingPatch) =>
@@ -751,22 +762,30 @@ function PayStep({
   f: Filing;
   typicalFee?: number;
 }) {
-  const openPay = (key: (typeof FORMATION_ADDONS)[number]["key"]) => {
-    const href = stripeCheckoutUrl(key, {
-      filingId: f.id,
-      email: f.organizerEmail || undefined,
-    });
-    window.open(href, "_blank", "noopener,noreferrer");
-  };
+  const paid = new Set(f.payments.map((p) => p.addonKey));
+  const pay = useMutation({
+    mutationFn: (addon: (typeof FORMATION_ADDONS)[number]["key"]) =>
+      startCheckout({
+        data: {
+          filingId: f.id,
+          addon,
+          origin: window.location.origin,
+        },
+      }),
+    onSuccess: (res) => {
+      window.location.assign(res.url);
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="font-display text-3xl tracking-tight">Pay what you use</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted">
-          The packet is free. State filing is a pass-through — you type the
-          exact state charge on the next screen. Everything else is optional.
-          Stripe takes the card. John Gault & Sons shows on the statement.
+          The packet is free. When they pay, this packet is marked paid and they
+          show up on Clients — that is who you serve. Stripe takes the card.
+          John Gault & Sons on the statement.
         </p>
         {typicalFee ? (
           <p className="mt-3 text-sm text-muted">
@@ -776,32 +795,48 @@ function PayStep({
         ) : null}
       </div>
       <ul className="space-y-3">
-        {FORMATION_ADDONS.map((addon) => (
-          <li
-            key={addon.key}
-            className="flex flex-col gap-3 rounded-[var(--radius-md)] border border-border bg-elevated p-4 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div className="min-w-0">
-              <p className="font-medium">
-                {addon.title}
-                {addon.required ? (
-                  <span className="ml-2 text-[0.65rem] uppercase tracking-[0.14em] text-muted">
-                    Pass-through
-                  </span>
-                ) : null}
-              </p>
-              <p className="mt-1 text-sm leading-relaxed text-muted">{addon.blurb}</p>
-              <p className="mt-1 text-sm tabular-nums text-fg">{addon.price}</p>
-            </div>
-            <Button
-              variant={addon.required ? "primary" : "secondary"}
-              onClick={() => openPay(addon.key)}
+        {FORMATION_ADDONS.map((addon) => {
+          const isPaid = paid.has(addon.key);
+          return (
+            <li
+              key={addon.key}
+              className="flex flex-col gap-3 rounded-[var(--radius-md)] border border-border bg-elevated p-4 sm:flex-row sm:items-center sm:justify-between"
             >
-              Pay
-              <ExternalLink className="size-4" />
-            </Button>
-          </li>
-        ))}
+              <div className="min-w-0">
+                <p className="font-medium">
+                  {addon.title}
+                  {addon.required ? (
+                    <span className="ml-2 text-[0.65rem] uppercase tracking-[0.14em] text-muted">
+                      Pass-through
+                    </span>
+                  ) : null}
+                  {isPaid ? (
+                    <span className="ml-2 text-[0.65rem] uppercase tracking-[0.14em] text-ok">
+                      Paid
+                    </span>
+                  ) : null}
+                </p>
+                <p className="mt-1 text-sm leading-relaxed text-muted">{addon.blurb}</p>
+                <p className="mt-1 text-sm tabular-nums text-fg">{addon.price}</p>
+              </div>
+              {isPaid ? (
+                <Button variant="secondary" disabled>
+                  <Check className="size-4" />
+                  Paid
+                </Button>
+              ) : (
+                <Button
+                  variant={addon.required ? "primary" : "secondary"}
+                  disabled={pay.isPending}
+                  onClick={() => pay.mutate(addon.key)}
+                >
+                  Pay
+                  <ExternalLink className="size-4" />
+                </Button>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
