@@ -49,6 +49,11 @@ export const startCheckout = createServerFn({ method: "POST" })
     body.set("metadata[filingId]", String(data.filingId));
     body.set("metadata[addon]", data.addon);
     body.set("metadata[userId]", context.userId);
+    if (addon.mode === "subscription") {
+      body.set("subscription_data[metadata][filingId]", String(data.filingId));
+      body.set("subscription_data[metadata][addon]", data.addon);
+      body.set("subscription_data[metadata][userId]", context.userId);
+    }
     const email = filing.organizer_email.trim();
     if (email) body.set("customer_email", email);
 

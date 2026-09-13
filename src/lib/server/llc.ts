@@ -311,7 +311,7 @@ export type ClientRow = {
   totalCents: number;
   serviceStatus: string;
   serviceNotes: string;
-  items: { addonKey: string; amountCents: number }[];
+  items: { addonKey: string; amountCents: number; status: string }[];
 };
 
 export const SERVICE_STATUSES = ["paid", "working", "filed", "done"] as const;
@@ -350,6 +350,7 @@ export const listClients = createServerFn({ method: "GET" })
       amount_cents: number;
       paid_at: string;
       email: string;
+      pay_status: string;
     };
 
     const sqlText = `select
@@ -364,10 +365,11 @@ export const listClients = createServerFn({ method: "GET" })
              p.addon_key,
              p.amount_cents,
              p.created_at as paid_at,
-             p.email
+             p.email,
+             p.status as pay_status
            from filing_payments p
            join filings f on f.id = p.filing_id
-           where p.status = 'paid'${isOperator ? "" : " and f.user_id = $1"}
+           where p.status in ('paid','active','past_due','canceled')${isOperator ? "" : " and f.user_id = $1"}
            order by p.created_at desc`;
     const rows = isOperator
       ? await sql.query<JoinRow>(sqlText)
@@ -380,6 +382,7 @@ export const listClients = createServerFn({ method: "GET" })
       const item = {
         addonKey: r.addon_key,
         amountCents: Number(r.amount_cents) || 0,
+        status: r.pay_status,
       };
       if (existing) {
         existing.items.push(item);

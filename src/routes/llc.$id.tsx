@@ -762,7 +762,11 @@ function PayStep({
   f: Filing;
   typicalFee?: number;
 }) {
-  const paid = new Set(f.payments.map((p) => p.addonKey));
+  const paid = new Set(
+    f.payments
+      .filter((p) => p.status === "paid" || p.status === "active")
+      .map((p) => p.addonKey),
+  );
   const pay = useMutation({
     mutationFn: (addon: (typeof FORMATION_ADDONS)[number]["key"]) =>
       startCheckout({

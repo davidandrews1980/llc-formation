@@ -2,28 +2,26 @@
 
 The app records who ordered what.
 
-- Customer pays → webhook stamps the packet **Paid**
-- **Desk** (`/clients`) is the admin dashboard: company, contact, email, line items, amount, date
-- You move the job: paid → working → filed → done
-- Notes stay on the order
+- One-time (state fee, EIN, expedite, OA extra): first pay stamps the packet
+- Monthly command desk and yearly reminders: first pay plus each renewal
 
-## Files
+## Webhook — four events
 
-- `migrations/0003_payments.sql`
-- `src/lib/stripe.ts`
-- `src/lib/server/checkout.ts`
-- `src/lib/server/llc.ts`
-- `src/routes/api/stripe.webhook.ts`
-- `src/routes/llc.$id.tsx`
-- `src/routes/llc.tsx`
-- `src/routes/clients.tsx`  ← the desk
-- `src/components/app-shell.tsx`
+`https://YOUR-SITE/api/stripe/webhook`
+
+| Event | Why |
+|---|---|
+| `checkout.session.completed` | First pay. Packet becomes a client. |
+| `invoice.paid` | Command desk ($10/mo) and reminders ($99/yr) renewed. |
+| `invoice.payment_failed` | Recurring gig lapsed. Desk shows `past_due`. |
+| `customer.subscription.deleted` | They canceled. Desk shows `canceled`. |
+
+Do not add `customer.created` or the rest.
 
 ## Netlify env (secret — not in git)
 
 - `STRIPE_SECRET_KEY`
 - `STRIPE_WEBHOOK_SECRET`
-- `OPERATOR_EMAIL` — your login email so Desk shows every order
+- `OPERATOR_EMAIL`
 
-Webhook: `https://YOUR-SITE/api/stripe/webhook`
-Event: `checkout.session.completed`
+Desk: `/clients`

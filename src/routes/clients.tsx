@@ -199,7 +199,14 @@ function OrderCard({
       <ul className="mt-3 space-y-1 text-sm text-muted">
         {c.items.map((i) => (
           <li key={i.addonKey} className="flex justify-between gap-4">
-            <span>{addonTitle(i.addonKey)}</span>
+            <span>
+              {addonTitle(i.addonKey)}
+              {i.status && i.status !== "paid" ? (
+                <span className="ml-2 text-[0.65rem] uppercase tracking-[0.12em] text-muted">
+                  {i.status}
+                </span>
+              ) : null}
+            </span>
             <span className="tabular-nums text-fg">{money(i.amountCents)}</span>
           </li>
         ))}
