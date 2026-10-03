@@ -1,9 +1,10 @@
 # Pathway Formation
 
-Live GitHub Pages copy of the LLC formation desk. Open `index.html` — no build step.
+The public page is `index.html`. Orders and the filing queue are stored by the Netlify function `netlify/functions/desk.mjs`, not in the browser.
 
-- Wizard with a 50-state fee matrix (state change updates document, agency, processing, annual, office/agent state, and quote)
-- Customer desk and admin queue (stored in this browser)
-- Stripe charges cards on the full server app in this same repo; this page is the walkable live site for tonight
+- Wizard, 50-state fees, customer desk, admin queue
+- `POST /.netlify/functions/desk` with `bootstrap`, `place`, `pay`, `status`
+- Set `OPERATOR_KEY` on the Netlify site to lock queue changes. Until that key exists, the queue stays open.
+- Stripe still charges cards only when `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` are set. This desk records the order either way.
 
-If you are looking at this on GitHub.com, the running site is **https://pathwaydevs.me/**
+Live page: **https://pathwaydevs.me/** (GitHub Pages). The function runs on the Netlify site `pathway-formation`.

@@ -138,6 +138,38 @@ function persist() {
   save("pf-live-orders", orders);
   save("pf-live-queue", queue);
 }
+let deskOk = null;
+let deskNote = "";
+function clientId() {
+  let id = localStorage.getItem("pf-client");
+  if (!id) {
+    id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : uid()+uid()+uid();
+    localStorage.setItem("pf-client", id);
+  }
+  return id;
+}
+function deskUrl() {
+  if (location.hostname.endsWith("netlify.app")) return "/.netlify/functions/desk";
+  return "https://pathway-formation.netlify.app/.netlify/functions/desk";
+}
+async function desk(action, extra) {
+  const res = await fetch(deskUrl(), {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(Object.assign({ action: action, clientId: clientId(), key: session.operatorKey || "", role: session.role || "customer" }, extra || {}))
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || data.ok === false) throw new Error(data.error || ("desk " + res.status));
+  deskOk = true;
+  deskNote = data.locked ? "" : "Queue is open until OPERATOR_KEY is set on the Netlify site.";
+  return data;
+}
+function applyDesk(data) {
+  if (!data) return;
+  if (Array.isArray(data.orders)) orders = data.orders;
+  if (Array.isArray(data.queue)) queue = data.queue;
+  persist();
+}
 
 function route() {
   const h = (location.hash || "#/").replace(/^#/, "") || "/";
@@ -368,7 +400,7 @@ function wizard() {
         ${lines.map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--line)"><span>${esc(k)}</span><span class="price">${money(v)}</span></div>`).join("")}
         <div style="display:flex;justify-content:space-between;padding:.8rem 0 0;font-weight:600"><span>Due today</span><span class="price">${money(q.due)}</span></div>
       </div>
-      <p class="small mist" style="margin-top:1rem">Stripe charges cards on the full server deploy. Tonight this live page records the order on your desks so you can walk the whole product. Nothing is sent to a state until you mark it filed in Admin.</p>
+      <p class="small mist" style="margin-top:1rem">This order is written to the formation desk. Nothing is sent to a state until you mark it filed in Admin. Card charging still needs the Stripe secret on the host.</p>
       <p class="warn small" id="order-err"></p>
       <button class="btn" data-act="place" style="margin-top:.8rem">Place the order · ${money(q.due)}</button>`;
   }
@@ -433,7 +465,7 @@ function desk() {
   const mine = orders;
   return header(false)+`<main class="wrap pad">
     <p class="kicker">Customer desk</p><h1 style="font-size:2rem">Command</h1>
-    <p class="small mist">Documents, reminders, and the partners we can actually send you to. $10 a month covers this desk.</p>
+    <p class="small mist">Documents, reminders, and the partners we can actually send you to. $10 a month covers this desk.</p>${deskNote?`<p class="warn small">${esc(deskNote)}</p>`:""}
     <div class="grid g3" style="margin-top:1.4rem">
       <div class="card"><p class="kicker">Orders</p><p style="font-family:Fraunces,serif;font-size:2rem">${mine.length}</p></div>
       <div class="card"><p class="kicker">Due</p><p style="font-family:Fraunces,serif;font-size:2rem">${money(mine.filter(o=>o.status!=="paid").reduce((a,o)=>a+o.due,0))}</p></div>
@@ -453,7 +485,7 @@ function admin() {
   const rev = orders.filter(o=>o.status==="paid").reduce((a,o)=>a+o.due,0);
   return header(false)+`<main class="wrap pad">
     <p class="kicker">Admin desk</p><h1 style="font-size:2rem">What needs a human</h1>
-    <p class="small mist">Filings, EIN packets, website builds. Status changes here are what the customer sees.</p>
+    <p class="small mist">Filings, EIN packets, website builds. Status changes here are what the customer sees.</p>${deskNote?`<p class="warn small">${esc(deskNote)}</p>`:""}
     <div class="grid g4" style="margin-top:1.2rem">
       <div class="card"><p class="kicker">Open work</p><p style="font-family:Fraunces,serif;font-size:2rem">${open}</p></div>
       <div class="card"><p class="kicker">Filed</p><p style="font-family:Fraunces,serif;font-size:2rem">${filed}</p></div>
@@ -461,7 +493,7 @@ function admin() {
       <div class="card"><p class="kicker">Orders</p><p style="font-family:Fraunces,serif;font-size:2rem">${orders.length}</p></div>
     </div>
     <div class="card" style="margin-top:1.2rem"><h3>Stripe</h3>
-      <p class="small mist">Checkout is built on the full server app. This live page records the order so the desks work tonight. To charge cards you still paste the Stripe secret key and webhook signing secret on the host that runs the server.</p>
+      <p class="small mist">Orders and this queue are stored by the desk function, not in one browser. Set OPERATOR_KEY on Netlify to lock status changes. Stripe still needs its secret key and webhook secret before a card is charged.</p>
     </div>
     <h3 style="margin-top:1.6rem">Queue</h3>
     ${queue.length?queue.map(q=>`<div class="card" style="margin-top:.6rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap">
@@ -474,10 +506,11 @@ function admin() {
 
 function login() {
   return header(false)+`<main class="wrap pad" style="max-width:28rem">
-    <p class="kicker">Sign in</p><h1 style="font-size:2rem">The desk is local tonight</h1>
-    <p class="small mist">This live GitHub page stores your name in this browser. The full server uses real accounts.</p>
+    <p class="kicker">Sign in</p><h1 style="font-size:2rem">The desk is on the server</h1>
+    <p class="small mist">Your name stays in this browser. The order itself is written to the formation desk.</p>
     <label class="field"><span>Name</span><input id="nm" value="${esc(session.name)}" placeholder="David"/></label>
-    <label class="small" style="display:flex;gap:.5rem;margin-top:1rem"><input type="checkbox" id="as-admin"/> Admin desk access</label>
+    <label class="small" style="display:flex;gap:.5rem;margin-top:1rem"><input type="checkbox" id="as-admin" ${session.role==="admin"?"checked":""}/> Admin desk</label>
+    <label class="field" style="margin-top:.8rem"><span>Operator key</span><input id="op-key" type="password" value="${esc(session.operatorKey||"")}" placeholder="Matches OPERATOR_KEY on Netlify"/><span class="tiny mist">Blank is fine until that key is set. After it is set, the queue locks.</span></label>
     <button class="btn" data-act="signin" style="margin-top:1rem">Continue</button>
   </main>`+footer();
 }
@@ -506,22 +539,32 @@ function harvest() {
   persist();
 }
 
-function placeOrder() {
+async function placeOrder() {
   harvest();
-  if (draft.llcName.trim().length < 3) { const e=document.getElementById("order-err"); if(e) e.textContent="Name the company first."; return; }
+  const err = document.getElementById("order-err");
+  if (draft.llcName.trim().length < 3) { if (err) err.textContent = "Name the company first."; return; }
   const st = BY[draft.stateCode];
   const q = quote(draft);
   const id = uid();
   const order = {
     id, llcName: draft.llcName.trim(), stateCode: draft.stateCode, stateName: st.name,
     document: st.document, agency: st.agency, due: q.due, status: "due",
-    created: new Date().toISOString(), draft: JSON.parse(JSON.stringify(draft))
+    created: new Date().toISOString(), organizer: draft.organizer || session.name || "",
+    draft: JSON.parse(JSON.stringify(draft))
   };
-  orders.unshift(order);
-  queue.unshift({id, llcName: order.llcName, kind: "filing", stateName: st.name, status: "received"});
-  if (draft.ein) queue.unshift({id: id+"-ein", llcName: order.llcName, kind: "ein", stateName: st.name, status: "received"});
-  persist();
-  go("/app?placed="+id);
+  const items = [{id, llcName: order.llcName, kind: "filing", stateName: st.name, status: "received"}];
+  if (draft.ein) items.push({id: id+"-ein", llcName: order.llcName, kind: "ein", stateName: st.name, status: "received"});
+  try {
+    applyDesk(await desk("place", { order, items }));
+    go("/app?placed="+id);
+  } catch (e) {
+    deskOk = false;
+    deskNote = e.message;
+    orders.unshift(order);
+    items.slice().reverse().forEach(item => queue.unshift(item));
+    persist();
+    if (err) err.textContent = "The desk refused this order (" + e.message + "). It is only in this browser.";
+  }
 }
 
 function bind() {
@@ -532,7 +575,11 @@ function bind() {
     if (t.id === "mail-same") { harvest(); render(); return; }
     if (t.dataset.q) {
       const item = queue.find(x => x.id === t.dataset.q);
-      if (item) { item.status = t.value; persist(); render(); }
+      if (item) {
+        item.status = t.value;
+        persist();
+        desk("status", { queueId: item.id, status: item.status }).then(data => { applyDesk(data); render(); }).catch(e => { deskOk = false; deskNote = e.message; render(); });
+      }
       return;
     }
     harvest();
@@ -554,7 +601,11 @@ function bind() {
     }
     if (b.dataset.pay) {
       const o = orders.find(x => x.id === b.dataset.pay);
-      if (o) { o.status = "paid"; persist(); render(); }
+      if (o) {
+        o.status = "paid";
+        persist();
+        desk("pay", { orderId: o.id }).then(data => { applyDesk(data); render(); }).catch(e => { deskOk = false; deskNote = e.message; render(); });
+      }
       return;
     }
     const act = b.dataset.act;
@@ -571,7 +622,11 @@ function bind() {
     if (act === "signin") {
       session.name = document.getElementById("nm").value.trim() || "Guest";
       session.role = document.getElementById("as-admin").checked ? "admin" : "customer";
-      persist(); go(session.role==="admin"?"/admin":"/app");
+      const keyEl = document.getElementById("op-key");
+      if (keyEl) session.operatorKey = keyEl.value;
+      persist();
+      const dest = session.role==="admin"?"/admin":"/app";
+      desk("bootstrap", { role: session.role }).then(data => { applyDesk(data); go(dest); }).catch(e => { deskOk = false; deskNote = e.message; go(dest); });
     }
   });
 }
@@ -594,6 +649,7 @@ function render() {
 window.addEventListener("hashchange", render);
 bind();
 render();
+desk("bootstrap", { role: session.role || "customer" }).then(data => { applyDesk(data); render(); }).catch(e => { deskOk = false; deskNote = e.message; render(); });
 </script>
 </body>
 </html>

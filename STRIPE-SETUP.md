@@ -1,6 +1,6 @@
 # Pathway Formation — paid clients + admin desk
 
-The app records who ordered what.
+The desk function records who ordered what. Card charging is separate and still needs Stripe.
 
 - One-time (state fee, EIN, expedite, OA extra): first pay stamps the packet
 - Monthly command desk and yearly reminders: first pay plus each renewal
@@ -23,5 +23,6 @@ Do not add `customer.created` or the rest.
 - `STRIPE_SECRET_KEY`
 - `STRIPE_WEBHOOK_SECRET`
 - `OPERATOR_EMAIL`
+- `OPERATOR_KEY` — locks the formation queue. Leave unset and anyone can move a status.
 
-Desk: `/clients`
+Desk: `/clients` on the server app. The live page uses `/admin`.

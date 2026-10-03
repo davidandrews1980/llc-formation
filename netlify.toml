@@ -5,6 +5,15 @@
 [build.environment]
   NODE_VERSION = "22"
 
+[functions]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/desk"
+  to = "/.netlify/functions/desk"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
