@@ -15,12 +15,6 @@
   force = true
 
 [[redirects]]
-  from = "/api/stripe/webhook"
-  to = "/.netlify/functions/stripe-webhook"
-  status = 200
-  force = true
-
-[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200

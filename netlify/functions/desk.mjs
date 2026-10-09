@@ -4,13 +4,17 @@
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { blobCtx, blobGet, blobPut } from "../lib/blobs.mjs";
 import { serverQuote } from "../lib/pricing.mjs";
-import { createCheckoutSession, stripeConfigured } from "../lib/stripe.mjs";
+import { paymentUrl } from "../lib/payment.mjs";
+import { sendOrderEmail } from "../lib/email.mjs";
 
 // Queue (work) statuses an operator can set.
 const STATUSES = new Set(["received", "in_progress", "filed", "cancelled"]);
-// Order (money) statuses. Only an operator (OPERATOR_KEY) or the signed Stripe webhook can set "paid".
+// Order (money) statuses. Only an operator (OPERATOR_KEY) can set "paid" or a paid amount.
+// Payment happens on the Stripe payment link (payer types the amount); nothing on the page can mark it paid.
 const ORDER_STATUSES = new Set(["due", "awaiting_payment", "paid"]);
 const MAX_ORDERS = 400;
+// Spam / quota guard: at most this many order emails per rolling hour (orders are still saved).
+const MAX_EMAILS_PER_HOUR = 30;
 
 // Browsers may only call this function from these origins (plus the site's own host, see originAllowed).
 const ALLOWED_ORIGINS = new Set([
@@ -109,16 +113,18 @@ function cleanOrder(input, clientId, id) {
     id, // always server-generated; a caller cannot overwrite someone else's order by reusing an id
     clientId: trimStr(clientId, 80),
     llcName: trimStr(input.llcName, 160),
+    contactName: trimStr(input.contactName, 120).trim(),
     email: trimStr(input.email, 254).trim(),
     stateCode: trimStr(input.stateCode, 8),
     stateName: trimStr(input.stateName, 40),
     document: trimStr(input.document, 80),
     agency: trimStr(input.agency, 120),
-    // "due" is computed HERE from the order's choices (netlify/lib/pricing.mjs). Any amount the
-    // browser sends (input.due) is ignored. Checkout recomputes it again before charging.
+    // "due" is the QUOTED total, computed HERE from the order's choices (netlify/lib/pricing.mjs).
+    // Any amount the browser sends (input.due) is ignored. The payer enters the real amount on Stripe.
     due: 0,
     quote: null,
-    status: "due", // never trust a status from the browser
+    status: "awaiting_payment", // never trust a status from the browser; the customer is sent to pay right away
+    paidAmount: null, // cents; only an operator can set this
     created: new Date().toISOString(),
     organizer: trimStr(input.organizer, 160),
     draft,
@@ -179,6 +185,7 @@ export function reduce(state, body) {
     const id = newId();
     const order = priceOrder(cleanOrder(body.order || {}, clientId, id));
     if (order.llcName.trim().length < 3) return out(400, { ok: false, error: "name the company" });
+    if (order.contactName.length < 2) return out(400, { ok: false, error: "add your name" });
     if (!validEmail(order.email)) return out(400, { ok: false, error: "add a contact email" });
     if (!order.quote) return out(400, { ok: false, error: "pick a supported state" });
     const items = asList(body.items)
@@ -188,7 +195,23 @@ export function reduce(state, body) {
     const ids = new Set(items.map((i) => i.id));
     const nextOrders = [order, ...orders].slice(0, MAX_ORDERS);
     const nextQueue = [...items, ...queue.filter((q) => !ids.has(q.id))].slice(0, MAX_ORDERS * 3);
-    return out(200, { ...mine(nextOrders, nextQueue), orderId: id }, { orders: nextOrders, queue: nextQueue });
+    return {
+      ...out(200, { ...mine(nextOrders, nextQueue), orderId: id, payUrl: paymentUrl(order) }, { orders: nextOrders, queue: nextQueue }),
+      notify: id,
+    };
+  }
+
+  // Customer desk "Pay": same as the end of "place" for an order that already exists.
+  if (action === "begin_payment") {
+    if (!validClientId(clientId)) return out(400, { ok: false, error: "missing client" });
+    const hit = orders.find((o) => o.id === trimStr(body.orderId, 40) && o.clientId === clientId);
+    if (!hit) return out(404, { ok: false, error: "order not on this desk" });
+    if (hit.status === "paid") return out(409, { ok: false, error: "already paid" });
+    hit.status = "awaiting_payment";
+    return {
+      ...out(200, { ...mine(orders, queue), orderId: hit.id, payUrl: paymentUrl(hit) }, { orders, queue }),
+      notify: hit.id,
+    };
   }
 
   // ---- operator actions (OPERATOR_KEY required; fail closed) ----
@@ -196,16 +219,28 @@ export function reduce(state, body) {
     return requireOperator() || out(200, all());
   }
 
-  if (action === "pay") {
-    // Operator marks an order paid after confirming payment (manual until the Stripe webhook exists).
+  if (action === "pay" || action === "paid_amount") {
+    // Operator records what was actually paid on Stripe. "pay" also sets the order status (default paid);
+    // "paid_amount" only records the amount and leaves the status alone.
     const denied = requireOperator();
     if (denied) return denied;
     const id = trimStr(body.orderId, 40);
-    const status = body.status ? trimStr(body.status, 20) : "paid";
-    if (!ORDER_STATUSES.has(status)) return out(400, { ok: false, error: "bad status" });
     const hit = orders.find((o) => o.id === id);
     if (!hit) return out(404, { ok: false, error: "order not found" });
-    hit.status = status;
+    if (body.paidAmount !== undefined && body.paidAmount !== null && body.paidAmount !== "") {
+      const dollars = Number(body.paidAmount);
+      if (!Number.isFinite(dollars) || dollars < 0 || dollars > 1_000_000) return out(400, { ok: false, error: "bad paid amount" });
+      hit.paidAmount = Math.round(dollars * 100);
+    } else if (action === "paid_amount") {
+      return out(400, { ok: false, error: "paid amount required" });
+    }
+    if (action === "pay") {
+      const status = body.status ? trimStr(body.status, 20) : "paid";
+      if (!ORDER_STATUSES.has(status)) return out(400, { ok: false, error: "bad status" });
+      hit.status = status;
+      if (status === "paid") hit.paidAt = hit.paidAt || new Date().toISOString();
+      else delete hit.paidAt;
+    }
     return out(200, all());
   }
 
@@ -224,35 +259,9 @@ export function reduce(state, body) {
   return out(400, { ok: false, error: "unknown action" });
 }
 
-export function paidKey(orderId) {
-  return `paid-${String(orderId).replace(/[^A-Za-z0-9]/g, "")}`;
-}
-
 async function loadState(ctx) {
   const [orders, queue] = await Promise.all([blobGet(ctx, "orders"), blobGet(ctx, "queue")]);
-  const list = asList(orders);
-  // The Stripe webhook also writes a per-order "paid-<id>" marker. Overlay it so a desk write that
-  // raced the webhook can never flip a paid order back. Only orders that went to Checkout are checked.
-  const pending = list.filter((o) => o.status !== "paid" && o.checkout && o.checkout.sessionId);
-  const marks = await Promise.all(pending.map((o) => blobGet(ctx, paidKey(o.id))));
-  pending.forEach((o, i) => {
-    const m = marks[i];
-    if (m && m.orderId === o.id) {
-      o.status = "paid";
-      o.paidAt = m.paidAt;
-      o.payment = { via: "stripe", sessionId: m.sessionId, amountTotal: m.amountTotal };
-    }
-  });
-  return { orders: list, queue: asList(queue) };
-}
-
-// Where Stripe sends the customer back. Only our own origins are accepted.
-function returnBase(event) {
-  const origin = header(event, "origin");
-  if (origin && (ALLOWED_ORIGINS.has(origin) || sameHost(origin, event))) return origin.replace(/\/$/, "");
-  const site = process.env.URL;
-  if (typeof site === "string" && /^https:\/\//.test(site)) return site.replace(/\/$/, "");
-  return "https://pathwaydevs.software";
+  return { orders: asList(orders), queue: asList(queue) };
 }
 
 function sameHost(origin, event) {
@@ -263,34 +272,33 @@ function sameHost(origin, event) {
   }
 }
 
-// Customer pressed Pay: create a Stripe Checkout Session for THEIR order with a server-computed
-// amount and return its URL. This never marks anything paid; only the signed webhook does.
-async function createCheckout(event, ctx, body) {
-  const clientId = trimStr(body.clientId, 80);
-  const orderId = trimStr(body.orderId, 40);
-  if (!stripeConfigured()) {
-    return { status: 503, response: { ok: false, error: "payments are not configured on the server yet (STRIPE_SECRET_KEY / STRIPE_WEBHOOK_SECRET). Nothing was charged." } };
+// Send the order email (awaited, <= 4s, never throws) and record the outcome on the order.
+// The order is already saved at this point, so a failure here never loses it.
+async function notifyOrder(ctx, orderId) {
+  let state = await loadState(ctx);
+  const order = state.orders.find((o) => o.id === orderId);
+  if (!order) return { status: "failed" };
+  if (order.emailStatus && order.emailStatus.status === "sent") return { status: "already_sent" };
+  const hourAgo = Date.now() - 3600_000;
+  const recent = state.orders.filter((o) => o.emailStatus && o.emailStatus.status === "sent" && Date.parse(o.emailStatus.at) > hourAgo).length;
+  let result;
+  if (recent >= MAX_EMAILS_PER_HOUR) {
+    console.error(`order email skipped for ${orderId}: ${MAX_EMAILS_PER_HOUR}/hour limit reached (order saved)`);
+    result = { status: "skipped" };
+  } else {
+    result = await sendOrderEmail(order);
   }
-  if (!validClientId(clientId)) return { status: 400, response: { ok: false, error: "missing client" } };
-  const state = await loadState(ctx);
-  const order = state.orders.find((o) => o.id === orderId && o.clientId === clientId);
-  if (!order) return { status: 404, response: { ok: false, error: "order not on this desk" } };
-  if (order.status === "paid") return { status: 409, response: { ok: false, error: "already paid" } };
-  const quote = serverQuote({ ...order.draft, stateCode: order.stateCode });
-  if (!quote || quote.total < 50) return { status: 400, response: { ok: false, error: "this order has nothing to charge" } };
-  let session;
   try {
-    session = await createCheckoutSession({ order, quote, baseUrl: returnBase(event) });
+    state = await loadState(ctx); // re-read so we only patch this order
+    const again = state.orders.find((o) => o.id === orderId);
+    if (again) {
+      again.emailStatus = { status: result.status, provider: result.provider || null, at: new Date().toISOString() };
+      await blobPut(ctx, "orders", state.orders);
+    }
   } catch (err) {
-    console.error("checkout failed", err && err.message);
-    return { status: 502, response: { ok: false, error: "could not start Stripe Checkout. Nothing was charged; please try again." } };
+    console.error("could not record email status", err && err.message);
   }
-  order.due = quote.total;
-  order.quote = quote;
-  order.status = "awaiting_payment";
-  order.checkout = { sessionId: session.id, amountTotal: quote.total, currency: quote.currency, created: new Date().toISOString() };
-  await blobPut(ctx, "orders", state.orders);
-  return { status: 200, response: { ok: true, url: session.url, orderId: order.id, amount: quote.total } };
+  return result;
 }
 
 function originAllowed(event) {
@@ -310,10 +318,6 @@ export async function handler(event) {
   if (!ctx) return json(503, { ok: false, error: "desk store is not attached to this function" }, origin);
   try {
     const body = readBody(event);
-    if (body.action === "create_checkout") {
-      const r = await createCheckout(event, ctx, body);
-      return json(r.status, { adminEnabled: adminEnabled(), ...r.response }, origin);
-    }
     const before = await loadState(ctx);
     const result = reduce(before, body);
     const changed = JSON.stringify(result.state) !== JSON.stringify(before);
@@ -323,7 +327,12 @@ export async function handler(event) {
         blobPut(ctx, "queue", result.state.queue),
       ]);
     }
-    return json(result.status, result.response, origin);
+    const response = { ...result.response };
+    if (result.status < 300 && result.notify) {
+      const mail = await notifyOrder(ctx, result.notify); // never throws; the redirect happens regardless
+      response.emailStatus = mail.status;
+    }
+    return json(result.status, response, origin);
   } catch (err) {
     console.error("desk failed", err);
     return json(500, { ok: false, error: "desk failed" }, origin);

@@ -1,6 +1,8 @@
-// Stripe webhook for Pathway Formation. The ONLY automatic way an order becomes "paid".
+// LEGACY / UNUSED (commit dcf75a8 Checkout approach). The live flow redirects to a Stripe Payment Link and
+// an operator marks orders paid; nothing calls this and it has no route in netlify.toml. It is fail-closed
+// (503 without STRIPE_WEBHOOK_SECRET) and is kept only so the old approach stays readable.
+// Original description: Stripe webhook for Pathway Formation.
 // URL: https://pathwaydevs.software/.netlify/functions/stripe-webhook
-//      (also reachable as /api/stripe/webhook via netlify.toml)
 // Events: checkout.session.completed (+ checkout.session.async_payment_succeeded for delayed methods)
 // Env: STRIPE_WEBHOOK_SECRET (the endpoint's whsec_ signing secret). Missing => 503, nothing changes.
 
