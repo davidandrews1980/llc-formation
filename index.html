@@ -65,7 +65,7 @@ table{width:100%;border-collapse:collapse;font-size:.875rem}
 th,td{text-align:left;padding:.65rem .4rem;border-bottom:1px solid var(--line)}
 th{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mist);font-weight:500}
 .badge{display:inline-block;border-radius:999px;padding:.15rem .55rem;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;background:var(--paper-2)}
-.badge.due{background:#f3e2c7;color:#8a5a1a}.badge.paid{background:#dce8e1;color:var(--pine)}.badge.filed{background:var(--ink);color:var(--paper)}
+.badge.due,.badge.awaiting_payment{background:#f3e2c7;color:#8a5a1a}.badge.paid{background:#dce8e1;color:var(--pine)}.badge.filed{background:var(--ink);color:var(--paper)}
 @media(max-width:720px){.dl{grid-template-columns:1fr}.hero{padding:2.5rem 0}h1{font-size:2rem!important}
 </style>
 </head>
@@ -121,7 +121,7 @@ function blank() {
     mailingSame: true, mailing: {street:"", city:"", state:"MI", zip:""},
     ra: {name:"", street:"", city:"", state:"MI", zip:""},
     members: [{name:"", title:"Member", street:"", city:"", state:"MI", zip:"", ownership:100}],
-    organizer: "", email: "", expedited: false, ein: false, oaPages: 3,
+    organizer: "", contactName: "", email: "", expedited: false, ein: false, oaPages: 3,
     reminders: false, command: false, website: false
   };
 }
@@ -157,7 +157,7 @@ function clientId() {
 function deskUrl() {
   return "/.netlify/functions/desk";
 }
-const ADMIN_ACTIONS = ["admin_bootstrap", "status", "pay"];
+const ADMIN_ACTIONS = ["admin_bootstrap", "status", "pay", "paid_amount"];
 // Server call. The server decides access: customers by their own client id, admin only by OPERATOR_KEY.
 // No role is sent; the operator key is sent only with admin actions.
 async function desk(action, extra) {
@@ -414,10 +414,14 @@ function wizard() {
         ${lines.map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--line)"><span>${esc(k)}</span><span class="price">${money(v)}</span></div>`).join("")}
         <div style="display:flex;justify-content:space-between;padding:.8rem 0 0;font-weight:600"><span>Due today</span><span class="price">${money(q.due)}</span></div>
       </div>
-      <label class="field" style="margin-top:1rem"><span>Contact email</span><input id="email" type="email" value="${esc(draft.email||"")}" placeholder="you@example.com"/><span class="tiny mist">Your Stripe receipt and filing updates go here.</span></label>
-      <p class="small mist" style="margin-top:1rem">Pay opens Stripe Checkout right away. Card details go to Stripe, not this page. The total is recalculated on our server, and nothing is filed with the state until Stripe confirms payment.</p>
+      <div class="grid g2" style="margin-top:1rem">
+        <label class="field"><span>Your name</span><input id="contactName" autocomplete="name" value="${esc(draft.contactName||"")}" placeholder="Full name" required/></label>
+        <label class="field"><span>Email</span><input id="email" type="email" autocomplete="email" value="${esc(draft.email||"")}" placeholder="you@example.com" required/></label>
+      </div>
+      <p class="small mist" style="margin-top:1rem">Submitting saves your order, sends it to our desk, and takes you to our secure Stripe payment page. Card details go to Stripe, not this page. Nothing is filed with the state until we confirm your payment.</p>
       <p class="warn small" id="order-err"></p>
-      <button class="btn" data-act="place" style="margin-top:.8rem">Pay · ${money(q.due)}</button>`;
+      <p class="small" style="margin-top:.8rem"><strong>Please pay the exact amount shown for your filing and add-ons.</strong></p>
+      <button class="btn" data-act="place" style="margin-top:.4rem">Submit order and pay · ${money(q.due)}</button>`;
   }
 
   const nextLabels = ["Continue to name","Continue to office","Continue to agent","Continue to members","Continue to company","Continue to add-ons","Continue to review"];
@@ -485,14 +489,14 @@ function deskPage() {
     <p class="small mist">Documents, reminders, and the partners we can actually send you to. $10 a month covers this desk.</p>${payNote?`<p class="small" style="color:var(--pine)">${esc(payNote)}</p>`:""}${deskNote?`<p class="warn small">${esc(deskNote)}</p>`:""}
     <div class="grid g3" style="margin-top:1.4rem">
       <div class="card"><p class="kicker">Orders</p><p style="font-family:Fraunces,serif;font-size:2rem">${mine.length}</p></div>
-      <div class="card"><p class="kicker">Due</p><p style="font-family:Fraunces,serif;font-size:2rem">${money(mine.filter(o=>o.status!=="paid").reduce((a,o)=>a+o.due,0))}</p></div>
-      <div class="card"><p class="kicker">Paid</p><p style="font-family:Fraunces,serif;font-size:2rem">${money(mine.filter(o=>o.status==="paid").reduce((a,o)=>a+o.due,0))}</p></div>
+      <div class="card"><p class="kicker">Quoted, unpaid</p><p style="font-family:Fraunces,serif;font-size:2rem">${money(mine.filter(o=>o.status!=="paid").reduce((a,o)=>a+o.due,0))}</p></div>
+      <div class="card"><p class="kicker">Paid</p><p style="font-family:Fraunces,serif;font-size:2rem">${money(mine.reduce((a,o)=>a+(o.paidAmount||0),0))}</p></div>
     </div>
     <div style="margin-top:1.4rem">${mine.length?mine.map(o=>`<div class="card" style="margin-bottom:.7rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap">
-      <div><strong>${esc(o.llcName)}</strong><p class="tiny mist">${esc(o.stateName)} · ${esc(o.document)} · ${money(o.due)}</p></div>
+      <div><strong>${esc(o.llcName)}</strong><p class="tiny mist">${esc(o.stateName)} · ${esc(o.document)} · quoted ${money(o.due)}${o.paidAmount?` · paid ${money(o.paidAmount)}`:""}</p></div>
       <div><span class="badge ${esc(o.status)}">${esc(statusLabel(o.status))}</span>
         ${o.status!=="paid"?`<button class="btn" data-pay="${esc(o.id)}" style="height:2.2rem;margin-left:.5rem">Pay</button>`:""}
-        ${o.status==="awaiting_payment"?`<p class="tiny mist" style="margin-top:.4rem">Checkout started. This turns to paid as soon as Stripe confirms.</p>`:""}
+        ${o.status!=="paid"?`<p class="tiny" style="margin-top:.4rem"><strong>Please pay the exact amount shown for your filing and add-ons.</strong></p>`:""}
       </div></div>`).join(""):`<div class="card mist">No formations yet. <a href="#/form" style="color:var(--pine)">Open the wizard</a>.</div>`}</div>
   </main>`+footer();
 }
@@ -507,23 +511,25 @@ function admin() {
   }
   const open = queue.filter(q=>q.status!=="filed" && q.status!=="cancelled").length;
   const filed = queue.filter(q=>q.status==="filed").length;
-  const rev = orders.filter(o=>o.status==="paid").reduce((a,o)=>a+o.due,0);
+  const rev = orders.reduce((a,o)=>a+(o.paidAmount||0),0);
   return header(false)+`<main class="wrap pad">
     <p class="kicker">Admin desk</p><h1 style="font-size:2rem">What needs a human</h1>
     <p class="small mist">Filings, EIN packets, website builds. Status changes here are what the customer sees.</p>${deskNote?`<p class="warn small">${esc(deskNote)}</p>`:""}
     <div class="grid g4" style="margin-top:1.2rem">
       <div class="card"><p class="kicker">Open work</p><p style="font-family:Fraunces,serif;font-size:2rem">${open}</p></div>
       <div class="card"><p class="kicker">Filed</p><p style="font-family:Fraunces,serif;font-size:2rem">${filed}</p></div>
-      <div class="card"><p class="kicker">Collected</p><p style="font-family:Fraunces,serif;font-size:2rem">${money(rev)}</p></div>
+      <div class="card"><p class="kicker">Paid amounts recorded</p><p style="font-family:Fraunces,serif;font-size:2rem">${money(rev)}</p></div>
       <div class="card"><p class="kicker">Orders</p><p style="font-family:Fraunces,serif;font-size:2rem">${orders.length}</p></div>
     </div>
-    <div class="card" style="margin-top:1.2rem"><h3>Stripe</h3>
-      <p class="small mist">Pay opens Stripe Checkout with an amount the server computes. Orders turn paid only when the signed Stripe webhook (checkout.session.completed) arrives; the page cannot mark itself paid. "Mark paid" here is a manual operator override (OPERATOR_KEY). Needs STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET on the site; without them Pay refuses and nothing is charged.</p>
+    <div class="card" style="margin-top:1.2rem"><h3>Payments</h3>
+      <p class="small mist">Submitting an order saves it, emails it to the desk inbox, and sends the customer to the Stripe payment link, where they type the amount. Orders show the quoted total and stay "awaiting payment" until you record the paid amount and mark them paid here (needs OPERATOR_KEY). The page cannot mark itself paid.</p>
     </div>
     <h3 style="margin-top:1.6rem">Orders</h3>
     ${orders.length?orders.map(o=>`<div class="card" style="margin-top:.6rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap">
-      <div><strong>${esc(o.llcName)}</strong><p class="tiny mist">${esc(o.stateName)} · ${money(o.due)} · ${esc(o.email||"no email")} · ${esc(statusLabel(o.status))}</p></div>
-      <div>${o.status!=="paid"?`<button class="btn" data-markpaid="${esc(o.id)}" style="height:2.2rem">Mark paid</button>`:""}</div></div>`).join(""):`<p class="mist">No orders yet.</p>`}
+      <div><strong>${esc(o.llcName)}</strong><p class="tiny mist">${esc(o.contactName||"no name")} · ${esc(o.email||"no email")} · ${esc(o.stateName)} · quoted ${money(o.due)} · paid amount ${o.paidAmount!=null?money(o.paidAmount):"not set"} · ${esc(statusLabel(o.status))} · order ${esc(o.id)}</p>${o.emailStatus?`<p class="tiny mist">order email: ${esc(o.emailStatus.status)}</p>`:""}</div>
+      <div><input id="pa-${esc(o.id)}" type="number" min="0" step="0.01" placeholder="paid amount $" value="${o.paidAmount!=null?(o.paidAmount/100).toFixed(2):""}" style="width:8rem;height:2.2rem"/>
+        <button class="btn ghost" data-saveamt="${esc(o.id)}" style="height:2.2rem">Save amount</button>
+        ${o.status!=="paid"?`<button class="btn" data-markpaid="${esc(o.id)}" style="height:2.2rem">Mark paid</button>`:""}</div></div>`).join(""):`<p class="mist">No orders yet.</p>`}
     <h3 style="margin-top:1.6rem">Queue</h3>
     ${queue.length?queue.map(q=>`<div class="card" style="margin-top:.6rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap">
       <div><strong>${esc(q.llcName)}</strong><p class="tiny mist">${esc(q.kind)} · ${esc(q.stateName)} · ${esc(q.status)}</p></div>
@@ -557,6 +563,7 @@ function harvest() {
     draft.members[i][k] = k==="ownership" ? Number(el.value||0) : el.value;
   });
   if (g("organizer")) draft.organizer = g("organizer").value;
+  if (g("contactName")) draft.contactName = g("contactName").value.trim();
   if (g("email")) draft.email = g("email").value.trim();
   if (g("purpose")) draft.purpose = g("purpose").value;
   if (g("mgmt")) draft.management = g("mgmt").value;
@@ -569,46 +576,49 @@ function harvest() {
   persist();
 }
 
-// Pay: the server prices the order and returns a Stripe Checkout URL; we go there immediately.
-// The page never sets "paid"; only the signed Stripe webhook does.
-async function startCheckout(orderId) {
-  const data = await desk("create_checkout", { orderId: orderId });
-  if (!data.url || !/^https:\/\/checkout\.stripe\.com\//.test(data.url)) throw new Error("checkout did not return a Stripe URL");
-  location.assign(data.url);
+// Pay: the order is saved on the server, the order email is sent, then we go straight to the Stripe
+// payment link (the server returns the URL with client_reference_id and prefilled_email). The payer types
+// the amount on Stripe. The page never sets "paid"; only the operator can (OPERATOR_KEY).
+function goToPayment(data) {
+  if (!data || typeof data.payUrl !== "string" || !data.payUrl.startsWith("https://buy.stripe.com/")) throw new Error("the desk did not return a Stripe payment link");
+  location.assign(data.payUrl);
 }
 
 async function placeOrder() {
   harvest();
   const err = document.getElementById("order-err");
   if (draft.llcName.trim().length < 3) { if (err) err.textContent = "Name the company first."; return; }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(draft.email || "")) { if (err) err.textContent = "Add a contact email for your receipt and filing updates."; return; }
+  if ((draft.contactName || "").trim().length < 2) { if (err) err.textContent = "Add your name."; return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(draft.email || "")) { if (err) err.textContent = "Add a valid email."; return; }
   const st = BY[draft.stateCode];
   const q = quote(draft);
   const id = uid();
   const order = {
     id, llcName: draft.llcName.trim(), stateCode: draft.stateCode, stateName: st.name,
-    document: st.document, agency: st.agency, due: q.due, email: draft.email,
+    document: st.document, agency: st.agency, due: q.due, contactName: draft.contactName.trim(), email: draft.email,
     created: new Date().toISOString(), organizer: draft.organizer || session.name || "",
     draft: JSON.parse(JSON.stringify(draft))
   };
   const items = [{id, llcName: order.llcName, kind: "filing", stateName: st.name, status: "received"}];
   if (draft.ein) items.push({id: id+"-ein", llcName: order.llcName, kind: "ein", stateName: st.name, status: "received"});
+  let data;
   try {
-    const data = await desk("place", { order, items });
+    if (err) err.textContent = "Saving your order…";
+    data = await desk("place", { order, items });
     applyDesk(data);
-    if (err) err.textContent = "Opening Stripe Checkout…";
-    try {
-      await startCheckout(data.orderId);
-    } catch (e) {
-      // The order is saved; payment did not start. Show it on the desk with a Pay button.
-      payNote = "Your order is saved, but checkout could not start: " + e.message;
-      go("/app?placed="+(data.orderId||""));
-    }
-    return;
   } catch (e) {
     deskOk = false;
     deskNote = e.message;
     if (err) err.textContent = "The desk could not save this order (" + e.message + "). Nothing was recorded. Please try again.";
+    return;
+  }
+  try {
+    if (err) err.textContent = "Order saved. Opening the Stripe payment page…";
+    goToPayment(data);
+  } catch (e) {
+    // The order is saved; show it on the desk, which has a Pay button.
+    payNote = "Your order is saved, but the payment page could not open: " + e.message;
+    go("/app?placed="+(data.orderId||""));
   }
 }
 
@@ -633,7 +643,7 @@ function bind() {
     harvest();
   });
   app.addEventListener("click", (e) => {
-    const b = e.target.closest("button, [data-state], [data-pay], [data-markpaid]");
+    const b = e.target.closest("button, [data-state], [data-pay], [data-markpaid], [data-saveamt]");
     if (!b) return;
     if (b.dataset.state) { applyState(b.dataset.state); return; }
     if (b.dataset.go !== undefined) {
@@ -643,14 +653,20 @@ function bind() {
       persist(); render(); return;
     }
     if (b.dataset.pay) {
-      // Customers cannot mark an order paid. Pay goes straight to Stripe Checkout.
-      payNote = "Opening Stripe Checkout…";
+      // Customers cannot mark an order paid. Pay re-sends the order to the desk and opens the Stripe link.
+      payNote = "Opening the Stripe payment page…";
       render();
-      startCheckout(b.dataset.pay).catch(e => { payNote = ""; deskNote = e.message; render(); });
+      desk("begin_payment", { orderId: b.dataset.pay }).then(data => { applyDesk(data); goToPayment(data); }).catch(e => { payNote = ""; deskNote = e.message; render(); });
+      return;
+    }
+    if (b.dataset.saveamt) {
+      const v = (document.getElementById("pa-" + b.dataset.saveamt) || {}).value;
+      desk("paid_amount", { orderId: b.dataset.saveamt, paidAmount: v }).then(data => { applyDesk(data); render(); }).catch(e => { deskNote = e.message; render(); });
       return;
     }
     if (b.dataset.markpaid) {
-      desk("pay", { orderId: b.dataset.markpaid }).then(data => { applyDesk(data); render(); }).catch(e => { deskOk = false; deskNote = e.message; render(); });
+      const v = (document.getElementById("pa-" + b.dataset.markpaid) || {}).value;
+      desk("pay", { orderId: b.dataset.markpaid, paidAmount: v }).then(data => { applyDesk(data); render(); }).catch(e => { deskOk = false; deskNote = e.message; render(); });
       return;
     }
     const act = b.dataset.act;
@@ -693,20 +709,19 @@ function render() {
 
 window.addEventListener("hashchange", render);
 bind();
-(function checkoutReturn() {
-  // Back from Stripe. This is only a message; the desk shows "paid" once the webhook has landed.
-  const sp = new URLSearchParams(location.search);
-  if (sp.has("paid")) payNote = "Thanks. Stripe is confirming your payment; this order turns paid in a moment.";
-  if (sp.has("canceled")) payNote = "Checkout was canceled. Nothing was charged. Press Pay to try again.";
-  if (sp.has("paid") || sp.has("canceled")) {
-    history.replaceState(null, "", location.pathname + location.hash);
-    if (sp.has("paid")) {
-      let n = 0;
-      const poll = () => desk(bootstrapAction()).then(data => { applyDesk(data); if (orders.some(o => o.id === sp.get("paid") && o.status === "paid")) payNote = "Payment received. Thank you."; render(); if (++n < 10 && orders.some(o => o.id === sp.get("paid") && o.status !== "paid")) setTimeout(poll, 2000); }).catch(() => {});
-      setTimeout(poll, 2000);
-    }
-  }
-})();
+// Analytics placeholder: David will provide the tag. Nothing loads until ANALYTICS_SCRIPT_URL is set
+// AND the visitor has consented (call pfConsent.grant() from a consent banner).
+const ANALYTICS_SCRIPT_URL = "";
+function loadAnalytics() {
+  if (!ANALYTICS_SCRIPT_URL) return;
+  try { if (localStorage.getItem("pf-consent-analytics") !== "granted") return; } catch { return; }
+  if (document.querySelector("script[data-pf-analytics]")) return;
+  const s = document.createElement("script");
+  s.async = true; s.src = ANALYTICS_SCRIPT_URL; s.setAttribute("data-pf-analytics", "1");
+  document.head.appendChild(s);
+}
+window.pfConsent = { grant() { try { localStorage.setItem("pf-consent-analytics", "granted"); } catch { /* ignore */ } loadAnalytics(); } };
+loadAnalytics();
 render();
 desk(bootstrapAction()).then(data => { applyDesk(data); render(); }).catch(e => { deskOk = false; deskNote = e.message; render(); });
 </script>
