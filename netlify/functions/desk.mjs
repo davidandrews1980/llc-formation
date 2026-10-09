@@ -2,10 +2,13 @@
 // Orders and the filing queue live here, not in the browser.
 
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
+import { blobCtx, blobGet, blobPut } from "../lib/blobs.mjs";
+import { serverQuote } from "../lib/pricing.mjs";
+import { createCheckoutSession, stripeConfigured } from "../lib/stripe.mjs";
 
 // Queue (work) statuses an operator can set.
 const STATUSES = new Set(["received", "in_progress", "filed", "cancelled"]);
-// Order (money) statuses. Only an operator (or, later, a verified Stripe webhook) can set "paid".
+// Order (money) statuses. Only an operator (OPERATOR_KEY) or the signed Stripe webhook can set "paid".
 const ORDER_STATUSES = new Set(["due", "awaiting_payment", "paid"]);
 const MAX_ORDERS = 400;
 
@@ -57,81 +60,6 @@ function header(event, name) {
     if (k.toLowerCase() === want) return v;
   }
   return "";
-}
-
-function blobCtx(event) {
-  if (event.blobs) {
-    try {
-      const data = JSON.parse(Buffer.from(event.blobs, "base64").toString("utf8"));
-      const siteID = header(event, "x-nf-site-id");
-      if (data && data.token && data.url && siteID) {
-        return { token: data.token, edgeURL: data.url, siteID };
-      }
-    } catch {
-      /* fall through */
-    }
-  }
-  const encoded = globalThis.netlifyBlobsContext || process.env.NETLIFY_BLOBS_CONTEXT;
-  if (typeof encoded === "string" && encoded) {
-    try {
-      const data = JSON.parse(Buffer.from(encoded, "base64").toString("utf8"));
-      if (data.token && data.siteID && (data.edgeURL || data.url)) {
-        return {
-          token: data.token,
-          siteID: data.siteID,
-          edgeURL: data.edgeURL || data.url,
-        };
-      }
-    } catch {
-      /* ignore */
-    }
-  }
-  return null;
-}
-
-async function blobGet(ctx, key) {
-  const url = new URL(`/${ctx.siteID}/site:pathway-formation/${key}`, ctx.edgeURL);
-  const res = await fetch(url, { headers: { authorization: `Bearer ${ctx.token}` } });
-  if (res.status === 404) return null;
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`read ${res.status} ${text.slice(0, 180)}`);
-  }
-  return res.json();
-}
-
-async function blobPut(ctx, key, value) {
-  const path = `/${ctx.siteID}/site:pathway-formation/${key}`;
-  const edge = new URL(path, ctx.edgeURL);
-  const body = JSON.stringify(value);
-  const put = await fetch(edge, {
-    method: "PUT",
-    headers: {
-      authorization: `Bearer ${ctx.token}`,
-      "content-type": "application/json",
-      "cache-control": "max-age=0, stale-while-revalidate=60",
-    },
-    body,
-  });
-  if (put.ok) return;
-  const detail = await put.text();
-  const sign = await fetch(new URL(`/api/v1/blobs${path}`, "https://api.netlify.com"), {
-    method: "PUT",
-    headers: {
-      authorization: `Bearer ${ctx.token}`,
-      accept: "application/json;type=signed-url",
-    },
-  });
-  if (!sign.ok) {
-    throw new Error(`write ${put.status} ${detail.slice(0, 120)}`);
-  }
-  const signed = await sign.json();
-  const again = await fetch(signed.url, {
-    method: "PUT",
-    headers: { "content-type": "application/json" },
-    body,
-  });
-  if (!again.ok) throw new Error(`signed write ${again.status}`);
 }
 
 // ---- Operator (admin) check -------------------------------------------------
@@ -186,14 +114,23 @@ function cleanOrder(input, clientId, id) {
     stateName: trimStr(input.stateName, 40),
     document: trimStr(input.document, 80),
     agency: trimStr(input.agency, 120),
-    // NOTE: "due" is the browser's quote. It is display-only. Any real charge must recompute
-    // the amount server-side (see the Stripe hook below) and never trust this number.
-    due: Math.max(0, Math.round(Number(input.due) || 0)),
+    // "due" is computed HERE from the order's choices (netlify/lib/pricing.mjs). Any amount the
+    // browser sends (input.due) is ignored. Checkout recomputes it again before charging.
+    due: 0,
+    quote: null,
     status: "due", // never trust a status from the browser
     created: new Date().toISOString(),
     organizer: trimStr(input.organizer, 160),
     draft,
   };
+}
+
+function priceOrder(order) {
+  const q = serverQuote({ ...order.draft, stateCode: order.stateCode });
+  order.quote = q;
+  order.due = q ? q.total : 0;
+  if (q) order.stateName = q.stateName;
+  return order;
 }
 
 function cleanItem(input, orderId, clientId) {
@@ -207,23 +144,6 @@ function cleanItem(input, orderId, clientId) {
     status: "received",
     clientId: trimStr(clientId, 80),
   };
-}
-
-// ---- Stripe hook (NOT ACTIVE) ------------------------------------------------
-// TODO(stripe): Formation has no Stripe Checkout wired in this static desk yet.
-// When ready:
-//   1. Set STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET in the Netlify site env (never in git).
-//   2. In createCheckoutForOrder(), recompute the amount server-side from the state fee table
-//      and selected add-ons (do not trust order.due), create a Checkout Session with
-//      client_reference_id = order.id, and return session.url to the browser.
-//   3. Add a webhook function that verifies the Stripe-Signature header with
-//      STRIPE_WEBHOOK_SECRET and, on checkout.session.completed, sets that order to "paid".
-//   Price ids already exist in src/lib/stripe.ts (server app) and may be reusable.
-// Until then this returns null and the desk only marks the order "awaiting_payment".
-// eslint-disable-next-line no-unused-vars
-async function createCheckoutForOrder(_order) {
-  if (!process.env.STRIPE_SECRET_KEY) return null;
-  return null; // intentionally not implemented yet
 }
 
 export function reduce(state, body) {
@@ -257,9 +177,10 @@ export function reduce(state, body) {
   if (action === "place") {
     if (!validClientId(clientId)) return out(400, { ok: false, error: "missing client" });
     const id = newId();
-    const order = cleanOrder(body.order || {}, clientId, id);
+    const order = priceOrder(cleanOrder(body.order || {}, clientId, id));
     if (order.llcName.trim().length < 3) return out(400, { ok: false, error: "name the company" });
     if (!validEmail(order.email)) return out(400, { ok: false, error: "add a contact email" });
+    if (!order.quote) return out(400, { ok: false, error: "pick a supported state" });
     const items = asList(body.items)
       .slice(0, 6)
       .map((item) => cleanItem({ ...item, llcName: order.llcName, stateName: order.stateName }, id, clientId));
@@ -268,15 +189,6 @@ export function reduce(state, body) {
     const nextOrders = [order, ...orders].slice(0, MAX_ORDERS);
     const nextQueue = [...items, ...queue.filter((q) => !ids.has(q.id))].slice(0, MAX_ORDERS * 3);
     return out(200, { ...mine(nextOrders, nextQueue), orderId: id }, { orders: nextOrders, queue: nextQueue });
-  }
-
-  if (action === "request_payment") {
-    // Customer pressed Pay. The page can NOT mark itself paid; it only flags the order.
-    const id = trimStr(body.orderId, 40);
-    const hit = orders.find((o) => o.id === id && o.clientId === clientId && validClientId(clientId));
-    if (!hit) return out(404, { ok: false, error: "order not on this desk" });
-    if (hit.status !== "paid") hit.status = "awaiting_payment";
-    return out(200, { ...mine(), message: "Payment coming soon: we'll email you a secure payment link." });
   }
 
   // ---- operator actions (OPERATOR_KEY required; fail closed) ----
@@ -312,9 +224,73 @@ export function reduce(state, body) {
   return out(400, { ok: false, error: "unknown action" });
 }
 
+export function paidKey(orderId) {
+  return `paid-${String(orderId).replace(/[^A-Za-z0-9]/g, "")}`;
+}
+
 async function loadState(ctx) {
   const [orders, queue] = await Promise.all([blobGet(ctx, "orders"), blobGet(ctx, "queue")]);
-  return { orders: asList(orders), queue: asList(queue) };
+  const list = asList(orders);
+  // The Stripe webhook also writes a per-order "paid-<id>" marker. Overlay it so a desk write that
+  // raced the webhook can never flip a paid order back. Only orders that went to Checkout are checked.
+  const pending = list.filter((o) => o.status !== "paid" && o.checkout && o.checkout.sessionId);
+  const marks = await Promise.all(pending.map((o) => blobGet(ctx, paidKey(o.id))));
+  pending.forEach((o, i) => {
+    const m = marks[i];
+    if (m && m.orderId === o.id) {
+      o.status = "paid";
+      o.paidAt = m.paidAt;
+      o.payment = { via: "stripe", sessionId: m.sessionId, amountTotal: m.amountTotal };
+    }
+  });
+  return { orders: list, queue: asList(queue) };
+}
+
+// Where Stripe sends the customer back. Only our own origins are accepted.
+function returnBase(event) {
+  const origin = header(event, "origin");
+  if (origin && (ALLOWED_ORIGINS.has(origin) || sameHost(origin, event))) return origin.replace(/\/$/, "");
+  const site = process.env.URL;
+  if (typeof site === "string" && /^https:\/\//.test(site)) return site.replace(/\/$/, "");
+  return "https://pathwaydevs.software";
+}
+
+function sameHost(origin, event) {
+  try {
+    return new URL(origin).host === header(event, "host");
+  } catch {
+    return false;
+  }
+}
+
+// Customer pressed Pay: create a Stripe Checkout Session for THEIR order with a server-computed
+// amount and return its URL. This never marks anything paid; only the signed webhook does.
+async function createCheckout(event, ctx, body) {
+  const clientId = trimStr(body.clientId, 80);
+  const orderId = trimStr(body.orderId, 40);
+  if (!stripeConfigured()) {
+    return { status: 503, response: { ok: false, error: "payments are not configured on the server yet (STRIPE_SECRET_KEY / STRIPE_WEBHOOK_SECRET). Nothing was charged." } };
+  }
+  if (!validClientId(clientId)) return { status: 400, response: { ok: false, error: "missing client" } };
+  const state = await loadState(ctx);
+  const order = state.orders.find((o) => o.id === orderId && o.clientId === clientId);
+  if (!order) return { status: 404, response: { ok: false, error: "order not on this desk" } };
+  if (order.status === "paid") return { status: 409, response: { ok: false, error: "already paid" } };
+  const quote = serverQuote({ ...order.draft, stateCode: order.stateCode });
+  if (!quote || quote.total < 50) return { status: 400, response: { ok: false, error: "this order has nothing to charge" } };
+  let session;
+  try {
+    session = await createCheckoutSession({ order, quote, baseUrl: returnBase(event) });
+  } catch (err) {
+    console.error("checkout failed", err && err.message);
+    return { status: 502, response: { ok: false, error: "could not start Stripe Checkout. Nothing was charged; please try again." } };
+  }
+  order.due = quote.total;
+  order.quote = quote;
+  order.status = "awaiting_payment";
+  order.checkout = { sessionId: session.id, amountTotal: quote.total, currency: quote.currency, created: new Date().toISOString() };
+  await blobPut(ctx, "orders", state.orders);
+  return { status: 200, response: { ok: true, url: session.url, orderId: order.id, amount: quote.total } };
 }
 
 function originAllowed(event) {
@@ -322,11 +298,7 @@ function originAllowed(event) {
   if (!origin) return true; // non-browser caller; data access is still gated by clientId / OPERATOR_KEY
   if (ALLOWED_ORIGINS.has(origin)) return true;
   // Same-origin calls (e.g. a deploy preview or local `netlify dev`) are allowed; nothing else.
-  try {
-    return new URL(origin).host === header(event, "host");
-  } catch {
-    return false;
-  }
+  return sameHost(origin, event);
 }
 
 export async function handler(event) {
@@ -337,8 +309,13 @@ export async function handler(event) {
   const ctx = blobCtx(event);
   if (!ctx) return json(503, { ok: false, error: "desk store is not attached to this function" }, origin);
   try {
+    const body = readBody(event);
+    if (body.action === "create_checkout") {
+      const r = await createCheckout(event, ctx, body);
+      return json(r.status, { adminEnabled: adminEnabled(), ...r.response }, origin);
+    }
     const before = await loadState(ctx);
-    const result = reduce(before, readBody(event));
+    const result = reduce(before, body);
     const changed = JSON.stringify(result.state) !== JSON.stringify(before);
     if (result.status < 300 && changed) {
       await Promise.all([

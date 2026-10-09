@@ -414,10 +414,10 @@ function wizard() {
         ${lines.map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--line)"><span>${esc(k)}</span><span class="price">${money(v)}</span></div>`).join("")}
         <div style="display:flex;justify-content:space-between;padding:.8rem 0 0;font-weight:600"><span>Due today</span><span class="price">${money(q.due)}</span></div>
       </div>
-      <label class="field" style="margin-top:1rem"><span>Contact email</span><input id="email" type="email" value="${esc(draft.email||"")}" placeholder="you@example.com"/><span class="tiny mist">We send your secure payment link and filing updates here.</span></label>
-      <p class="small mist" style="margin-top:1rem">This order is written to the formation desk. Nothing is charged on this page: we email you a secure payment link, and nothing is filed with the state until payment is confirmed.</p>
+      <label class="field" style="margin-top:1rem"><span>Contact email</span><input id="email" type="email" value="${esc(draft.email||"")}" placeholder="you@example.com"/><span class="tiny mist">Your Stripe receipt and filing updates go here.</span></label>
+      <p class="small mist" style="margin-top:1rem">Pay opens Stripe Checkout right away. Card details go to Stripe, not this page. The total is recalculated on our server, and nothing is filed with the state until Stripe confirms payment.</p>
       <p class="warn small" id="order-err"></p>
-      <button class="btn" data-act="place" style="margin-top:.8rem">Place the order · ${money(q.due)}</button>`;
+      <button class="btn" data-act="place" style="margin-top:.8rem">Pay · ${money(q.due)}</button>`;
   }
 
   const nextLabels = ["Continue to name","Continue to office","Continue to agent","Continue to members","Continue to company","Continue to add-ons","Continue to review"];
@@ -491,8 +491,8 @@ function deskPage() {
     <div style="margin-top:1.4rem">${mine.length?mine.map(o=>`<div class="card" style="margin-bottom:.7rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap">
       <div><strong>${esc(o.llcName)}</strong><p class="tiny mist">${esc(o.stateName)} · ${esc(o.document)} · ${money(o.due)}</p></div>
       <div><span class="badge ${esc(o.status)}">${esc(statusLabel(o.status))}</span>
-        ${o.status==="due"?`<button class="btn" data-pay="${esc(o.id)}" style="height:2.2rem;margin-left:.5rem">Pay</button>`:""}
-        ${o.status==="awaiting_payment"?`<p class="tiny mist" style="margin-top:.4rem">Payment coming soon: we'll email you a secure payment link.</p>`:""}
+        ${o.status!=="paid"?`<button class="btn" data-pay="${esc(o.id)}" style="height:2.2rem;margin-left:.5rem">Pay</button>`:""}
+        ${o.status==="awaiting_payment"?`<p class="tiny mist" style="margin-top:.4rem">Checkout started. This turns to paid as soon as Stripe confirms.</p>`:""}
       </div></div>`).join(""):`<div class="card mist">No formations yet. <a href="#/form" style="color:var(--pine)">Open the wizard</a>.</div>`}</div>
   </main>`+footer();
 }
@@ -518,7 +518,7 @@ function admin() {
       <div class="card"><p class="kicker">Orders</p><p style="font-family:Fraunces,serif;font-size:2rem">${orders.length}</p></div>
     </div>
     <div class="card" style="margin-top:1.2rem"><h3>Stripe</h3>
-      <p class="small mist">Customers cannot mark themselves paid. Pay on the customer desk only flags an order "awaiting payment". Send the payment link, then mark it paid here once the money has arrived. Stripe Checkout is not wired yet (needs STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET plus the hook in the desk function).</p>
+      <p class="small mist">Pay opens Stripe Checkout with an amount the server computes. Orders turn paid only when the signed Stripe webhook (checkout.session.completed) arrives; the page cannot mark itself paid. "Mark paid" here is a manual operator override (OPERATOR_KEY). Needs STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET on the site; without them Pay refuses and nothing is charged.</p>
     </div>
     <h3 style="margin-top:1.6rem">Orders</h3>
     ${orders.length?orders.map(o=>`<div class="card" style="margin-top:.6rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap">
@@ -569,11 +569,19 @@ function harvest() {
   persist();
 }
 
+// Pay: the server prices the order and returns a Stripe Checkout URL; we go there immediately.
+// The page never sets "paid"; only the signed Stripe webhook does.
+async function startCheckout(orderId) {
+  const data = await desk("create_checkout", { orderId: orderId });
+  if (!data.url || !/^https:\/\/checkout\.stripe\.com\//.test(data.url)) throw new Error("checkout did not return a Stripe URL");
+  location.assign(data.url);
+}
+
 async function placeOrder() {
   harvest();
   const err = document.getElementById("order-err");
   if (draft.llcName.trim().length < 3) { if (err) err.textContent = "Name the company first."; return; }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(draft.email || "")) { if (err) err.textContent = "Add a contact email so we can send your payment link."; return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(draft.email || "")) { if (err) err.textContent = "Add a contact email for your receipt and filing updates."; return; }
   const st = BY[draft.stateCode];
   const q = quote(draft);
   const id = uid();
@@ -588,7 +596,15 @@ async function placeOrder() {
   try {
     const data = await desk("place", { order, items });
     applyDesk(data);
-    go("/app?placed="+(data.orderId||""));
+    if (err) err.textContent = "Opening Stripe Checkout…";
+    try {
+      await startCheckout(data.orderId);
+    } catch (e) {
+      // The order is saved; payment did not start. Show it on the desk with a Pay button.
+      payNote = "Your order is saved, but checkout could not start: " + e.message;
+      go("/app?placed="+(data.orderId||""));
+    }
+    return;
   } catch (e) {
     deskOk = false;
     deskNote = e.message;
@@ -627,10 +643,10 @@ function bind() {
       persist(); render(); return;
     }
     if (b.dataset.pay) {
-      // Customers cannot mark an order paid. This only asks for a payment link.
-      payNote = "Payment coming soon: we'll email you a secure payment link.";
-      desk("request_payment", { orderId: b.dataset.pay }).then(data => { applyDesk(data); render(); }).catch(e => { deskOk = false; deskNote = e.message; render(); });
+      // Customers cannot mark an order paid. Pay goes straight to Stripe Checkout.
+      payNote = "Opening Stripe Checkout…";
       render();
+      startCheckout(b.dataset.pay).catch(e => { payNote = ""; deskNote = e.message; render(); });
       return;
     }
     if (b.dataset.markpaid) {
@@ -677,6 +693,20 @@ function render() {
 
 window.addEventListener("hashchange", render);
 bind();
+(function checkoutReturn() {
+  // Back from Stripe. This is only a message; the desk shows "paid" once the webhook has landed.
+  const sp = new URLSearchParams(location.search);
+  if (sp.has("paid")) payNote = "Thanks. Stripe is confirming your payment; this order turns paid in a moment.";
+  if (sp.has("canceled")) payNote = "Checkout was canceled. Nothing was charged. Press Pay to try again.";
+  if (sp.has("paid") || sp.has("canceled")) {
+    history.replaceState(null, "", location.pathname + location.hash);
+    if (sp.has("paid")) {
+      let n = 0;
+      const poll = () => desk(bootstrapAction()).then(data => { applyDesk(data); if (orders.some(o => o.id === sp.get("paid") && o.status === "paid")) payNote = "Payment received. Thank you."; render(); if (++n < 10 && orders.some(o => o.id === sp.get("paid") && o.status !== "paid")) setTimeout(poll, 2000); }).catch(() => {});
+      setTimeout(poll, 2000);
+    }
+  }
+})();
 render();
 desk(bootstrapAction()).then(data => { applyDesk(data); render(); }).catch(e => { deskOk = false; deskNote = e.message; render(); });
 </script>
