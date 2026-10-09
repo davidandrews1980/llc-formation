@@ -23,6 +23,6 @@ Do not add `customer.created` or the rest.
 - `STRIPE_SECRET_KEY`
 - `STRIPE_WEBHOOK_SECRET`
 - `OPERATOR_EMAIL`
-- `OPERATOR_KEY` — locks the formation queue. Leave unset and anyone can move a status.
+- `OPERATOR_KEY` — required for the admin desk (view queue, change status, mark paid). If unset, admin is disabled entirely (fail closed).
 
 Desk: `/clients` on the server app. The live page uses `/admin`.
