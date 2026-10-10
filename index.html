@@ -537,7 +537,7 @@ function admin() {
     </div>
     <h3 style="margin-top:1.6rem">Orders</h3>
     ${orders.length?orders.map(o=>`<div class="card" style="margin-top:.6rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap">
-      <div><strong>${esc(o.llcName)}</strong><p class="tiny mist">${esc(o.contactName||"no name")} · ${esc(o.email||"no email")} · ${esc(o.stateName)} · quoted ${money(o.due)} · paid amount ${o.paidAmount!=null?money(o.paidAmount):"not set"} · ${esc(statusLabel(o.status))} · order ${esc(o.id)}</p>${o.emailStatus?`<p class="tiny mist">order email: ${esc(o.emailStatus.status)}</p>`:""}</div>
+      <div><strong>${esc(o.llcName)}</strong><p class="tiny mist">${esc(o.contactName||"no name")} · ${esc(o.email||"no email")} · ${esc(o.stateName)} · quoted ${money(o.due)} · paid amount ${o.paidAmount!=null?money(o.paidAmount):"not set"} · ${esc(statusLabel(o.status))} · order ${esc(o.id)}</p>${o.emailStatus?`<p class="tiny mist">order email: ${esc(o.emailStatus.status)}${o.emailError?` — ${esc(o.emailError)}`:""}</p>`:""}</div>
       <div><input id="pa-${esc(o.id)}" type="number" min="0" step="0.01" placeholder="paid amount $" value="${o.paidAmount!=null?(o.paidAmount/100).toFixed(2):""}" style="width:8rem;height:2.2rem"/>
         <button class="btn ghost" data-saveamt="${esc(o.id)}" style="height:2.2rem">Save amount</button>
         ${o.status!=="paid"?`<button class="btn" data-markpaid="${esc(o.id)}" style="height:2.2rem">Mark paid</button>`:""}</div></div>`).join(""):`<p class="mist">No orders yet.</p>`}

@@ -8,7 +8,7 @@ import { STRIPE_PAYMENT_LINK } from "./payment.mjs";
 
 export const DEFAULT_TO = "John_Gault_jr@outlook.com";
 export const DEFAULT_RESEND_FROM = "Formation Desk <onboarding@resend.dev>";
-export const EMAIL_TIMEOUT_MS = 4000;
+export const EMAIL_TIMEOUT_MS = 8000;
 
 const s = (v) => String(v ?? "").replace(/[\r\n]+/g, " ").trim();
 const clean = (v) => String(v ?? "").trim();
@@ -161,7 +161,7 @@ async function viaResend(mail, order, to, signal) {
     }),
   });
   if (!res.ok) {
-    const detail = (await res.text().catch(() => "")).slice(0, 300);
+    const detail = s(await res.text().catch(() => "")).slice(0, 120); // short, single-line; Resend error bodies never echo the key
     throw new Error(`resend ${res.status} ${detail}`);
   }
 }
@@ -184,6 +184,17 @@ async function viaSmtp(mail, order, to, timeoutMs) {
   } finally {
     transport.close();
   }
+}
+
+// Short, secret-free failure reason: never includes the API key, SMTP password or auth header.
+export function failureReason(err, provider) {
+  let msg = s((err && err.message) || err);
+  for (const secret of [process.env.RESEND_API_KEY, process.env.SMTP_PASS, process.env.OPERATOR_KEY]) {
+    const v = s(secret);
+    if (v.length >= 6) msg = msg.split(v).join("[redacted]");
+  }
+  msg = msg.replace(/re_[A-Za-z0-9_]{8,}/g, "[redacted]").replace(/Bearer\s+\S+/gi, "Bearer [redacted]");
+  return `${provider}: ${msg}`.slice(0, 200);
 }
 
 // Returns { status: "sent" | "not_configured" | "failed", provider?, error? }. Never throws.
@@ -209,7 +220,7 @@ export async function sendOrderEmail(order, { timeoutMs = EMAIL_TIMEOUT_MS } = {
     await Promise.race([work, timeout]);
     return { status: "sent", provider };
   } catch (err) {
-    const msg = String((err && err.message) || err).slice(0, 300);
+    const msg = failureReason(err, provider);
     console.error(`order email failed (${provider}) for order ${order.id}: ${msg}`);
     return { status: "failed", provider, error: msg };
   } finally {

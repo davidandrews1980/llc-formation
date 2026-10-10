@@ -120,18 +120,22 @@ test("email provider failure (500) does not block the order or the redirect", as
   const o = orders().find((x) => x.id === r.data.orderId);
   assert.ok(o);
   assert.equal(o.emailStatus.status, "failed");
+  assert.match(o.emailError, /resend 500 .*stub failure/);
+  assert.match(r.data.emailError, /resend 500/);
+  assert.equal(r.data.emailRecorded, true);
+  assert.ok(!JSON.stringify(r.data).includes("re_local_test_only"));
   assert.equal(o.status, "awaiting_payment");
   log("email-failure", { httpStatus: r.status, emailStatus: r.data.emailStatus, orderSaved: true, payUrlPresent: true });
 });
 
-test("email provider hang: place returns within ~4s, order saved, redirect URL returned", async () => {
+test("email provider hang: place returns within ~8s, order saved, redirect URL returned", async () => {
   resendMode = "hang";
   const t0 = Date.now();
   const r = await call(orderBody({ llcName: "Hanging Mail LLC" }));
   const ms = Date.now() - t0;
   resendMode = "ok";
   assert.equal(r.status, 200);
-  assert.ok(ms >= 3800 && ms < 6000, `took ${ms}ms`);
+  assert.ok(ms >= 7000 && ms < 9800, `took ${ms}ms`);
   assert.equal(r.data.emailStatus, "failed");
   assert.ok(r.data.payUrl.startsWith(LINK));
   assert.ok(orders().find((x) => x.id === r.data.orderId));

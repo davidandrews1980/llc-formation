@@ -5,7 +5,7 @@ import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { blobCtx, blobGet, blobPut } from "../lib/blobs.mjs";
 import { serverQuote } from "../lib/pricing.mjs";
 import { paymentUrl } from "../lib/payment.mjs";
-import { sendOrderEmail } from "../lib/email.mjs";
+import { sendOrderEmail, EMAIL_TIMEOUT_MS } from "../lib/email.mjs";
 
 // Queue (work) statuses an operator can set.
 const STATUSES = new Set(["received", "in_progress", "filed", "cancelled"]);
@@ -272,12 +272,16 @@ function sameHost(origin, event) {
   }
 }
 
-// Send the order email (awaited, <= 4s, never throws) and record the outcome on the order.
-// The order is already saved at this point, so a failure here never loses it.
-async function notifyOrder(ctx, orderId) {
+// Whole-request budget for the desk function (Netlify's default synchronous limit is 10s).
+const FUNCTION_BUDGET_MS = 9500;
+
+// Send the order email (awaited, <= EMAIL_TIMEOUT_MS and inside the function budget, never throws) and
+// record the outcome on the order (status, provider, short secret-free reason). The order is already
+// saved at this point, so a failure here never loses it. The write is verified by reading it back.
+async function notifyOrder(ctx, orderId, startedAt = Date.now()) {
   let state = await loadState(ctx);
   const order = state.orders.find((o) => o.id === orderId);
-  if (!order) return { status: "failed" };
+  if (!order) return { status: "failed", error: "order not found after save" };
   if (order.emailStatus && order.emailStatus.status === "sent") return { status: "already_sent" };
   const hourAgo = Date.now() - 3600_000;
   const recent = state.orders.filter((o) => o.emailStatus && o.emailStatus.status === "sent" && Date.parse(o.emailStatus.at) > hourAgo).length;
@@ -286,19 +290,33 @@ async function notifyOrder(ctx, orderId) {
     console.error(`order email skipped for ${orderId}: ${MAX_EMAILS_PER_HOUR}/hour limit reached (order saved)`);
     result = { status: "skipped" };
   } else {
-    result = await sendOrderEmail(order);
+    // Leave ~2s after the email for the status write + response.
+    const left = FUNCTION_BUDGET_MS - (Date.now() - startedAt) - 2000;
+    const timeoutMs = Math.max(1500, Math.min(EMAIL_TIMEOUT_MS, left));
+    result = await sendOrderEmail(order, { timeoutMs });
   }
-  try {
-    state = await loadState(ctx); // re-read so we only patch this order
-    const again = state.orders.find((o) => o.id === orderId);
-    if (again) {
-      again.emailStatus = { status: result.status, provider: result.provider || null, at: new Date().toISOString() };
+  const record = { status: result.status, provider: result.provider || null, at: new Date().toISOString() };
+  if (result.error) record.error = String(result.error).slice(0, 200);
+  let recorded = false;
+  let recordError = "";
+  for (let attempt = 0; attempt < 2 && !recorded; attempt++) {
+    try {
+      state = await loadState(ctx); // re-read so we only patch this order
+      const again = state.orders.find((o) => o.id === orderId);
+      if (!again) throw new Error("order missing at status write");
+      again.emailStatus = record;
+      if (record.error) again.emailError = record.error;
+      else delete again.emailError;
       await blobPut(ctx, "orders", state.orders);
+      const check = (await loadState(ctx)).orders.find((o) => o.id === orderId);
+      recorded = !!(check && check.emailStatus && check.emailStatus.status === record.status);
+      if (!recorded) recordError = "status write not visible on read-back";
+    } catch (err) {
+      recordError = String((err && err.message) || err).slice(0, 120);
+      console.error("could not record email status", recordError);
     }
-  } catch (err) {
-    console.error("could not record email status", err && err.message);
   }
-  return result;
+  return { ...result, recorded, ...(recorded ? {} : { recordError }) };
 }
 
 function originAllowed(event) {
@@ -310,6 +328,7 @@ function originAllowed(event) {
 }
 
 export async function handler(event) {
+  const startedAt = Date.now();
   const origin = header(event, "origin");
   if (!originAllowed(event)) return json(403, { ok: false, error: "origin not allowed" }, "");
   if (event.httpMethod === "OPTIONS") return json(204, {}, origin);
@@ -329,8 +348,11 @@ export async function handler(event) {
     }
     const response = { ...result.response };
     if (result.status < 300 && result.notify) {
-      const mail = await notifyOrder(ctx, result.notify); // never throws; the redirect happens regardless
+      const mail = await notifyOrder(ctx, result.notify, startedAt); // never throws; the redirect happens regardless
       response.emailStatus = mail.status;
+      if (mail.error) response.emailError = mail.error;
+      response.emailRecorded = mail.recorded !== false;
+      if (mail.recordError) response.emailRecordError = mail.recordError;
     }
     return json(result.status, response, origin);
   } catch (err) {
