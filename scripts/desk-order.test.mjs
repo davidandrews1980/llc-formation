@@ -11,11 +11,18 @@ for (const k of ["OPERATOR_KEY", "RESEND_API_KEY", "SMTP_HOST", "SMTP_USER", "SM
 const store = new Map();
 const resendCalls = [];
 let resendMode = "ok"; // ok | fail | hang
+let blobMode = "normal"; // normal | stale (orders reads miss, like a lagging edge read) | failafter (orders PUT fails after N successes)
+let ordersPuts = 0;
+let failAfter = 1;
 globalThis.fetch = async (input, init = {}) => {
   const url = new URL(String(input));
   if (url.host === "blobs.local") {
     const key = decodeURIComponent(url.pathname.split("/site:pathway-formation/")[1]);
-    if ((init.method || "GET") === "PUT") { store.set(key, init.body); return new Response("", { status: 200 }); }
+    if ((init.method || "GET") === "PUT") {
+      if (key === "orders") { ordersPuts++; if (blobMode === "failafter" && ordersPuts > failAfter) return new Response("nope", { status: 500 }); }
+      store.set(key, init.body); return new Response("", { status: 200 });
+    }
+    if (blobMode === "stale" && key === "orders") return new Response("", { status: 404 });
     return store.has(key) ? new Response(store.get(key), { status: 200 }) : new Response("", { status: 404 });
   }
   if (url.href === "https://api.resend.com/emails" && init.method === "POST") {
@@ -121,8 +128,9 @@ test("email provider failure (500) does not block the order or the redirect", as
   assert.ok(o);
   assert.equal(o.emailStatus.status, "failed");
   assert.match(o.emailError, /resend 500 .*stub failure/);
-  assert.match(r.data.emailError, /resend 500/);
+  assert.equal(r.data.emailError, undefined, "reason text is operator-view only");
   assert.equal(r.data.emailRecorded, true);
+  assert.equal(r.data.orders[0].emailError, undefined);
   assert.ok(!JSON.stringify(r.data).includes("re_local_test_only"));
   assert.equal(o.status, "awaiting_payment");
   log("email-failure", { httpStatus: r.status, emailStatus: r.data.emailStatus, orderSaved: true, payUrlPresent: true });
@@ -140,6 +148,51 @@ test("email provider hang: place returns within ~8s, order saved, redirect URL r
   assert.ok(r.data.payUrl.startsWith(LINK));
   assert.ok(orders().find((x) => x.id === r.data.orderId));
   log("email-timeout", { elapsedMs: ms, emailStatus: r.data.emailStatus, orderSaved: true });
+});
+
+test("stale Blobs read right after the save: email still sends and status is recorded from in-memory state", async () => {
+  const snapshot = new Map(store);
+  blobMode = "stale";
+  const r = await call(orderBody({ llcName: "Stale Read LLC" }));
+  blobMode = "normal";
+  assert.equal(r.status, 200);
+  assert.equal(r.data.emailStatus, "sent");
+  assert.equal(r.data.emailRecorded, true);
+  const o = orders().find((x) => x.id === r.data.orderId);
+  assert.ok(o, "order saved");
+  assert.equal(o.emailStatus.status, "sent");
+  assert.equal(o.emailError, undefined);
+  store.clear(); for (const [k, v] of snapshot) store.set(k, v);
+});
+
+test("status write fails: emailRecorded is false, order was already saved, no crash", async () => {
+  const snapshot = new Map(store);
+  ordersPuts = 0; failAfter = 1; blobMode = "failafter";
+  const orig = console.error; console.error = () => {};
+  const r = await call(orderBody({ llcName: "Status Write Fails LLC" }));
+  console.error = orig; blobMode = "normal";
+  assert.equal(r.status, 200);
+  assert.equal(r.data.emailStatus, "sent");
+  assert.equal(r.data.emailRecorded, false);
+  assert.ok(r.data.payUrl.startsWith(LINK));
+  const o = orders().find((x) => x.id === r.data.orderId);
+  assert.ok(o, "order saved before the email");
+  assert.equal(o.emailStatus, undefined);
+  store.clear(); for (const [k, v] of snapshot) store.set(k, v);
+});
+
+test("emailStatus/emailError are operator-view only; customer lists never include them", async () => {
+  process.env.OPERATOR_KEY = "op-local-test";
+  resendMode = "fail";
+  const r = await call(orderBody({ llcName: "Operator Only Reason LLC" }));
+  resendMode = "ok";
+  const mine = await call({ action: "bootstrap", clientId: CLIENT });
+  for (const o of mine.data.orders) { assert.equal(o.emailStatus, undefined); assert.equal(o.emailError, undefined); }
+  const op = await call({ action: "admin_bootstrap", key: "op-local-test" });
+  const oo = op.data.orders.find((x) => x.id === r.data.orderId);
+  assert.equal(oo.emailStatus.status, "failed");
+  assert.match(oo.emailError, /resend 500/);
+  delete process.env.OPERATOR_KEY;
 });
 
 test("no email provider configured: order saved, clear log, redirect still returned", async () => {

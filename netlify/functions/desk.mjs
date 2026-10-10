@@ -169,7 +169,7 @@ export function reduce(state, body) {
   const mine = (o = orders, q = queue) => ({
     ok: true,
     operator: false,
-    orders: o.filter((x) => x.clientId === clientId),
+    orders: o.filter((x) => x.clientId === clientId).map(({ emailStatus, emailError, ...rest }) => rest),
     queue: q.filter((x) => x.clientId === clientId),
   });
   const all = () => ({ ok: true, operator: true, orders, queue });
@@ -275,16 +275,18 @@ function sameHost(origin, event) {
 // Whole-request budget for the desk function (Netlify's default synchronous limit is 10s).
 const FUNCTION_BUDGET_MS = 9500;
 
-// Send the order email (awaited, <= EMAIL_TIMEOUT_MS and inside the function budget, never throws) and
-// record the outcome on the order (status, provider, short secret-free reason). The order is already
-// saved at this point, so a failure here never loses it. The write is verified by reading it back.
-async function notifyOrder(ctx, orderId, startedAt = Date.now()) {
-  let state = await loadState(ctx);
-  const order = state.orders.find((o) => o.id === orderId);
-  if (!order) return { status: "failed", error: "order not found after save" };
-  if (order.emailStatus && order.emailStatus.status === "sent") return { status: "already_sent" };
+// Send the order email for an order that was JUST saved and record the outcome on it.
+// Works on the in-memory saved state (no re-read from Blobs, which can be stale right after a write),
+// sends (<= EMAIL_TIMEOUT_MS and inside the function budget, never throws), patches the in-memory order
+// (status, provider, short secret-free reason) and saves the orders list once.
+// `recorded` is true only if that write actually succeeded.
+async function notifyOrder(ctx, savedState, orderId, startedAt = Date.now()) {
+  const orders = asList(savedState && savedState.orders);
+  const order = orders.find((o) => o.id === orderId);
+  if (!order) return { status: "failed", error: "order not in saved state", recorded: false };
+  if (order.emailStatus && order.emailStatus.status === "sent") return { status: "already_sent", recorded: true };
   const hourAgo = Date.now() - 3600_000;
-  const recent = state.orders.filter((o) => o.emailStatus && o.emailStatus.status === "sent" && Date.parse(o.emailStatus.at) > hourAgo).length;
+  const recent = orders.filter((o) => o.emailStatus && o.emailStatus.status === "sent" && Date.parse(o.emailStatus.at) > hourAgo).length;
   let result;
   if (recent >= MAX_EMAILS_PER_HOUR) {
     console.error(`order email skipped for ${orderId}: ${MAX_EMAILS_PER_HOUR}/hour limit reached (order saved)`);
@@ -295,28 +297,17 @@ async function notifyOrder(ctx, orderId, startedAt = Date.now()) {
     const timeoutMs = Math.max(1500, Math.min(EMAIL_TIMEOUT_MS, left));
     result = await sendOrderEmail(order, { timeoutMs });
   }
-  const record = { status: result.status, provider: result.provider || null, at: new Date().toISOString() };
-  if (result.error) record.error = String(result.error).slice(0, 200);
-  let recorded = false;
-  let recordError = "";
-  for (let attempt = 0; attempt < 2 && !recorded; attempt++) {
-    try {
-      state = await loadState(ctx); // re-read so we only patch this order
-      const again = state.orders.find((o) => o.id === orderId);
-      if (!again) throw new Error("order missing at status write");
-      again.emailStatus = record;
-      if (record.error) again.emailError = record.error;
-      else delete again.emailError;
-      await blobPut(ctx, "orders", state.orders);
-      const check = (await loadState(ctx)).orders.find((o) => o.id === orderId);
-      recorded = !!(check && check.emailStatus && check.emailStatus.status === record.status);
-      if (!recorded) recordError = "status write not visible on read-back";
-    } catch (err) {
-      recordError = String((err && err.message) || err).slice(0, 120);
-      console.error("could not record email status", recordError);
-    }
+  order.emailStatus = { status: result.status, provider: result.provider || null, at: new Date().toISOString() };
+  if (result.error) order.emailError = String(result.error).slice(0, 200);
+  else delete order.emailError;
+  try {
+    await blobPut(ctx, "orders", orders);
+    return { ...result, recorded: true };
+  } catch (err) {
+    const recordError = String((err && err.message) || err).slice(0, 120);
+    console.error("could not record email status", recordError);
+    return { ...result, recorded: false, recordError };
   }
-  return { ...result, recorded, ...(recorded ? {} : { recordError }) };
 }
 
 function originAllowed(event) {
@@ -348,11 +339,10 @@ export async function handler(event) {
     }
     const response = { ...result.response };
     if (result.status < 300 && result.notify) {
-      const mail = await notifyOrder(ctx, result.notify, startedAt); // never throws; the redirect happens regardless
+      const mail = await notifyOrder(ctx, result.state, result.notify, startedAt); // never throws; the redirect happens regardless
+      // The submitter only gets the status word. The reason (emailError) is operator-view only.
       response.emailStatus = mail.status;
-      if (mail.error) response.emailError = mail.error;
-      response.emailRecorded = mail.recorded !== false;
-      if (mail.recordError) response.emailRecordError = mail.recordError;
+      response.emailRecorded = mail.recorded === true;
     }
     return json(result.status, response, origin);
   } catch (err) {

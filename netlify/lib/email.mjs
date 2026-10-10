@@ -194,7 +194,7 @@ export function failureReason(err, provider) {
     if (v.length >= 6) msg = msg.split(v).join("[redacted]");
   }
   msg = msg.replace(/re_[A-Za-z0-9_]{8,}/g, "[redacted]").replace(/Bearer\s+\S+/gi, "Bearer [redacted]");
-  return `${provider}: ${msg}`.slice(0, 200);
+  return (msg.startsWith(provider) ? msg : `${provider}: ${msg}`).slice(0, 200);
 }
 
 // Returns { status: "sent" | "not_configured" | "failed", provider?, error? }. Never throws.
