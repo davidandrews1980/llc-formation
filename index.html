@@ -241,7 +241,7 @@ function header(dark) {
 function footer() {
   return `<footer class="foot"><div class="wrap grid g3">
     <div><p style="font-family:Fraunces,serif;font-size:1.2rem;color:var(--ink)">Pathway Formation</p>
-      <p>Articles, an operating agreement, and a desk. No legal advice. No tax advice. No surprise add-ons on the state fee.</p></div>
+      <p>Articles, an operating agreement, and a desk. Not a licensed attorney. Not legal advice. No tax advice. No surprise add-ons on the state fee.</p></div>
     <div><p class="kicker">On the site</p>
       <p><a href="#/form">Formation wizard</a><br/><a href="#/fees">50-state fees</a><br/><a href="#/app">Customer desk</a><br/><a href="#/admin">Admin desk</a></p></div>
     <div><p class="kicker">Not legal advice</p>
@@ -272,14 +272,14 @@ function home() {
     <p class="kicker">How it works</p>
     <h2 style="font-size:2rem;margin-top:.4rem">Three steps. Then the desk.</h2>
     <div class="grid g3" style="margin-top:1.6rem">
-      ${[["01","Answer the wizard","State, name, address, your own registered agent, members."],["02","Pay only what is real","State fee, pass-through. Optional EIN, extra OA pages, reminders, expedite. The articles themselves are free."],["03","We file. You keep the vault.","The packet lands on the admin desk. You get the documents, the calendar, and a $10 Command plan."]].map(([n,t,d])=>`<div class="card"><p style="font-family:Fraunces,serif;font-size:1.6rem;color:var(--pine)">${n}</p><h3 style="margin-top:.6rem">${t}</h3><p class="small mist">${d}</p></div>`).join("")}
+      ${[["01","Answer the wizard","State, name, address, your own registered agent, members."],["02","Pay for the filing","You pay only for the filing and the add-ons you choose. State fee, pass-through. Optional EIN, extra OA pages, reminders, expedite. The articles themselves are free."],["03","We file. You keep the vault.","The packet lands on the admin desk. You get the documents and the calendar. The $10/month Command plan is an optional paid add-on."]].map(([n,t,d])=>`<div class="card"><p style="font-family:Fraunces,serif;font-size:1.6rem;color:var(--pine)">${n}</p><h3 style="margin-top:.6rem">${t}</h3><p class="small mist">${d}</p></div>`).join("")}
     </div>
   </div></section>
   <section style="background:var(--cream)"><div class="wrap pad">
     <p class="kicker">On the menu</p>
     <h2 style="font-size:2rem;margin:.4rem 0 1.4rem">In. Out. Priced in the open.</h2>
     <div class="grid g2">
-      ${[["Articles + operating agreement","Wizard prepares the packet. Simple OA is free through three pages, then $2 a page. You name your own registered agent — we do not sell that seat."],["EIN, banks, and the desk","$99 to prepare the EIN. Command desk is $10/month: vault, simple books, invoices, and partner links."],["Reminders, not compliance work","$99 a year puts annual reports, quarterly estimates, and year-end on a calendar. We will not file your taxes or your annual report."],["What we will not do","No legal advice. No tax advice. No virtual mailbox (Form 1583). No logos. No “next-day filing” claims. Expedite means we prioritize — not a guaranteed date."]].map(([t,b])=>`<div class="card"><h3>${t}</h3><p class="small mist" style="margin-top:.5rem">${b}</p></div>`).join("")}
+      ${[["Articles + operating agreement","Wizard prepares the packet. Simple OA is free through three pages, then $2 a page. You name your own registered agent — we do not sell that seat."],["EIN, banks, and the desk","$99 to prepare the EIN. Optional paid add-on: Command desk, $10/month: vault, simple books, invoices, and partner links."],["Reminders, not compliance work","$99 a year puts annual reports, quarterly estimates, and year-end on a calendar. We will not file your taxes or your annual report."],["What we will not do","Not a licensed attorney. Not legal advice. No tax advice. No virtual mailbox (Form 1583). No logos. No “next-day filing” claims. Expedite means we prioritize — not a guaranteed date."]].map(([t,b])=>`<div class="card"><h3>${t}</h3><p class="small mist" style="margin-top:.5rem">${b}</p></div>`).join("")}
     </div>
   </div></section>
   <section class="pad"><div class="wrap">
@@ -430,6 +430,7 @@ function wizard() {
         <label class="field"><span>Email</span><input id="email" type="email" autocomplete="email" value="${esc(draft.email||"")}" placeholder="you@example.com" required/></label>
       </div>
       <p class="small mist" style="margin-top:1rem">Submitting saves your order, sends it to our desk, and takes you to our secure Stripe payment page. Card details go to Stripe, not this page. Nothing is filed with the state until we confirm your payment.</p>
+      <p class="small mist" style="margin-top:.5rem"><strong>Not a licensed attorney. Not legal advice.</strong></p>
       <p class="warn small" id="order-err"></p>
       <p class="small" style="margin-top:.8rem"><strong>Please pay the exact amount shown for your filing and add-ons.</strong></p>
       <button class="btn" data-act="place" style="margin-top:.4rem">Submit order and pay · ${money(q.due)}</button>`;
@@ -479,7 +480,7 @@ function learn() {
     <p class="kicker">Guides</p><h1 style="font-size:2.2rem">What we will not do</h1>
     <p class="mist">It stays because it is true.</p>
     <ul class="small" style="line-height:1.8">
-      <li>No legal advice. No tax advice. No CPA substitute.</li>
+      <li>Not a licensed attorney. Not legal advice. No tax advice. No CPA substitute.</li>
       <li>No virtual mailbox, no Form 1583, no “we are your registered agent” upsell.</li>
       <li>No logos, no brand kits, no “next-day filing” claims.</li>
       <li>Expedite means we prioritize the packet. It is not a guaranteed date.</li>
