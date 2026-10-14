@@ -241,10 +241,10 @@ function header(dark) {
 function footer() {
   return `<footer class="foot"><div class="wrap grid g3">
     <div><p style="font-family:Fraunces,serif;font-size:1.2rem;color:var(--ink)">Pathway Formation</p>
-      <p>Articles, an operating agreement, and a desk. Not a licensed attorney. Not legal advice. No tax advice. No surprise add-ons on the state fee.</p></div>
+      <p>Articles, an operating agreement, and a desk. State fees passed through at cost.</p><p class="tiny">Not legal advice. Not a licensed attorney.</p></div>
     <div><p class="kicker">On the site</p>
       <p><a href="#/form">Formation wizard</a><br/><a href="#/fees">50-state fees</a><br/><a href="#/app">Customer desk</a><br/><a href="#/admin">Admin desk</a></p></div>
-    <div><p class="kicker">Not legal advice</p>
+    <div><p class="kicker">Before you pay</p>
       <p>We prepare packets and file what you ask us to file. State fees change. Confirm on the official portal before you pay.</p></div>
   </div></footer>`;
 }
@@ -256,7 +256,7 @@ function home() {
     <div>
       <p class="k">Pathway Devs · Formation desk</p>
       <h1>Make the company official. Keep the fees honest.</h1>
-      <p class="lede">The wizard prepares your articles. You pay the state what the state charges. We file. No registered-agent upsell, no legal-advice theater, no “next-day” promise we cannot keep.</p>
+      <p class="lede">The wizard prepares your articles. You pay the state what the state charges. We file. Plain pricing, honest timelines.</p>
       <div class="row">
         <a class="btn paper" href="#/form">Start the wizard</a>
         <a class="btn ghost" href="#/fees" style="color:var(--paper);box-shadow:inset 0 0 0 1px rgba(251,248,241,.25)">50-state fee table</a>
@@ -264,8 +264,8 @@ function home() {
     </div>
     <aside class="ink-card">
       <p class="tiny" style="letter-spacing:.14em;text-transform:uppercase;color:rgba(251,248,241,.5)">Formation, itemized</p>
-      ${[["Articles of organization","Free + state fee"],["Operating agreement","$0 through 3 pages"],["EIN assistance","$99"],["Expedite (no date promised)","State + $100"],["Command desk","$10 / month"],["Compliance reminders","$99 / year"]].map(([k,v])=>`<div style="display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid rgba(251,248,241,.1);padding:.7rem 0"><span style="color:rgba(251,248,241,.8)">${k}</span><span class="price">${v}</span></div>`).join("")}
-      <p class="tiny" style="margin-top:1rem;color:rgba(251,248,241,.5)">Michigan files at $50. Montana at $35. Massachusetts at $500. We do not mark those up.</p>
+      ${[["Articles of organization","Free + state fee"],["Operating agreement","$0 through 3 pages"],["EIN assistance","$99"],["Expedite handling","State + $100"],["Command desk","$10 / month"],["Compliance reminders","$99 / year"]].map(([k,v])=>`<div style="display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid rgba(251,248,241,.1);padding:.7rem 0"><span style="color:rgba(251,248,241,.8)">${k}</span><span class="price">${v}</span></div>`).join("")}
+      <p class="tiny" style="margin-top:1rem;color:rgba(251,248,241,.5)">Michigan files at $50. Montana at $35. Massachusetts at $500. We pass them through at cost.</p>
     </aside>
   </div></section>
   <section class="pad"><div class="wrap">
@@ -279,7 +279,7 @@ function home() {
     <p class="kicker">On the menu</p>
     <h2 style="font-size:2rem;margin:.4rem 0 1.4rem">In. Out. Priced in the open.</h2>
     <div class="grid g2">
-      ${[["Articles + operating agreement","Wizard prepares the packet. Simple OA is free through three pages, then $2 a page. You name your own registered agent — we do not sell that seat."],["EIN, banks, and the desk","$99 to prepare the EIN. Optional paid add-on: Command desk, $10/month: vault, simple books, invoices, and partner links."],["Reminders, not compliance work","$99 a year puts annual reports, quarterly estimates, and year-end on a calendar. We will not file your taxes or your annual report."],["What we will not do","Not a licensed attorney. Not legal advice. No tax advice. No virtual mailbox (Form 1583). No logos. No “next-day filing” claims. Expedite means we prioritize — not a guaranteed date."]].map(([t,b])=>`<div class="card"><h3>${t}</h3><p class="small mist" style="margin-top:.5rem">${b}</p></div>`).join("")}
+      ${[["Articles + operating agreement","Wizard prepares the packet. Simple OA is free through three pages, then $2 a page. You name your own registered agent."],["EIN, banks, and the desk","$99 to prepare the EIN. Optional paid add-on: Command desk, $10/month: vault, simple books, invoices, and partner links."],["Compliance reminders","$99 a year puts annual reports, quarterly estimates, and year-end on your calendar."]].map(([t,b])=>`<div class="card"><h3>${t}</h3><p class="small mist" style="margin-top:.5rem">${b}</p></div>`).join("")}
     </div>
   </div></section>
   <section class="pad"><div class="wrap">
@@ -317,7 +317,7 @@ function wizard() {
   }
   if (draft.step===0) {
     body += `<h2 style="font-size:1.7rem">Where is the company?</h2>
-      <p class="small mist">File where you live and work unless you have a specific reason not to. Pick a state — the fee, agency, document, and every later address field follow it.</p>
+      <p class="small mist">File where you live and work unless you have a specific reason to choose another. Pick a state — the fee, agency, document, and every later address field follow it.</p>
       <div class="filing" id="filing-card" data-filing-state="${st.code}">
         <p class="tiny" style="letter-spacing:.12em;text-transform:uppercase;opacity:.5">Filing in</p>
         <h3>${esc(st.name)}</h3>
@@ -340,7 +340,7 @@ function wizard() {
   }
   if (draft.step===1) {
     body += `<h2 style="font-size:1.7rem">Name the company</h2>
-      <p class="small mist">${esc(st.name)} will see <strong>${esc(st.document)}</strong>. We do not check the state’s database live — confirm availability on the portal before you pay.</p>
+      <p class="small mist">${esc(st.name)} will see <strong>${esc(st.document)}</strong>. Confirm availability on the state portal before you pay.</p>
       <label class="field" style="margin-top:1.2rem"><span>Legal name</span><input id="llcName" value="${esc(draft.llcName)}" placeholder="North Lotz Holdings LLC"/></label>`;
   }
   if (draft.step===2) {
@@ -362,7 +362,7 @@ function wizard() {
   }
   if (draft.step===3) {
     body += `<h2 style="font-size:1.7rem">Your registered agent</h2>
-      <p class="small mist">We do not sell a registered-agent seat. Name a person or company with a street address in ${esc(st.name)}. A P.O. box will not do.</p>
+      <p class="small mist">Name a person or company with a street address in ${esc(st.name)}. Use a street address, not a P.O. box.</p>
       <div class="grid g2" style="margin-top:1.2rem">
         <label class="field" style="grid-column:1/-1"><span>Agent name</span><input id="ra-name" value="${esc(draft.ra.name)}"/></label>
         <label class="field" style="grid-column:1/-1"><span>Street</span><input id="ra-street" value="${esc(draft.ra.street)}"/></label>
@@ -401,8 +401,8 @@ function wizard() {
     body += `<h2 style="font-size:1.7rem">Add-ons</h2>
       <div class="grid" style="margin-top:1rem">
         ${tog("ein", draft.ein, "EIN assistance", "$99 — we prepare the SS-4 packet")}
-        ${tog("exp", draft.expedited, "Expedite handling", money(st.expediteCents) + " state fee + $100. We prioritize. No date promised.")}
-        ${tog("rem", draft.reminders, "Compliance reminders", "$99 / year. We will not file your reports.")}
+        ${tog("exp", draft.expedited, "Expedite handling", money(st.expediteCents) + " state fee + $100. We prioritize your packet.")}
+        ${tog("rem", draft.reminders, "Compliance reminders", "$99 / year. We put every filing date on your calendar.")}
         ${tog("cmd", draft.command, "Command desk", "$10 / month — vault, books, partners")}
         ${tog("web", draft.website, "Website / domain / email", "$20 / month")}
         <label class="field"><span>Operating agreement pages</span><input type="number" min="3" max="40" id="oa" value="${draft.oaPages}"/><span class="tiny mist">First 3 free, then $2/page</span></label>
@@ -469,7 +469,7 @@ function wizard() {
 
 function fees() {
   return header(false)+`<main class="wrap pad"><p class="kicker">50 states</p><h1 style="font-size:2rem">What the state charges</h1>
-    <p class="small mist">Pass-through. We do not mark these up.</p>
+    <p class="small mist">Pass-through at cost.</p>
     <div style="overflow:auto;margin-top:1.4rem"><table><thead><tr><th>State</th><th>Fee</th><th>Document</th><th>Agency</th><th>Processing</th><th></th></tr></thead><tbody>
     ${STATES.map(s=>`<tr><td>${s.name}</td><td class="price">${money(s.feeCents)}</td><td>${esc(s.document)}</td><td>${esc(s.agency)}</td><td>${esc(s.processing)}</td><td><a href="#/form?state=${s.code}" style="color:var(--pine)">File here</a></td></tr>`).join("")}
     </tbody></table></div></main>`+footer();
@@ -477,17 +477,15 @@ function fees() {
 
 function learn() {
   return header(false)+`<main class="wrap pad" style="max-width:46rem">
-    <p class="kicker">Guides</p><h1 style="font-size:2.2rem">What we will not do</h1>
-    <p class="mist">It stays because it is true.</p>
+    <p class="kicker">Guides</p><h1 style="font-size:2.2rem">How we work</h1>
     <ul class="small" style="line-height:1.8">
-      <li>Not a licensed attorney. Not legal advice. No tax advice. No CPA substitute.</li>
-      <li>No virtual mailbox, no Form 1583, no “we are your registered agent” upsell.</li>
-      <li>No logos, no brand kits, no “next-day filing” claims.</li>
-      <li>Expedite means we prioritize the packet. It is not a guaranteed date.</li>
-      <li>We will not file your annual report or your taxes. Reminders only.</li>
-      <li>Banks are affiliates with a hard disclaimer — we cannot make them say yes.</li>
+      <li>We prepare your articles and operating agreement and file them with the state.</li>
+      <li>You name your own registered agent; we put it on the packet.</li>
+      <li>Expedite puts your packet at the front of our queue.</li>
+      <li>Compliance reminders keep annual reports and tax dates on your calendar.</li>
+      <li>Partner banks are linked from the desk so you can open an account fast.</li>
     </ul>
-    <p class="small mist">An LLC that exists only as a PDF on a laptop will not help you. Keep the books. Keep the calendar.</p>
+    <p class="small mist">Keep the books. Keep the calendar.</p>
     <a class="btn" href="#/form" style="margin-top:1rem">Start the wizard</a>
   </main>`+footer();
 }
