@@ -84,6 +84,29 @@ Either the bare array Free Tools sends (`[ {state, code, ...}, ... ]`, treated a
   explanation from `WORD_RULES` in `llc-name-check.js`; other words show "Check with the state".
 - Optional `slug` per state (defaults to the state name, e.g. `new-york`).
 
+## "Do I need an LLC?" verdict
+
+The form's second button, **Do I need an LLC?**, returns one of three verdicts from the yes/no answers. It runs in
+the browser like the name check. State and name are optional for it; when they are filled in they carry into the
+filing hand-off. Once any answer is Yes, the name-check result card shows the same verdict too.
+
+- Rules live in `llc-need-rules.json`. Live copy: the `llc-config` branch, `llc-name-check/llc-need-rules.json`
+  (same GitHub raw path and ~5 minute cache as `llc-states.json`, no Netlify build). The copy bundled with the
+  deploy is the fallback. If neither loads, the name check still works and the verdict is left out.
+- `questions`: the extra checkboxes (`liability`, `bank`, `separate`, `investors`). The name check's five
+  (`online`, `markets`, `hire`, `owners`, `food`) are always there; "sole owner" is `owners` = No.
+- `verdicts` are checked top to bottom. The first whose `when_any` has a Yes answer wins; the one with
+  `"default": true` covers the rest. Today: `should` (owners, investors, liability, food) → `better` (separate,
+  bank, hire, online, markets) → `operate`.
+- `reasons` (per verdict, keyed by the answer that triggered it), `facts`, and `benefits` each need `sources`:
+  keys into the top-level `sources` map, each with an https URL (IRS and SBA pages today). An entry without a
+  valid source is dropped at load, so every line on the page links to where it comes from.
+- `benefits` show for the verdicts in `benefits_for` when `always` is true or a `when_any` answer is Yes. A benefit
+  with the same id as a listed reason is skipped.
+- `disclaimer` ends with "Not a licensed attorney. Not legal advice."
+- Hand-off: verdict (a) offers **Check a business name**; (b) and (c) add the filing CTA (`File it free, pay only
+  the [State] fee of $X` when a verified state is chosen). Share link: `/llc-name-check?bank=1&separate=1&view=need`.
+
 ## Per-state pages later
 
 Add `llc-name-check/<slug>/index.html` (e.g. `michigan/`) with its own title, canonical and FAQ, the same
@@ -92,4 +115,4 @@ from the path. Netlify serves the file before the SPA catch-all. Add each page t
 
 ## Tests
 
-`node --test scripts/llc-name-check.test.mjs` (rule engine, config shape, share URL, CTA URL, fee hiding).
+`node --test scripts/llc-name-check.test.mjs scripts/llc-need.test.mjs scripts/state-fees-parity.test.mjs` (rule engine, config shape, share URL, CTA URL, fee display, the verdict rules and their sources, fee parity with the wizard and server).

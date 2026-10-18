@@ -18,6 +18,10 @@
   // A page can override 1) with window.LNC_CONFIG_URL before this script runs (used by tests).
   var REMOTE_CONFIG_URL = "https://raw.githubusercontent.com/davidandrews1980/llc-formation/llc-config/llc-name-check/llc-states.json";
   var BUNDLED_CONFIG_URL = "/llc-name-check/llc-states.json";
+  // "Do I need an LLC?" rules load the same way: llc-config branch first, bundled copy as fallback.
+  // Override with window.LNC_NEED_RULES_URL (tests).
+  var REMOTE_NEED_RULES_URL = "https://raw.githubusercontent.com/davidandrews1980/llc-formation/llc-config/llc-name-check/llc-need-rules.json";
+  var BUNDLED_NEED_RULES_URL = "/llc-name-check/llc-need-rules.json";
   var FILING_FLOW_URL = "/#/form";
 
   // What each restricted word means. Words in the state config that are not listed here still get flagged.
@@ -118,16 +122,81 @@
     cfg.codes.forEach(function (c) { if (bundled.states[c]) cfg.states[c].fee = bundled.states[c].fee; });
     return cfg;
   }
+  function loadNeedRules() {
+    var remoteUrl = root.LNC_NEED_RULES_URL || REMOTE_NEED_RULES_URL;
+    var bundledP = fetchJson(BUNDLED_NEED_RULES_URL, 6000).then(normalizeNeedRules, function () { return null; });
+    var remoteP = fetchJson(remoteUrl, 3500).then(normalizeNeedRules, function () { return null; });
+    return Promise.all([remoteP, bundledP]).then(function (both) {
+      if (both[0]) { both[0].loadedFrom = remoteUrl; return both[0]; }
+      if (both[1]) { both[1].loadedFrom = BUNDLED_NEED_RULES_URL; return both[1]; }
+      return null; // the name check still works; the verdict section is left out
+    });
+  }
   function loadConfig() {
     var remoteUrl = root.LNC_CONFIG_URL || REMOTE_CONFIG_URL;
     var bundledP = fetchJson(BUNDLED_CONFIG_URL, 6000).then(normalizeConfig, function () { return null; });
     var remoteP = fetchJson(remoteUrl, 3500).then(normalizeConfig, function () { return null; });
-    return Promise.all([remoteP, bundledP]).then(function (both) {
-      var remote = both[0], bundled = both[1];
-      if (remote) { remote.loadedFrom = remoteUrl; return withBundledFees(remote, bundled); }
-      if (bundled) { bundled.loadedFrom = BUNDLED_CONFIG_URL; return bundled; }
-      throw new Error("config unavailable");
+    var needP = loadNeedRules().catch(function () { return null; });
+    return Promise.all([remoteP, bundledP, needP]).then(function (both) {
+      var remote = both[0], bundled = both[1], cfg;
+      if (remote) { remote.loadedFrom = remoteUrl; cfg = withBundledFees(remote, bundled); }
+      else if (bundled) { bundled.loadedFrom = BUNDLED_CONFIG_URL; cfg = bundled; }
+      else throw new Error("config unavailable");
+      cfg.need = both[2];
+      return cfg;
     });
+  }
+
+  // ---------- "Do I need an LLC?" ----------
+  // Pure: rules JSON in, normalized rules out. Any reason, fact or benefit without a known https source is
+  // dropped, so every line shown on the page links to where it comes from.
+  var QID = /^[a-z][a-z0-9_]{1,23}$/;
+  function normalizeNeedRules(raw) {
+    if (!raw || typeof raw !== "object" || !Array.isArray(raw.verdicts)) throw new Error("bad need rules");
+    var sources = {};
+    Object.keys(raw.sources || {}).forEach(function (k) {
+      var s = raw.sources[k];
+      if (s && safeHttps(s.url)) sources[k] = { key: k, title: String(s.title || s.url), url: s.url };
+    });
+    function item(x, id) {
+      if (!x || !x.text) return null;
+      var src = (Array.isArray(x.sources) ? x.sources : [x.source]).filter(function (k) { return sources[k]; }).map(function (k) { return sources[k]; });
+      if (!src.length) return null;
+      return { id: id || (x.id ? String(x.id) : ""), title: x.title ? String(x.title) : "", text: String(x.text), sources: src, always: x.always === true, when: Array.isArray(x.when_any) ? x.when_any.map(String) : [] };
+    }
+    var verdicts = raw.verdicts.map(function (v) {
+      var reasons = {};
+      Object.keys(v.reasons || {}).forEach(function (k) { var it = item(v.reasons[k], k); if (it) reasons[k] = it; });
+      return {
+        id: String(v.id), title: String(v.title || ""), intro: v.intro ? String(v.intro) : "",
+        when: Array.isArray(v.when_any) ? v.when_any.map(String) : [], isDefault: v.default === true,
+        reasons: reasons, facts: (v.facts || []).map(function (f) { return item(f); }).filter(Boolean)
+      };
+    }).filter(function (v) { return v.id && v.title; });
+    if (!verdicts.some(function (v) { return v.isDefault; })) throw new Error("need rules: no default verdict");
+    var questions = (raw.questions || []).filter(function (q) { return q && QID.test(String(q.id)) && q.label; }).map(function (q) { return [String(q.id), String(q.label)]; });
+    return {
+      updated: raw.updated ? String(raw.updated) : "",
+      disclaimer: raw.disclaimer ? String(raw.disclaimer) : "Not a licensed attorney. Not legal advice.",
+      questions: questions,
+      verdicts: verdicts,
+      benefitsFor: Array.isArray(raw.benefits_for) ? raw.benefits_for.map(String) : ["better", "should"],
+      benefits: (raw.benefits || []).map(function (b) { return item(b); }).filter(Boolean),
+      sources: sources
+    };
+  }
+  // Pure: the first verdict whose when_any has a Yes answer wins; otherwise the default verdict.
+  function evaluateNeed(rules, a) {
+    a = a || {};
+    var yes = function (k) { return a[k] === true; };
+    var v = null;
+    rules.verdicts.forEach(function (x) { if (!v && !x.isDefault && x.when.some(yes)) v = x; });
+    if (!v) rules.verdicts.forEach(function (x) { if (!v && x.isDefault) v = x; });
+    var reasons = v.when.filter(function (k) { return yes(k) && v.reasons[k]; }).map(function (k) { return v.reasons[k]; });
+    var shown = reasons.map(function (x) { return x.id; });
+    // A benefit that repeats a reason already listed (same id, e.g. liability) is left out.
+    var benefits = rules.benefitsFor.indexOf(v.id) > -1 ? rules.benefits.filter(function (b) { return (b.always || b.when.some(yes)) && shown.indexOf(b.id) < 0; }) : [];
+    return { id: v.id, title: v.title, intro: v.intro, reasons: reasons, facts: v.facts, benefits: benefits, disclaimer: rules.disclaimer, matched: v.when.filter(yes) };
   }
 
   // ---------- name rules (pure, no network) ----------
@@ -234,20 +303,66 @@
   }
 
   var ANSWERS = [["online", "Selling online?"], ["markets", "Selling at markets or events?"], ["hire", "Hiring employees?"], ["owners", "More than one owner?"], ["food", "Selling food or other regulated goods?"]];
-  function shareQuery(code, name, a) {
+  // The name check's questions plus the extra ones the need rules ask (liability, bank, separate, investors).
+  function questionsOf(cfg) {
+    var list = ANSWERS.slice(), seen = {};
+    list.forEach(function (x) { seen[x[0]] = 1; });
+    ((cfg && cfg.need && cfg.need.questions) || []).forEach(function (x) { if (!seen[x[0]]) { seen[x[0]] = 1; list.push(x); } });
+    return list;
+  }
+  function shareQuery(code, name, a, opts) {
+    opts = opts || {};
     var p = new URLSearchParams();
-    p.set("state", code); p.set("name", name);
-    ANSWERS.forEach(function (x) { if (a[x[0]]) p.set(x[0], "1"); });
+    if (code) p.set("state", code);
+    if (name) p.set("name", name);
+    Object.keys(a || {}).forEach(function (k) { if (a[k] === true && QID.test(k)) p.set(k, "1"); });
+    if (opts.view) p.set("view", opts.view);
     return p.toString();
   }
-  function parseQuery(search) {
+  function parseQuery(search, questions) {
     var p = new URLSearchParams(search || "");
     var a = {};
-    ANSWERS.forEach(function (x) { a[x[0]] = p.get(x[0]) === "1" || p.get(x[0]) === "yes"; });
-    return { state: (p.get("state") || "").toUpperCase(), name: (p.get("name") || "").slice(0, 200), answers: a };
+    (questions || ANSWERS).forEach(function (x) { a[x[0]] = p.get(x[0]) === "1" || p.get(x[0]) === "yes"; });
+    return { state: (p.get("state") || "").toUpperCase(), name: (p.get("name") || "").slice(0, 200), answers: a, view: p.get("view") === "need" ? "need" : "" };
   }
 
   // ---------- rendering ----------
+  function srcLinks(list) {
+    return ' <span class="lnc-src">' + list.map(function (s) { return '<a target="_blank" rel="noopener" href="' + esc(s.url) + '">' + esc(s.title) + '</a>'; }).join(" · ") + '</span>';
+  }
+  // The verdict block. ctx: { cfg, st (optional), legalName (optional), standalone }.
+  function needHtml(rules, v, ctx) {
+    ctx = ctx || {};
+    var h = '<section class="lnc-need lnc-need-' + esc(v.id) + '" id="lnc-need" data-verdict="' + esc(v.id) + '">';
+    h += '<p class="lnc-k">Do I need an LLC?</p><h3 class="lnc-h3 lnc-verdict" id="lnc-verdict">' + esc(v.title) + '</h3>';
+    if (v.intro) h += '<p class="lnc-small">' + esc(v.intro) + '</p>';
+    var li = function (x, cls, kind) { return '<li class="' + cls + '" data-' + kind + '="' + esc(x.id) + '">' + (x.title ? '<strong>' + esc(x.title) + '.</strong> ' : '') + esc(x.text) + srcLinks(x.sources) + '</li>'; };
+    if (v.reasons.length) { h += '<ul class="lnc-list" id="lnc-need-reasons">'; v.reasons.forEach(function (x) { h += li(x, "lnc-warn", "reason"); }); h += '</ul>'; }
+    // With reasons (verdict c) the facts close the block; otherwise they lead.
+    var facts = v.facts.length ? '<ul class="lnc-list" id="lnc-need-facts">' + v.facts.map(function (x) { return li(x, "lnc-info", "fact"); }).join("") + '</ul>' : "";
+    if (!v.reasons.length) h += facts;
+    if (v.benefits.length) {
+      h += '<p class="lnc-small"><strong>Benefits that match your answers</strong></p><ul class="lnc-list" id="lnc-need-benefits">';
+      v.benefits.forEach(function (x) { h += li(x, "lnc-ok", "benefit"); }); h += '</ul>';
+    }
+    if (v.reasons.length) h += facts;
+    h += '<p class="lnc-small lnc-disclaimer" id="lnc-need-disclaimer">' + esc(v.disclaimer.replace(/\s*Not a licensed attorney\. Not legal advice\.\s*$/, "")) + ' <strong>Not a licensed attorney. Not legal advice.</strong></p>';
+    if (ctx.standalone) {
+      var st = ctx.st, cfg = ctx.cfg;
+      h += '<div class="lnc-row">';
+      h += '<button type="button" class="lnc-btn' + (v.id === "operate" ? "" : " lnc-btn-ghost") + '" id="lnc-need-name">' + (ctx.legalName ? "Check this name" : "Check a business name") + '</button>';
+      if (v.id !== "operate") {
+        var href = st ? (ctx.legalName ? ctaHref(st, ctx.legalName) : FILING_FLOW_URL + "?state=" + encodeURIComponent(st.code) + "&src=llc-need") : FILING_FLOW_URL + "?src=llc-need";
+        h += '<a class="lnc-btn" id="lnc-need-cta" href="' + esc(href) + '">' + esc(st && cfg ? ctaLabel(cfg, st) : "File it free, pay only the state fee") + '</a>';
+      }
+      h += '<button type="button" class="lnc-btn lnc-btn-ghost" id="lnc-share">Copy share link</button></div><p class="lnc-small" id="lnc-share-note" aria-live="polite"></p>';
+    }
+    h += '</section>';
+    return h;
+  }
+  function needCardHtml(cfg, st, legalName, a) {
+    return '<div class="lnc-card" id="lnc-need-card">' + needHtml(cfg.need, evaluateNeed(cfg.need, a), { cfg: cfg, st: st, legalName: legalName, standalone: true }) + '</div>';
+  }
   function resultHtml(cfg, st, r, a) {
     var h = "";
     var avail = availabilityLink(st, r.core);
@@ -292,13 +407,20 @@
     h += '<div><dt>Registered agent</dt><dd>Every ' + esc(st.name) + ' LLC names a registered agent with a street address in ' + esc(st.name) + '. It can be you, a person you trust, or a company. You add it in the filing flow.</dd></div>';
     h += '</dl>';
 
-    // 4. Likely next
+    // 4. Do I need an LLC? (only once they've answered something; the full view is the form's second button)
+    if (cfg.need) {
+      var anyYes = Object.keys(a).some(function (k) { return a[k] === true; });
+      if (anyYes) h += needHtml(cfg.need, evaluateNeed(cfg.need, a), {});
+      else h += '<p class="lnc-small" id="lnc-need-hint">Wondering whether you need an LLC at all? Answer the quick questions above and choose <strong>Do I need an LLC?</strong></p>';
+    }
+
+    // 5. Likely next
     var ns = nextSteps(st, a);
     h += '<h3 class="lnc-h3">You\'ll likely need next</h3><ul class="lnc-list" id="lnc-next">';
     ns.forEach(function (n) { h += '<li data-next="' + esc(n.k) + '"><strong>' + esc(n.t) + '.</strong> ' + esc(n.d) + '</li>'; });
     h += '</ul>';
 
-    // 5. Disclaimer + CTA + share
+    // 6. Disclaimer + CTA + share
     h += '<p class="lnc-small lnc-disclaimer">This check uses common state naming rules and our ' + esc(st.name) + ' data' + (cfg.updated ? " (updated " + esc(cfg.updated) + ")" : "") + '. Fees and rules change, so confirm on the official state site before you file. <strong>Not a licensed attorney. Not legal advice.</strong></p>';
     h += '<div class="lnc-row"><a class="lnc-btn" id="lnc-cta" href="' + esc(ctaHref(st, r.legalName)) + '">' + esc(ctaLabel(cfg, st)) + '</a>';
     h += '<button type="button" class="lnc-btn lnc-btn-ghost" id="lnc-share">Copy share link</button></div><p class="lnc-small" id="lnc-share-note" aria-live="polite"></p>';
@@ -307,13 +429,14 @@
   }
 
   function formHtml(cfg, sel, name, a) {
+    var qs = questionsOf(cfg);
     var h = '<form class="lnc-card" id="lnc-form" novalidate>';
     h += '<div class="lnc-grid"><label class="lnc-field"><span>State</span><select id="lnc-state" required><option value="">Choose a state</option>';
     cfg.codes.forEach(function (c) { h += '<option value="' + c + '"' + (c === sel ? " selected" : "") + '>' + esc(cfg.states[c].name) + '</option>'; });
     h += '</select></label><label class="lnc-field"><span>Business name</span><input id="lnc-name" maxlength="200" autocomplete="organization" placeholder="Zephyr Bakery" value="' + esc(name) + '"></label></div>';
     h += '<fieldset class="lnc-qs"><legend>Optional: a few quick questions</legend>';
-    ANSWERS.forEach(function (x) { h += '<label class="lnc-q"><input type="checkbox" id="lnc-' + x[0] + '"' + (a[x[0]] ? " checked" : "") + '> <span>' + esc(x[1]) + '</span> <em>Yes</em></label>'; });
-    h += '</fieldset><p class="lnc-err" id="lnc-err" aria-live="polite"></p><button class="lnc-btn" type="submit" id="lnc-go">Check my name</button></form><div id="lnc-out"></div>';
+    qs.forEach(function (x) { h += '<label class="lnc-q"><input type="checkbox" id="lnc-' + x[0] + '"' + (a[x[0]] ? " checked" : "") + '> <span>' + esc(x[1]) + '</span> <em>Yes</em></label>'; });
+    h += '</fieldset><p class="lnc-err" id="lnc-err" aria-live="polite"></p><div class="lnc-row"><button class="lnc-btn" type="submit" id="lnc-go">Check my name</button>' + (cfg.need ? '<button class="lnc-btn lnc-btn-ghost" type="button" id="lnc-need-go">Do I need an LLC?</button>' : '') + '</div></form><div id="lnc-out"></div>';
     return h;
   }
 
@@ -323,14 +446,26 @@
     el.innerHTML = '<div class="lnc-card lnc-small" id="lnc-loading">Loading state rules…</div>';
     loadConfig().then(function (cfg) {
       root.LNC.config = cfg;
-      var q = parseQuery(root.location.search);
+      var QS = questionsOf(cfg);
+      var q = parseQuery(root.location.search, QS);
       var fromPath = (root.location.pathname.match(/\/llc-name-check\/([a-z-]+)\/?$/) || [])[1];
       var def = (el.getAttribute("data-default-state") || "").toUpperCase();
       if (!cfg.states[def] && fromPath) cfg.codes.forEach(function (c) { if (cfg.states[c].slug === fromPath) def = c; });
       var sel = cfg.states[q.state] ? q.state : (cfg.states[def] ? def : "");
       el.innerHTML = formHtml(cfg, sel, q.name, q.answers);
       var $ = function (id) { return el.querySelector("#" + id); };
-      function answers() { var a = {}; ANSWERS.forEach(function (x) { a[x[0]] = !!$("lnc-" + x[0]).checked; }); return a; }
+      function answers() { var a = {}; QS.forEach(function (x) { a[x[0]] = !!$("lnc-" + x[0]).checked; }); return a; }
+      // "Do I need an LLC?": state and name are optional here; when present they carry into the hand-off.
+      function runNeed(updateUrl) {
+        if (!cfg.need) return;
+        $("lnc-err").textContent = "";
+        var code = $("lnc-state").value, st = cfg.states[code] || null, a = answers();
+        var r = st ? checkName($("lnc-name").value, st) : null;
+        var legal = r && !r.errors.length ? r.legalName : "";
+        $("lnc-out").innerHTML = needCardHtml(cfg, st, legal, a);
+        if (updateUrl && root.history && root.history.replaceState) root.history.replaceState(null, "", root.location.pathname + "?" + shareQuery(st ? code : "", $("lnc-name").value.trim(), a, { view: "need" }));
+        if (typeof root.gtag === "function") root.gtag("event", "llc_need_verdict", { verdict: evaluateNeed(cfg.need, a).id });
+      }
       function run(updateUrl) {
         var code = $("lnc-state").value, name = $("lnc-name").value;
         var err = $("lnc-err");
@@ -352,17 +487,23 @@
           var note = $("lnc-share-note");
           (root.navigator.clipboard ? root.navigator.clipboard.writeText(url) : Promise.reject()).then(function () { note.textContent = "Link copied: " + url; }, function () { note.textContent = "Share this link: " + url; });
         }
+        if (t.id === "lnc-need-go") { runNeed(true); var c = $("lnc-need-card"); if (c && c.scrollIntoView) c.scrollIntoView({ behavior: "smooth", block: "start" }); }
+        if (t.id === "lnc-need-name") {
+          if ($("lnc-state").value && $("lnc-name").value.trim()) { run(true); var o2 = $("lnc-result"); if (o2 && o2.scrollIntoView) o2.scrollIntoView({ behavior: "smooth", block: "start" }); }
+          else { var f = $("lnc-state").value ? $("lnc-name") : $("lnc-state"); if (f.scrollIntoView) f.scrollIntoView({ behavior: "smooth", block: "center" }); f.focus(); }
+        }
         if (t.id === "lnc-avail" && t.getAttribute("data-prefilled") === "0" && root.navigator.clipboard) {
           root.navigator.clipboard.writeText(t.getAttribute("data-copy") || "").catch(function () {});
         }
       });
-      if (sel && q.name) run(false);
+      if (q.view === "need" && cfg.need) runNeed(false);
+      else if (sel && q.name) run(false);
     }).catch(function () {
       el.innerHTML = '<div class="lnc-card">State rules are taking a moment to load. Refresh the page to try again.</div>';
     });
   }
 
-  var api = { normalizeConfig: normalizeConfig, checkName: checkName, findDesignator: findDesignator, restrictedHits: restrictedHits, coreName: coreName, nextSteps: nextSteps, stripMoney: stripMoney, ctaLabel: ctaLabel, ctaHref: ctaHref, availabilityLink: availabilityLink, shareQuery: shareQuery, parseQuery: parseQuery, resultHtml: resultHtml, feeShown: feeShown, mount: mount, REMOTE_CONFIG_URL: REMOTE_CONFIG_URL, BUNDLED_CONFIG_URL: BUNDLED_CONFIG_URL };
+  var api = { normalizeConfig: normalizeConfig, checkName: checkName, findDesignator: findDesignator, restrictedHits: restrictedHits, coreName: coreName, nextSteps: nextSteps, stripMoney: stripMoney, ctaLabel: ctaLabel, ctaHref: ctaHref, availabilityLink: availabilityLink, shareQuery: shareQuery, parseQuery: parseQuery, normalizeNeedRules: normalizeNeedRules, evaluateNeed: evaluateNeed, needHtml: needHtml, needCardHtml: needCardHtml, questionsOf: questionsOf, REMOTE_NEED_RULES_URL: REMOTE_NEED_RULES_URL, BUNDLED_NEED_RULES_URL: BUNDLED_NEED_RULES_URL, resultHtml: resultHtml, feeShown: feeShown, mount: mount, REMOTE_CONFIG_URL: REMOTE_CONFIG_URL, BUNDLED_CONFIG_URL: BUNDLED_CONFIG_URL };
   if (typeof module === "object" && module.exports) module.exports = api;
   root.LNC = api;
   if (root.document) {

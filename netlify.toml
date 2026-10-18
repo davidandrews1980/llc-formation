@@ -36,3 +36,8 @@
   for = "/llc-name-check/llc-states.json"
   [headers.values]
     Cache-Control = "public, max-age=300"
+
+[[headers]]
+  for = "/llc-name-check/llc-need-rules.json"
+  [headers.values]
+    Cache-Control = "public, max-age=300"
