@@ -14,11 +14,9 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Filing $200 same paper and online (SOS LLC page/fee schedule; online adds card convenience fee 3%+$2). Old $50 'min' BPT applied only to tax year 2023; ADOR: for tax years beginning after 12/31/2023 BPT of $100 or less is fully exempt and no return required (Act 2022-252). Larger LLCs owe BPT based on net worth ($0.25-$1.75 per $1,000). Name reservation ($25 paper/$28 online) required before formation.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -46,7 +44,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.sos.alabama.gov/business-entities/llcs; https://www.sos.alabama.gov/sites/default/files/form-files/FeeSchedule.pdf; https://www.revenue.alabama.gov/notice-important-changes-to-the-2024-business-privilege-tax-filing-requirements/; https://www.revenue.alabama.gov/individual-corporate/due-dates/",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 0
+      "typical_yearly_cost_usd": 0,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Alaska",
@@ -57,11 +65,9 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: $250 online and paper (form 08-484). Biennial report $100 domestic.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -89,22 +95,33 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 403 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.commerce.alaska.gov/web/cbpl/corporations/corpformsfees/formsbyentity.aspx; https://www.commerce.alaska.gov/web/cbpl/Corporations/BiennialReportsFAQs.aspx",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 100
+      "typical_yearly_cost_usd": 50.0,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 2
     },
     {
       "state": "Arizona",
       "code": "AZ",
       "filing_fee_usd": 50,
-      "search_url": "https://arizonabusinesscenter.azcc.gov/",
+      "search_url": "https://arizonabusinesscenter.azcc.gov/nameavailability",
       "deep_link_template_or_null": null,
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: ACC fee schedule rev. 3.2026: Articles of Organization $50 regular, $85 expedited. Publication within 60 days (3 consecutive newspaper publications) unless statutory agent street address is in Maricopa or Pima County, where ACC posts the notice on its website for free (A.R.S. 29-3201(G)).",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -134,7 +151,21 @@
       "min_annual_tax_usd": 0,
       "typical_yearly_cost_usd": 0,
       "deep_link_template": null,
-      "publication_note": "Publication generally required within 60 days; waived when the statutory agent address is in Maricopa or Pima County (ACC publishes then). Confirm on azcc.gov."
+      "publication_note": "Publication generally required within 60 days; waived when the statutory agent address is in Maricopa or Pima County (ACC publishes then). Confirm on azcc.gov.",
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C."
+      ],
+      "allowed_endings_cite": "A.R.S. 29-3112(A)",
+      "allowed_endings_source": "https://www.azleg.gov/ars/29/03112.htm",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1,
+      "publication_status": "Required unless waived"
     },
     {
       "state": "Arkansas",
@@ -145,11 +176,9 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Certificate of Organization LL-01: $45 online, $50 paper. Franchise tax $150 flat for LLCs (online filing adds $5 processing fee).",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -177,7 +206,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 405 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.sos.arkansas.gov/business-commercial-services-bcs/forms-fees/llc; https://www.sos.arkansas.gov/business-commercial-services-bcs/franchise-tax-report-forms",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 150
+      "typical_yearly_cost_usd": 150,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "California",
@@ -188,10 +227,11 @@
       "api_available": false,
       "notes": "$70 plus $20 Statement of Information. bizfile search is a JavaScript single-page app protected by bot controls (uncertain). | Fees verified 2026-10-18 on official source: SOS: Articles of Organization $70 (online; paper LLC-1 also $70, $15 in-person handling fee); Statement of Information $20, biennial. FTB: every LLC owes $800 annual tax (first-year exemption applied only to tax years 2021-2023); LLCs with CA gross receipts over $250,000 also owe an LLC fee. annual_report_fee_usd keeps the $20 SOS fee; the $800 tax is in annual_report_due (realistic yearly minimum is about $810).",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
-        "Limited Company",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
         "Ltd. Liability Co."
       ],
       "restricted_words": [
@@ -212,7 +252,7 @@
       ],
       "source_url": "https://www.sos.ca.gov/business-programs/cannabizfile/cannabis-forms-and-fees/limited-liability-companies-llc-california",
       "annual_report_fee_usd": 20,
-      "annual_report_due": "$20 Statement of Information within 90 days of formation, then every 2 years (6-month window ending in formation month); PLUS $800 minimum annual LLC tax to FTB, due 15th day of 4th month of each tax year (first year: 15th day of 4th month after SOS filing)",
+      "annual_report_due": "Statement of Information within 90 days of formation, then every 2 years",
       "publication_required": false,
       "search_url_http_status": "200",
       "search_url_resolves": true,
@@ -220,7 +260,20 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.sos.ca.gov/business-programs/cannabizfile/cannabis-forms-and-fees/limited-liability-companies-llc-california; https://bpd.cdn.sos.ca.gov/llc/forms/llc-1.pdf; https://www.sos.ca.gov/business-programs/business-entities/statements; https://www.ftb.ca.gov/file/business/types/limited-liability-company/index.html",
       "min_annual_tax_usd": 800,
-      "typical_yearly_cost_usd": 820
+      "typical_yearly_cost_usd": 810.0,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co."
+      ],
+      "allowed_endings_cite": "Cal. Code Regs. tit. 2, 21000(c)(2) (SOS Business Entity Names guidelines)",
+      "allowed_endings_source": "https://bpd.cdn.sos.ca.gov/be/forms/name-guidelines-restrictions-2022.pdf",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 2
     },
     {
       "state": "Colorado",
@@ -231,11 +284,14 @@
       "api_available": true,
       "notes": "Free Socrata open-data API, public/open license; bulk data refreshed periodically, not real-time. | Fees verified 2026-10-18 on official source: Online-only filing: Articles of Organization $50; Periodic Report $25 (raised from $10 on Jul 1 2024).",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "Ltd. Liability Company",
+        "Limited Liability Co.",
+        "Ltd. Liability Co.",
+        "Limited",
+        "Ltd."
       ],
       "restricted_words": [
         "Bank",
@@ -263,7 +319,22 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.coloradosos.gov/pubs/info_center/fees/business.html; https://www.coloradosos.gov/pubs/newsRoom/pressReleases/2024/PR20240617Fees.html",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 25
+      "typical_yearly_cost_usd": 25,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Ltd. Liability Company",
+        "Limited Liability Co.",
+        "Ltd. Liability Co.",
+        "Limited",
+        "Ltd."
+      ],
+      "allowed_endings_cite": "C.R.S. 7-90-601(3)(c)",
+      "allowed_endings_source": "https://leg.colorado.gov/sites/default/files/images/olls/crs2023-title-07.pdf",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Connecticut",
@@ -274,11 +345,9 @@
       "api_available": true,
       "notes": "Free Socrata open-data API, public/open license; bulk data refreshed periodically, not real-time. | Fees verified 2026-10-18 on official source: Certificate of Organization $120; annual report $80, filed online Jan 1-Mar 31.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -306,7 +375,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://business.ct.gov/knowledge-base/articles/domestic-limited-liability-companies-forms-and-fees; https://business.ct.gov/knowledge-base/articles/domestic-annual-report-forms-and-fees",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 80
+      "typical_yearly_cost_usd": 80,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Delaware",
@@ -317,11 +396,9 @@
       "api_available": false,
       "notes": "$110 Certificate of Formation. Paid status lookups add fees, but the name search is free. | Fees verified 2026-10-18 on official source: Certificate of Formation $110 (form PDF). Annual LLC tax is now $400 per Division of Corporations (was $300). No annual report.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -349,22 +426,39 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://corp.delaware.gov/alt-entitytaxinstructions/; https://corp.delaware.gov/frtax/; https://corpfiles.delaware.gov/LLC_Forms/LLC%20Formation.pdf",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 400
+      "typical_yearly_cost_usd": 400,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "6 Del. C. 18-102(1)",
+      "allowed_endings_source": "https://delcode.delaware.gov/title6/c018/sc01/index.html",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "District of Columbia",
       "code": "DC",
       "filing_fee_usd": 99,
-      "search_url": "https://boss.dc.gov/",
+      "search_url": "https://boss.dc.gov/homepage/business-license-search",
       "deep_link_template_or_null": null,
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Certificate of organization $99; biennial report $300 (every two years, so ~$150/yr). Walk-in filers charged $100 expedite.",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
       ],
       "restricted_words": [
         "Bank",
@@ -392,8 +486,27 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://dlcp.dc.gov/page/corporations-division-fees-limited-liability-company; https://dlcp.dc.gov/service/domestic-limited-liability-company; https://code.dccouncil.gov/us/dc/council/code/sections/29-102.11",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 300,
-      "deep_link_template": null
+      "typical_yearly_cost_usd": 150.0,
+      "deep_link_template": null,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
+      ],
+      "allowed_endings_cite": "D.C. Code 29-103.02(f)",
+      "allowed_endings_source": "https://code.dccouncil.gov/us/dc/council/code/sections/29-103.02",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 2
     },
     {
       "state": "Florida",
@@ -404,11 +517,9 @@
       "api_available": false,
       "notes": "$125 includes $25 registered agent designation. Sunbiz results URL accepts a query string (observed pattern; uncertain stability). Prefill pattern untested: Sunbiz returned HTTP 403 to automated requests on 2026-10-18. Test it manually in a browser. | Fees verified 2026-10-18 on official source: $100 Articles of Organization filing fee + $25 required registered agent designation = $125 total (same online/paper). Annual report $138.75 ($538.75 after May 1).",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -436,7 +547,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 403 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://dos.fl.gov/sunbiz/forms/fees/llc-fees/; https://dos.fl.gov/sunbiz/manage-business/efile/annual-report",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 138.75
+      "typical_yearly_cost_usd": 138.75,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "Fla. Stat. 605.0112(1)(a)",
+      "allowed_endings_source": "https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0600-0699/0605/Sections/0605.0112.html",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Georgia",
@@ -447,11 +568,9 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: SOS: formation $110 total ($100 filing fee + $10 service charge) for online, paper-online and mail filing. Annual registration $60 ($50 + $10 service charge). Page 403s to curl; read via WebFetch.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -479,7 +598,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 403 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://sos.ga.gov/how-to-guide/how-guide-register-domestic-entity",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 60
+      "typical_yearly_cost_usd": 60,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Hawaii",
@@ -490,11 +619,9 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Articles of Organization $50 (+$25 optional expedite; DCCA also lists a $1 State Archives fee). Annual report $15 paper, $12.50 online.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -522,7 +649,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://cca.hawaii.gov/breg/registration/dllc/fees/; https://cca.hawaii.gov/wp-content/uploads/2025/12/LLC-INFO_3-2023.pdf",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 15
+      "typical_yearly_cost_usd": 15,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Idaho",
@@ -533,11 +670,18 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Certificate of Organization $100 online (SOSBiz); $120 by paper ($100 + $20 manual processing fee). Annual report has no state fee (filed online). Due date from Idaho Code 30-21-213.",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
       ],
       "restricted_words": [
         "Bank",
@@ -565,7 +709,26 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://sos.idaho.gov/business-forms/; https://legislature.idaho.gov/statutesrules/idstat/title30/t30ch21/sect30-21-213/; https://sos.idaho.gov/business-resources/business-faq/",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 0
+      "typical_yearly_cost_usd": 0,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
+      ],
+      "allowed_endings_cite": "Idaho Code 30-21-302(d)",
+      "allowed_endings_source": "https://legislature.idaho.gov/statutesrules/idstat/title30/t30ch21/sect30-21-302/",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Illinois",
@@ -576,11 +739,9 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Articles of Organization LLC-5.5 $150 ($400 series LLC); annual report LLC-50.1 $75. ilsos.gov blocks curl; read via WebFetch.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -608,7 +769,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 000 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.ilsos.gov/publications/business_services/llc.html; https://www.ilga.gov/documents/legislation/ilcs/documents/080501800K50-1.htm",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 75
+      "typical_yearly_cost_usd": 75,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Indiana",
@@ -619,11 +790,9 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Formation: $75 statutory electronic fee + $20 enhanced-access fee = $95 online via INBiz (IC 23-0.5-9 and SOS LSA 25-155 doc); paper Articles of Organization $100. Business entity report (biennial) $32 on INBiz, $50 paper (was listed as $31).",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -651,7 +820,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 202 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://inbiz.in.gov/business-filings/business-entityreport; https://iga.in.gov/ic/2026/Title_23/Article_0.5/Chapter_9.pdf; https://www.in.gov/sos/business/files/Regulatory-Analysis-Business-Entity-LSA-25-155-OMB-2024-73R.pdf; https://forms.in.gov/Download.aspx?id=16989",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 32
+      "typical_yearly_cost_usd": 16.0,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 2
     },
     {
       "state": "Iowa",
@@ -662,11 +841,18 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Certificate of Organization $50. LLC biennial report $30 online, $45 paper, odd-numbered years (profit corporations file in even years).",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
       ],
       "restricted_words": [
         "Bank",
@@ -694,7 +880,26 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 403 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://sos.iowa.gov/businesses/business-entity-forms-and-fees",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 30
+      "typical_yearly_cost_usd": 15.0,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
+      ],
+      "allowed_endings_cite": "Iowa Code 489.112(1)",
+      "allowed_endings_source": "https://www.legis.iowa.gov/docs/code/489.112.pdf",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 2
     },
     {
       "state": "Kansas",
@@ -705,11 +910,9 @@
       "api_available": false,
       "notes": "$160 online / $165 paper. | Fees verified 2026-10-18 on official source: SOS form DL: Articles of Organization $85 online, $90 paper (old $160/$165 figures are outdated). Information report is now biennial: $90 online, $110 paper (form ILC rev. 1/23/26), due Apr 15.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -737,7 +940,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 202 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.sos.ks.gov/forms/business_services/dl.pdf; https://www.sos.ks.gov/forms/business_services/ILC.pdf; https://www.sos.ks.gov/businesses/information-reports.html; https://www.kslegislature.gov/b2025_26/laws/017_000_0000_chapter/017_076_0000_article/017_076_0139_section/017_076_0139_k/",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 90
+      "typical_yearly_cost_usd": 45.0,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 2
     },
     {
       "state": "Kentucky",
@@ -748,11 +961,9 @@
       "api_available": false,
       "notes": "$40, one of the lowest fees. | Fees verified 2026-10-18 on official source: Articles of Organization $40; annual report $15, due by June 30.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -780,7 +991,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.sos.ky.gov/bus/business-filings/Pages/Fees.aspx; https://www.sos.ky.gov/bus/business-filings/Pages/Annual-Reports.aspx",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 15
+      "typical_yearly_cost_usd": 15,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Louisiana",
@@ -791,11 +1012,9 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: New fee schedule effective Oct 1, 2026 (Act 921 of 2026): Articles of Organization $125 (was $100), annual report $35 (was $30). Due date per La. R.S. 12:1308.1.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -823,7 +1042,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://static.sos.la.gov/shared/fee_changes_2026.pdf; https://legis.la.gov/legis/Law.aspx?d=76256",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 35
+      "typical_yearly_cost_usd": 35,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Maine",
@@ -834,11 +1063,18 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Certificate of Formation $175 (SOS LLC forms page, 31 MRSA 1680). Annual report $85 domestic, due June 1.",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
       ],
       "restricted_words": [
         "Bank",
@@ -866,7 +1102,26 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.maine.gov/sos/news/annual-reports-business-and-nonprofit-entities-are-due-june-1-1; https://www.maine.gov/sos/corporations-commissions/i-need-a-business-form/limited-liability-company-forms; https://legislature.maine.gov/statutes/31/title31sec1680.html; https://legislature.maine.gov/legis/statutes/31/title31sec1665.html",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 85
+      "typical_yearly_cost_usd": 85,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
+      ],
+      "allowed_endings_cite": "31 M.R.S. 1508(1)",
+      "allowed_endings_source": "https://legislature.maine.gov/statutes/31/title31sec1508.html",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Maryland",
@@ -877,11 +1132,9 @@
       "api_available": false,
       "notes": "$100 base. Online/expedite fees may apply (uncertain). | Fees verified 2026-10-18 on official source: SDAT: Articles of Organization $100 (+$50 optional expedite). 2026 Form 1 annual report fee $300 for LLCs, due Apr 15 (businesses approved by MarylandSaves can get the fee waived).",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -909,7 +1162,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://dat.maryland.gov/Documents/Accessible%20Documents/Charter%20-%20Resource%20Docs/List%20of%20Fees%20for%20Charter%20Services%20and%20Document%20Filings_0326-A.pdf; https://dat.maryland.gov/Documents/Accessible%20Documents/BPP%20-%20Annual%20Reports%20and%20Returns/2026%20Filings%20-%20Form%201%20Business%20Entity%20Annual%20Report_0426-A.pdf",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 300
+      "typical_yearly_cost_usd": 300,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Massachusetts",
@@ -920,11 +1183,12 @@
       "api_available": false,
       "notes": "$500 Certificate of Organization. | Fees verified 2026-10-18 on official source: Certificate of Organization $500; annual report $500. Page returned a stub to curl; read via WebFetch.",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -952,7 +1216,20 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.sec.state.ma.us/divisions/corporations/filing-by-subject/limited-liability/corporations-limited-liability-company.htm",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 500
+      "typical_yearly_cost_usd": 500,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C."
+      ],
+      "allowed_endings_cite": "M.G.L. c. 156C, 3(1)",
+      "allowed_endings_source": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleXXII/Chapter156C/Section3",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Michigan",
@@ -963,11 +1240,11 @@
       "api_available": false,
       "notes": "MiBusiness Registry is a JavaScript single-page app with no documented public API (uncertain). | Fees verified 2026-10-18 on official source: Articles of Organization $50; annual statement $25 (MCL 450.5101: $25 through Sep 30, 2027, then $15). Veteran-owned LLCs can get fees waived.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "L.L.C.",
+        "LLC",
+        "L.C.",
+        "LC"
       ],
       "restricted_words": [
         "Bank",
@@ -995,7 +1272,19 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 403 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.michigan.gov/-/media/Project/Websites/lara/cscl/Folder1/BCS%5FCD%5F265.pdf; https://www.legislature.mi.gov/Laws/MCL?objectName=mcl-450-5101; https://www.michigan.gov/lara/-/media/Project/Websites/lara/cscl/NonImages%5Fnew/Corps/forms/llc/700-0725.pdf",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 25
+      "typical_yearly_cost_usd": 25,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "L.L.C.",
+        "LLC",
+        "L.C.",
+        "LC"
+      ],
+      "allowed_endings_cite": "MCL 450.4204(1) (with or without periods)",
+      "allowed_endings_source": "https://www.legislature.mi.gov/Laws/MCL?objectName=mcl-450-4204",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Minnesota",
@@ -1006,11 +1295,8 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Articles of Organization $155 online or in person, $135 by mail. Annual renewal free. sos.mn.gov bot-blocks curl; read via WebFetch.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC"
       ],
       "restricted_words": [
         "Bank",
@@ -1038,7 +1324,16 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.sos.mn.gov/business-liens/business-filing-and-certification-fee-schedule/; https://www.sos.mn.gov/business-liens/renewals",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 0
+      "typical_yearly_cost_usd": 0,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC"
+      ],
+      "allowed_endings_cite": "Minn. Stat. 322C.0108, subd. 1(2)",
+      "allowed_endings_source": "https://www.revisor.mn.gov/statutes/cite/322C.0108",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Mississippi",
@@ -1049,11 +1344,9 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Certificate of Formation $50; domestic LLC annual report $0 (foreign $250).",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -1081,7 +1374,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 403 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.sos.ms.gov/sites/default/files/business-services/FeeSchedule.pdf; https://www.sos.ms.gov/business-services/annual-reports",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 0
+      "typical_yearly_cost_usd": 0,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Missouri",
@@ -1092,11 +1395,12 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Articles of Organization $50 online, $105 paper. SOS FAQ: LLCs do not file an annual report.",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -1124,7 +1428,20 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 403 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.sos.mo.gov/CMSImages/Business/fees.pdf?v=2025; https://www.sos.mo.gov/business/faqs",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 0
+      "typical_yearly_cost_usd": 0,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C."
+      ],
+      "allowed_endings_cite": "RSMo 347.020(1)",
+      "allowed_endings_source": "https://revisor.mo.gov/main/OneSection.aspx?section=347.020",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Montana",
@@ -1135,11 +1452,18 @@
       "api_available": false,
       "notes": "$35, the lowest fee. | Fees verified 2026-10-18 on official source: Articles of Organization $35 (+$50 per named series). SOS fee page lists LLC annual report 'Prior to April 15th: WAIVED', 'After April 15th: $35'. The waiver is a Secretary of State policy that has been renewed year to year, so re-check each January. sosmt.gov 403s to curl; read via WebFetch.",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
       ],
       "restricted_words": [
         "Bank",
@@ -1167,7 +1491,26 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 403 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://sosmt.gov/business/fees/",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 0
+      "typical_yearly_cost_usd": 0,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
+      ],
+      "allowed_endings_cite": "MCA 35-8-103(1)(a)",
+      "allowed_endings_source": "https://archive.legmt.gov/bills/mca/title_0350/chapter_0080/part_0010/section_0030/0350-0080-0010-0030.html",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Nebraska",
@@ -1178,11 +1521,18 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Certificate of Organization $100 online, $110 in office. Biennial report $25 electronic, $30 paper (Neb. Rev. Stat. 21-192(4)); old $13 figure is wrong. Publication: notice must run 3 successive weeks in a legal newspaper (21-193), then file proof of publication ($25 online/$30 paper).",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
       ],
       "restricted_words": [
         "Bank",
@@ -1210,8 +1560,27 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://sos.nebraska.gov/business-services/forms-and-fee-information; https://sos.nebraska.gov/business-services/annualbiennial-reporting; https://nebraskalegislature.gov/laws/statutes.php?statute=21-192; https://nebraskalegislature.gov/laws/statutes.php?statute=21-125; https://nebraskalegislature.gov/laws/statutes.php?statute=21-193",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 25,
-      "publication_note": "Notice of organization must be published 3 consecutive weeks in a local newspaper (Neb. Rev. Stat. 21-193)."
+      "typical_yearly_cost_usd": 12.5,
+      "publication_note": "Notice of organization must be published 3 consecutive weeks in a local newspaper (Neb. Rev. Stat. 21-193).",
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
+      ],
+      "allowed_endings_cite": "Neb. Rev. Stat. 21-108(a)",
+      "allowed_endings_source": "https://nebraskalegislature.gov/laws/statutes.php?statute=21-108",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 2
     },
     {
       "state": "Nevada",
@@ -1222,11 +1591,18 @@
       "api_available": false,
       "notes": "$75 Articles + $150 Initial List + $200 State Business License = $425. | Fees verified 2026-10-18 on official source: filing_fee_usd is the required formation total: Articles of Organization $75 (NRS 86.561) + initial list $150 (NRS 86.263) + state business license $200 (NRS 76.100). Annual: $150 list + $200 license. nvsos.gov (Incapsula) blocks both curl and fetch, so these are read from the Nevada Revised Statutes on leg.state.nv.us rather than the SOS fee schedule.",
       "designators_allowed": [
+        "Limited-Liability Company",
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C.",
+        "Limited",
+        "Ltd.",
+        "Limited-Liability Co.",
+        "Limited Liability Co.",
+        "Limited Co."
       ],
       "restricted_words": [
         "Bank",
@@ -1255,7 +1631,26 @@
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.leg.state.nv.us/NRS/NRS-086.html; https://www.leg.state.nv.us/nRs/NRS-076.html",
       "min_annual_tax_usd": 0,
       "typical_yearly_cost_usd": 350,
-      "deep_link_template": null
+      "deep_link_template": null,
+      "allowed_endings": [
+        "Limited-Liability Company",
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C.",
+        "Limited",
+        "Ltd.",
+        "Limited-Liability Co.",
+        "Limited Liability Co.",
+        "Limited Co."
+      ],
+      "allowed_endings_cite": "NRS 86.171(1)",
+      "allowed_endings_source": "https://www.leg.state.nv.us/NRS/NRS-086.html",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "New Hampshire",
@@ -1266,11 +1661,9 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Certificate of Formation $100 and annual report $100; filing online adds a $2 electronic handling charge ($102). Page 403s to curl; read via WebFetch.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -1298,7 +1691,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 403 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.sos.nh.gov/corporations-0/forms-and-fees/limited-liability-companies; https://gc.nh.gov/rsa/html/XXVIII/304-C/304-C-194.htm",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 100
+      "typical_yearly_cost_usd": 100,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "New Jersey",
@@ -1309,11 +1712,9 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: DORES fee schedule: LLC Certificate of formation $100 (was listed as $125); annual report $75.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -1341,7 +1742,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.nj.gov/treasury/revenue/fees.shtml; https://business.nj.gov/pages/filings-and-accounting; https://www.njportal.com/DOR/AnnualReports/HOME/FAQ",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 75
+      "typical_yearly_cost_usd": 75,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "New Mexico",
@@ -1352,11 +1763,9 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fee check 2026-10-18: NOT VERIFIED. Couldn't read an official page: sos.nm.gov business pages have no fee table, and enterprise.sos.nm.gov (forms and fees) is a JavaScript app behind a bot check that fetch and curl can't render. Unofficial: Justia/OpenJurist copies of NMSA 53-19-63 give $50 for articles of organization, and third-party guides (boostsuite, ezel, llcattorney) say NM LLCs file no annual report. Values left unchanged ($50 / $0 / none).",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -1384,7 +1793,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Fees NOT verified on an official page (see notes).",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 0
+      "typical_yearly_cost_usd": 0,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "New York",
@@ -1395,11 +1814,9 @@
       "api_available": true,
       "notes": "Free Socrata open-data API, public/open license; bulk data refreshed periodically, not real-time. $200 plus mandatory publication requirement (cost varies by county). | Fees verified 2026-10-18 on official source: Articles of Organization $200; biennial statement $9. Publication (LLC Law 206): within 120 days, publish in 2 county-designated newspapers for 6 consecutive weeks, then file Certificate of Publication ($50 state fee + newspaper costs). dos.ny.gov 403s to curl; read via WebFetch.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -1427,8 +1844,18 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 000 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://dos.ny.gov/articles-organization-domestic-limited-liability-company-0; https://dos.ny.gov/fee-schedules",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 9,
-      "publication_note": "Must publish in 2 newspapers for 6 weeks within 120 days and file a Certificate of Publication (NY LLC Law 206); cost varies by county."
+      "typical_yearly_cost_usd": 4.5,
+      "publication_note": "Must publish in 2 newspapers for 6 weeks within 120 days and file a Certificate of Publication (NY LLC Law 206); cost varies by county.",
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "N.Y. LLC Law 204(a); NY DOS Articles of Organization page",
+      "allowed_endings_source": "https://dos.ny.gov/articles-organization-domestic-limited-liability-company-0",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 2
     },
     {
       "state": "North Carolina",
@@ -1439,11 +1866,12 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Articles of Organization $125; annual report $200 (online payment processing may add a small fee).",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "Ltd. Liability Co.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company"
       ],
       "restricted_words": [
         "Bank",
@@ -1471,7 +1899,20 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 403 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.sosnc.gov/fees/by_title/_Business_Registration_limited_liability_companies; https://www.sosnc.gov/divisions/Business_Registration/annual_report_due_dates",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 200
+      "typical_yearly_cost_usd": 200,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Ltd. Liability Co.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company"
+      ],
+      "allowed_endings_cite": "N.C.G.S. 55D-20(a)(2)",
+      "allowed_endings_source": "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/BySection/Chapter_55D/GS_55D-20.html",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "North Dakota",
@@ -1482,11 +1923,9 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Registration (Articles of Organization) $135; annual report $50, due Nov 15.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -1514,7 +1953,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.sos.nd.gov/business/business-services/business-structures/limited-liability-company-llc",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 50
+      "typical_yearly_cost_usd": 50,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "N.D.C.C. 10-32.1-11(1)(b)",
+      "allowed_endings_source": "https://www.ndlegis.gov/cencode/t10c32-1.pdf",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Ohio",
@@ -1525,11 +1974,12 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Articles of Organization (Form 610, replaces 533A) $99 online or PDF. SOS fee schedule lists no annual/biennial report for domestic LLCs (biennial reports appear only for professional associations and LLPs). ohiosos.gov 403s to curl; read via WebFetch.",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "Limited",
+        "Ltd.",
+        "Ltd"
       ],
       "restricted_words": [
         "Bank",
@@ -1557,7 +2007,20 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 403 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.ohiosos.gov/businesses/filing-forms--fee-schedule/",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 0
+      "typical_yearly_cost_usd": 0,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited",
+        "Ltd.",
+        "Ltd"
+      ],
+      "allowed_endings_cite": "R.C. 1706.07(A)",
+      "allowed_endings_source": "https://codes.ohio.gov/ohio-revised-code/section-1706.07",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Oklahoma",
@@ -1568,11 +2031,9 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Articles of Organization $100; annual certificate $25.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -1600,7 +2061,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.sos.ok.gov/business/forms.aspx; https://www.sos.ok.gov/business/faq.aspx",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 25
+      "typical_yearly_cost_usd": 25,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Oregon",
@@ -1611,11 +2082,9 @@
       "api_available": true,
       "notes": "Free Socrata open-data API, public/open license; bulk data refreshed periodically, not real-time. | Fees verified 2026-10-18 on official source: Articles of Organization $100; annual renewal $100.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -1643,7 +2112,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://sos.oregon.gov/business/Documents/business-registry-forms/br-fee-schedule.pdf; https://sos.oregon.gov/business/Pages/obr-annual-report-renewal.aspx",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 100
+      "typical_yearly_cost_usd": 100,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "ORS 63.094(1)",
+      "allowed_endings_source": "https://www.oregonlegislature.gov/bills_laws/ors/ors063.html",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Pennsylvania",
@@ -1654,11 +2133,9 @@
       "api_available": true,
       "notes": "Free Socrata open-data API, Public Domain, updated monthly (verified by query 2026-10-18). | Fees verified 2026-10-18 on official source: Certificate of Organization $125; annual report $7 (for-profit LLCs; $0 for not-for-profit-purpose LLCs), due Sep 30.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -1686,7 +2163,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 999 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.pa.gov/agencies/dos/programs/business/fees-and-payments; https://www.pa.gov/agencies/dos/programs/business/types-of-filings-and-registrations/annual-reports",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 7
+      "typical_yearly_cost_usd": 7,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Rhode Island",
@@ -1697,11 +2184,9 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Articles of Organization $150; annual report $50 (online adds $2.50 + processing fee). RI SOS: LLCs also owe a $400 minimum annual tax to the Division of Taxation, owed whether or not business is conducted, not included in annual_report_fee_usd.",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -1729,7 +2214,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.sos.ri.gov/divisions/business-services/business-basics/costs-and-fees; https://www.sos.ri.gov/divisions/business-services/ri-business/file-your-annual-report",
       "min_annual_tax_usd": 400,
-      "typical_yearly_cost_usd": 450
+      "typical_yearly_cost_usd": 450,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "R.I. Gen. Laws 7-16-9(a)(1)",
+      "allowed_endings_source": "https://webserver.rilegislature.gov/Statutes/TITLE7/7-16/7-16-9.htm",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "South Carolina",
@@ -1740,11 +2235,18 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: S.C. Code 33-44-1204(a)(1): articles of organization $110. The official code chapter 33-44 has no LLC annual-report requirement and its fee section lists no annual-report fee, so 'none' comes from that absence. The SOS has no explicit fee page for LLCs (its online form PDF has no readable text).",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
       ],
       "restricted_words": [
         "Bank",
@@ -1772,7 +2274,26 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.scstatehouse.gov/code/t33c044.php; https://www.sos.sc.gov/faqs-about-business-entities",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 0
+      "typical_yearly_cost_usd": 0,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
+      ],
+      "allowed_endings_cite": "S.C. Code 33-44-105(a)",
+      "allowed_endings_source": "https://www.scstatehouse.gov/code/t33c044.php",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "South Dakota",
@@ -1783,11 +2304,18 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Articles of Organization $150 online, $165 paper; annual report $55 online, $70 paper.",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
       ],
       "restricted_words": [
         "Bank",
@@ -1815,7 +2343,26 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://sdsos.gov/general-information/filing-fees.aspx; https://sdlegislature.gov/api/Statutes/47-34A-212.html; https://mylrc.sdlegislature.gov/api/Documents/SessionLaw/306278.pdf?Year=2026",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 55
+      "typical_yearly_cost_usd": 55,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
+      ],
+      "allowed_endings_cite": "SDCL 47-34A-105(a)",
+      "allowed_endings_source": "https://sdlegislature.gov/Statutes/47-34A-105",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Tennessee",
@@ -1826,11 +2373,9 @@
       "api_available": false,
       "notes": "$50 per member, min $300, max $3,000. | Fees verified 2026-10-18 on official source: Articles of Organization $50 per member, min $300, max $3,000 (form SS-4270). Annual report: SOS FAQ says $300 min to $3,000 max, plus $50 per member over 6. Fees confirmed on official pages. The due-date rule (T.C.A. 48-249-1017) was not re-read on an official page: tnbear.tn.gov timed out and only Justia had it. LLCs may also owe TN franchise & excise tax to the Dept. of Revenue (not included, not verified).",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -1858,22 +2403,33 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://sos.tn.gov/businesses/faqs; https://sos-prod.tnsosgovfiles.com/s3fs-public/document/SS-4270%20LLC.pdf?VersionId=ud_ACjrIyFDBjfjOATyeux2Nqnechtxv",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 300
+      "typical_yearly_cost_usd": 300,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Texas",
       "code": "TX",
       "filing_fee_usd": 300,
-      "search_url": "https://comptroller.texas.gov/taxes/franchise/account-status/search",
+      "search_url": "https://www.sos.state.tx.us/corp/sosda/index.shtml",
       "deep_link_template_or_null": null,
       "api_available": false,
       "notes": "The official SOSDirect search is paid (about $1 per search). The Comptroller's franchise-tax search is free but covers only taxable entities. Texas Open Data has a franchise-tax permit-holder dataset (uncertain coverage). | Fees verified 2026-10-18 on official source: SOS fee schedule: certificate of formation (Form 205) $300. Comptroller: franchise tax report due May 15. 2026 no-tax-due threshold $2,650,000; entities at or below it file only a Public Information Report or Ownership Information Report.",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -1901,7 +2457,21 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.sos.state.tx.us/corp/forms/806_boc.pdf; https://comptroller.texas.gov/taxes/franchise/",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 0
+      "typical_yearly_cost_usd": 0,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C."
+      ],
+      "allowed_endings_cite": "Tex. Bus. Orgs. Code 5.056(a)",
+      "allowed_endings_source": "https://statutes.capitol.texas.gov/Docs/BO/htm/BO.5.htm",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1,
+      "registry_note": "SOSDirect is the Texas SOS business search. It charges $1 per search."
     },
     {
       "state": "Utah",
@@ -1912,11 +2482,9 @@
       "api_available": false,
       "notes": "$59 (uncertain; previously $54). | Fees verified 2026-10-18 on official source: Fee schedule (updated Jul 1, 2025): Certificate of Organization $59; LLC renewal/annual report $18 (includes $5 surcharge); $10 late fee. Due date per Utah Code 16-1a-212 (effective Oct 1, 2026 recodification).",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "L.L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -1944,7 +2512,17 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 403 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://commerce.utah.gov/wp-content/uploads/2023/04/currentfees.pdf; https://le.utah.gov/xcode/Title16/Chapter1A/C16-1a-S212_2026050620261001.html",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 18
+      "typical_yearly_cost_usd": 18,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C."
+      ],
+      "allowed_endings_cite": "",
+      "allowed_endings_source": "",
+      "allowed_endings_verified": false,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Vermont",
@@ -1955,11 +2533,18 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: SOS fee table and 11 V.S.A. 4012: Articles of Organization $155 (was listed $125); domestic LLC annual report $45 (was listed $35).",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
       ],
       "restricted_words": [
         "Bank",
@@ -1987,7 +2572,26 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://sos.vermont.gov/business-services/fees-statutes; https://legislature.vermont.gov/statutes/section/11/025/04012; https://legislature.vermont.gov/statutes/section/11/025/04033",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 45
+      "typical_yearly_cost_usd": 45,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
+      ],
+      "allowed_endings_cite": "11 V.S.A. 4005(a)(1)",
+      "allowed_endings_source": "https://legislature.vermont.gov/statutes/section/11/025/04005",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Virginia",
@@ -1998,11 +2602,12 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: SCC: Articles of Organization (LLC1011) $100; annual registration fee $50 (no separate annual report).",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C."
       ],
       "restricted_words": [
         "Bank",
@@ -2030,7 +2635,20 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.scc.virginia.gov/businesses/forms-and-fees/virginia-limited-liability-companies/; https://www.scc.virginia.gov/businesses/business-faqs/annual-registration-fees/",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 50
+      "typical_yearly_cost_usd": 50,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C."
+      ],
+      "allowed_endings_cite": "Va. Code 13.1-1012(A)",
+      "allowed_endings_source": "https://law.lis.virginia.gov/vacode/title13.1/chapter12/section13.1-1012/",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Washington",
@@ -2041,11 +2659,10 @@
       "api_available": false,
       "notes": "CCFS is a JavaScript single-page app; the hash route can't take a query reliably. | Fees verified 2026-10-18 on official source: Certificate of Formation $180 (paper or online; online adds a processing fee). Old $200 figure is outdated. Annual report $70 (includes online processing fee); $25 delinquency fee if late.",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
-        "Limited Company",
-        "Ltd. Liability Co."
+        "Limited Liability Co."
       ],
       "restricted_words": [
         "Bank",
@@ -2073,7 +2690,18 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://www.sos.wa.gov/corporations-charities/business-entities/limited-liability-company-llc-professional-llc-pllc-filing-resource-page; https://www.sos.wa.gov/corporations-charities/business-entities/online-filing-instructions/start-domestic-wa-limited-liability-company-llc-online; https://www.sos.wa.gov/corporations-charities/business-entities/online-filing-instructions/file-annual-report-multiple-entity-types-online",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 70
+      "typical_yearly_cost_usd": 70,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Liability Co."
+      ],
+      "allowed_endings_cite": "RCW 23.95.305(5)(a)(i)",
+      "allowed_endings_source": "https://app.leg.wa.gov/RCW/default.aspx?cite=23.95.305",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "West Virginia",
@@ -2084,11 +2712,18 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Articles of Organization (LLD-1 rev. 07/2026) $100; online filings add a $1 processing fee. Annual report $25 by June 30 ($75 after, includes $50 late fee). Fees waived for veteran-owned entities.",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
       ],
       "restricted_words": [
         "Bank",
@@ -2116,7 +2751,26 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://sos.wv.gov/limited-liability-companies; https://sos.wv.gov/sites/default/files/2026-07/lld-1.pdf",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 25
+      "typical_yearly_cost_usd": 25,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
+      ],
+      "allowed_endings_cite": "W. Va. Code 31B-1-105(a)",
+      "allowed_endings_source": "https://code.wvlegislature.gov/31B-1-105/",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Wisconsin",
@@ -2127,11 +2781,18 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: DFI: Articles of Organization $130 online, $170 paper. Annual report $25 online, $40 paper ($15 paper surcharge since Mar 1, 2024).",
       "designators_allowed": [
-        "LLC",
-        "L.L.C.",
         "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LLC",
+        "LC",
+        "L.L.C.",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
       ],
       "restricted_words": [
         "Bank",
@@ -2159,7 +2820,26 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://dfi.wi.gov/Pages/BusinessServices/BusinessEntities/Fees.aspx; https://dfi.wi.gov/Documents/BusinessServices/BusinessEntities/Forms/CORP5i.pdf",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 25
+      "typical_yearly_cost_usd": 25,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "Limited Company",
+        "LLC",
+        "LC",
+        "L.L.C.",
+        "L.C.",
+        "Limited Liability Co.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Co.",
+        "Ltd. Company",
+        "Ltd. Co."
+      ],
+      "allowed_endings_cite": "Wis. Stat. 183.0112(1)",
+      "allowed_endings_source": "https://docs.legis.wisconsin.gov/statutes/statutes/183/i/0112",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     },
     {
       "state": "Wyoming",
@@ -2170,11 +2850,15 @@
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Articles of Organization $100 (online adds a card processing fee). Annual license tax min $60 (assets up to $300,000).",
       "designators_allowed": [
+        "Limited Liability Company",
         "LLC",
         "L.L.C.",
-        "Limited Liability Company",
         "Limited Company",
-        "Ltd. Liability Co."
+        "LC",
+        "L.C.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Liability Co."
       ],
       "restricted_words": [
         "Bank",
@@ -2202,7 +2886,23 @@
       "verified_on": "2026-10-18",
       "verification_note": "search_url HTTP 200 via curl on 2026-10-18 (403/000 usually means bot-blocking, not a dead link). Filing fee, annual fee/due date and publication rule read on official state page(s) 2026-10-18: https://sos.wyo.gov/FAQS.aspx?root=BUS; https://sos.wyo.gov/Forms/Business/LLC/LLC-ArticlesOrganization.pdf",
       "min_annual_tax_usd": 0,
-      "typical_yearly_cost_usd": 60
+      "typical_yearly_cost_usd": 60,
+      "allowed_endings": [
+        "Limited Liability Company",
+        "LLC",
+        "L.L.C.",
+        "Limited Company",
+        "LC",
+        "L.C.",
+        "Ltd. Liability Company",
+        "Ltd. Liability Co.",
+        "Limited Liability Co."
+      ],
+      "allowed_endings_cite": "W.S. 17-29-108(a)",
+      "allowed_endings_source": "https://wyoleg.gov/statutes/compress/title17.pdf",
+      "allowed_endings_verified": true,
+      "restricted_words_scope": "common",
+      "annual_report_every_years": 1
     }
   ]
 }

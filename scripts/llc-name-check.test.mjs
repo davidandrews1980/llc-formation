@@ -26,7 +26,7 @@ test("bundled config: 51 jurisdictions, fees on, publication NY/AZ/NE", () => {
 });
 
 test("designator present, missing, in the middle", () => {
-  for (const n of ["Zephyr Bakery LLC", "Zephyr Bakery, L.L.C.", "Zephyr Bakery Limited Liability Company", "zephyr bakery llc", "Zephyr Bakery Ltd. Liability Co."]) {
+  for (const n of ["Zephyr Bakery LLC", "Zephyr Bakery, L.L.C.", "Zephyr Bakery Limited Liability Company", "zephyr bakery llc", "Zephyr Bakery L.C."]) {
     const r = L.checkName(n, S("MI"));
     assert.equal(r.addDesignator, false, n);
     assert.equal(r.moveDesignator, false, n);
@@ -80,7 +80,7 @@ test("per-row fees: verified rows show $ and CTA amount; NM shows fee + confirm 
   assert.match(nm, /id="lnc-fee">\$50</);
   assert.match(nm, /Confirm on the official site\. <a [^>]*href="https:/);
   const ca = L.resultHtml(cfg, S("CA"), L.checkName("Golden Bakery", S("CA")), {});
-  assert.match(ca, /id="lnc-yearly"><span class="lnc-price">\$820</);
+  assert.match(ca, /id="lnc-yearly"><span class="lnc-price">\$810</);
   assert.match(ca, /id="lnc-mintax"><span class="lnc-price">\$800</);
   const ri = L.resultHtml(cfg, S("RI"), L.checkName("Ocean Goods", S("RI")), {});
   assert.match(ri, /id="lnc-yearly"><span class="lnc-price">\$450</);

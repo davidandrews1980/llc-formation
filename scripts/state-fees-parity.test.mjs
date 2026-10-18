@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { STATE_FEES, serverQuote } from "../netlify/lib/pricing.mjs";
-import { syncIndex, syncPricing } from "./sync-state-fees.mjs";
+import { syncIndex, syncPricing, wizardAnnualUsd } from "./sync-state-fees.mjs";
 
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
 const cfgRaw = JSON.parse(read("llc-name-check/llc-states.json"));
@@ -31,7 +31,7 @@ test("wizard STATES fees === llc-states.json (all 51)", () => {
   for (const r of rows) {
     assert.ok(BY[r.code], r.code);
     assert.equal(BY[r.code].feeCents, cents(r.filing_fee_usd), `${r.code} filing fee`);
-    assert.equal(BY[r.code].annualCents, cents(r.typical_yearly_cost_usd), `${r.code} yearly cost`);
+    assert.equal(BY[r.code].annualCents, cents(wizardAnnualUsd(r)), `${r.code} yearly cost`);
   }
 });
 
