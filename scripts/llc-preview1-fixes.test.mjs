@@ -133,6 +133,11 @@ test("SEO: canonical and sitemap use the trailing slash; FAQ JSON-LD matches the
   assert.match(page, /<link rel="canonical" href="https:\/\/pathwaydevs\.software\/llc-name-check\/"\/>/);
   assert.match(read("sitemap.xml"), /<loc>https:\/\/pathwaydevs\.software\/llc-name-check\/<\/loc>/);
   assert.match(page, /<h1>Check your LLC name against state rules<\/h1>/);
+  const desc = "Check your LLC name against state rules, see the fees, and open the official state search.";
+  assert.ok(page.includes(`<meta name="description" content="${desc}"/>`));
+  assert.ok(page.includes(`<meta property="og:description" content="${desc}"/>`));
+  assert.ok(page.includes(`"description":"${desc}"`));
+  assert.doesNotMatch(page.match(/<head>[\s\S]*?<\/head>/)[0].replace(/"@type":"FAQPage"[\s\S]*$/, ""), /is available/i);
   const ld = JSON.parse(page.match(/<script type="application\/ld\+json">\n(\{"@context":"https:\/\/schema.org","@type":"FAQPage"[\s\S]*?)\n<\/script>/)[1]);
   const sec = page.match(/<section class="faq" id="faq">([\s\S]*?)<\/section>/)[1];
   const txt = (s) => s.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
