@@ -1,0 +1,70 @@
+{
+  "_readme": "Rules for the 'Do I need an LLC?' verdict on /llc-name-check. Live copy: llc-config branch, llc-name-check/llc-need-rules.json (GitHub raw, about 5 minutes to go live, no Netlify build). The bundled copy is the fallback. Verdicts are checked top to bottom; the first whose when_any matches a Yes answer wins; the one with default:true covers everything else. Every reason, fact and benefit names one or more keys in `sources`; an entry whose source is missing is dropped at load time. Question ids online, markets, hire, owners and food are the name check's existing questions. See llc-name-check/README.md.",
+  "schema": 1,
+  "updated": "2026-10-18",
+  "disclaimer": "General information from the IRS and the SBA, matched to your answers. State rules vary. Not a licensed attorney. Not legal advice.",
+  "questions": [
+    { "id": "liability", "label": "Physical services, clients on site, or products you make?" },
+    { "id": "bank", "label": "Need a business bank account or card payments in the business name?" },
+    { "id": "separate", "label": "Want to keep personal assets separate from the business?" },
+    { "id": "investors", "label": "Taking on investors?" }
+  ],
+  "sources": {
+    "sba_structure": { "title": "SBA: Choose a business structure", "url": "https://www.sba.gov/business-guide/launch-your-business/choose-business-structure" },
+    "sba_register": { "title": "SBA: Register your business and DBA names", "url": "https://www.sba.gov/business-guide/launch-your-business/register-your-business" },
+    "sba_licenses": { "title": "SBA: Apply for licenses and permits", "url": "https://www.sba.gov/business-guide/launch-your-business/apply-licenses-permits" },
+    "sba_bank": { "title": "SBA: Open a business bank account", "url": "https://www.sba.gov/business-guide/launch-your-business/open-business-bank-account" },
+    "sba_insurance": { "title": "SBA: Get business insurance", "url": "https://www.sba.gov/business-guide/launch-your-business/get-business-insurance" },
+    "irs_sole_prop": { "title": "IRS: Sole proprietorships", "url": "https://www.irs.gov/businesses/small-businesses-self-employed/sole-proprietorships" },
+    "irs_partnership": { "title": "IRS: Partnerships", "url": "https://www.irs.gov/businesses/small-businesses-self-employed/partnerships" },
+    "irs_llc": { "title": "IRS: Limited liability company (LLC)", "url": "https://www.irs.gov/businesses/small-businesses-self-employed/limited-liability-company-llc" },
+    "irs_2553": { "title": "IRS: About Form 2553 (S corporation election)", "url": "https://www.irs.gov/forms-pubs/about-form-2553" }
+  },
+  "verdicts": [
+    {
+      "id": "should",
+      "title": "You likely should form one",
+      "intro": "Your answers include the situations where an LLC does the most work.",
+      "when_any": ["owners", "investors", "liability", "food"],
+      "reasons": {
+        "owners": { "text": "Two or more people doing business together form a partnership by default. SBA lists a general partnership as unlimited personal liability for its owners; LLC members are not personally liable.", "sources": ["irs_partnership", "sba_structure"] },
+        "investors": { "text": "SBA notes that raising money is hard for a sole proprietorship, since it has no stock to sell and banks are hesitant to lend to it. An entity gives investors a defined ownership share.", "sources": ["sba_structure"] },
+        "liability": { "text": "SBA describes LLCs as a good choice for medium- or higher-risk businesses. In most instances, personal assets like your house, vehicle and savings stay out of reach of the LLC's debts and lawsuits.", "sources": ["sba_structure"] },
+        "food": { "text": "Food and other regulated goods carry product liability risk. SBA lists product liability as its own risk for businesses that make, distribute or sell a product.", "sources": ["sba_insurance"] }
+      },
+      "facts": [
+        { "text": "An LLC's protection has limits. Business insurance fills the gaps.", "sources": ["sba_insurance"] }
+      ]
+    },
+    {
+      "id": "better",
+      "title": "You don't need one, but you may be better off with one",
+      "intro": "Nothing in your answers requires an LLC. These benefits match what you told us.",
+      "when_any": ["separate", "bank", "hire", "online", "markets"],
+      "facts": [
+        { "text": "A one-person business is a sole proprietorship by default, and it is legal to run without a state filing.", "sources": ["sba_structure", "irs_sole_prop"] }
+      ]
+    },
+    {
+      "id": "operate",
+      "title": "You don't need an LLC to operate",
+      "intro": "Here are the plain facts for a one-person business.",
+      "default": true,
+      "facts": [
+        { "text": "You're automatically a sole proprietorship when you do business without registering as another kind of business. No state filing is needed to start.", "sources": ["sba_structure", "irs_sole_prop"] },
+        { "text": "Doing business under a name other than your own legal name usually means registering a DBA (trade name) with your state, county or city.", "sources": ["sba_register"] },
+        { "text": "Licenses and permits still apply, based on what you do and where you do it.", "sources": ["sba_licenses"] },
+        { "text": "In a sole proprietorship, business and personal assets and debts are one and the same. SBA calls it a good fit for low-risk businesses and for testing an idea.", "sources": ["sba_structure"] },
+        { "text": "You can form an LLC later if your plans change.", "sources": ["sba_structure"] }
+      ]
+    }
+  ],
+  "benefits_for": ["better", "should"],
+  "benefits": [
+    { "id": "liability", "title": "Liability separation", "text": "In most instances, personal assets like your house, vehicle and savings stay separate from the LLC's debts and lawsuits.", "sources": ["sba_structure"], "when_any": ["separate", "liability", "food", "hire", "markets", "owners"] },
+    { "id": "taxes", "title": "Pass-through taxes, unchanged", "text": "By default a one-owner LLC is reported on your own tax return, and an LLC with two or more members is taxed as a partnership. No separate corporate tax.", "sources": ["irs_llc"], "always": true },
+    { "id": "scorp", "title": "S-corp election later", "text": "An LLC can elect to be taxed as an S corporation with IRS Form 2553 when that starts to make sense.", "sources": ["irs_llc", "irs_2553"], "always": true },
+    { "id": "credibility", "title": "Credibility", "text": "Your entity name is registered with the state, and customers pay the business by name instead of paying you personally.", "sources": ["sba_register", "sba_bank"], "when_any": ["online", "markets", "bank", "investors"] },
+    { "id": "bank", "title": "Bank and payment processors", "text": "Banks commonly ask for formation documents and an EIN to open a business account, and payment processors pay out to a business checking account. A sole proprietor can also open one with a DBA and an EIN.", "sources": ["sba_bank", "sba_register"], "when_any": ["bank", "online", "markets"] }
+  ]
+}
