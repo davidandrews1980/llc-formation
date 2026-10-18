@@ -71,6 +71,8 @@ th{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mis
 .pf-consent button{height:2rem;padding:0 .8rem;border-radius:.4rem;border:0;font-size:.8rem;font-weight:500;background:var(--paper);color:var(--ink)}
 .pf-consent button.pf-no{background:transparent;color:var(--paper);box-shadow:inset 0 0 0 1px rgba(251,248,241,.35)}
 .pf-consent[hidden]{display:none}
+.wiz-cols{grid-template-columns:minmax(0,1.6fr) minmax(16rem,.8fr);gap:2rem}
+@media (max-width:600px){.wiz-cols{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:30rem){.pf-consent{left:.5rem;right:.5rem;bottom:.5rem;max-width:none}}
 @media(max-width:720px){.dl{grid-template-columns:1fr}.hero{padding:2.5rem 0}h1{font-size:2rem!important}
 </style>
@@ -457,7 +459,7 @@ function wizard() {
 
   const nextLabels = ["Continue to name","Continue to office","Continue to agent","Continue to members","Continue to company","Continue to add-ons","Continue to review"];
   return header(false) + `<main class="wrap" style="padding:2.4rem 0 6rem" data-filing-state="${st.code}" data-wizard-step="${draft.step}">
-    <div class="grid" style="grid-template-columns:minmax(0,1.6fr) minmax(16rem,.8fr);gap:2rem">
+    <div class="grid wiz-cols">
       <div>
         <p class="kicker">Formation wizard</p>
         <h1 style="font-size:2rem;margin-top:.4rem">Articles of organization</h1>

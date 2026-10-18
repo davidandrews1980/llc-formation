@@ -10,13 +10,13 @@
     { "id": "investors", "label": "Taking on investors?" }
   ],
   "sources": {
-    "sba_structure": { "title": "SBA: Choose a business structure", "url": "https://www.sba.gov/business-guide/launch-your-business/choose-business-structure" },
-    "sba_register": { "title": "SBA: Register your business and DBA names", "url": "https://www.sba.gov/business-guide/launch-your-business/register-your-business" },
-    "sba_licenses": { "title": "SBA: Apply for licenses and permits", "url": "https://www.sba.gov/business-guide/launch-your-business/apply-licenses-permits" },
-    "sba_bank": { "title": "SBA: Open a business bank account", "url": "https://www.sba.gov/business-guide/launch-your-business/open-business-bank-account" },
-    "sba_insurance": { "title": "SBA: Get business insurance", "url": "https://www.sba.gov/business-guide/launch-your-business/get-business-insurance" },
+    "sba_structure": { "title": "SBA: Choose a business structure", "url": "https://www.sba.gov/counseling/launch-your-business/#business-structure" },
+    "sba_register": { "title": "SBA: Register your business and DBA names", "url": "https://www.sba.gov/counseling/launch-your-business/#register-business" },
+    "sba_licenses": { "title": "SBA: Apply for licenses and permits", "url": "https://www.sba.gov/counseling/launch-your-business/#licenses-permits" },
+    "sba_bank": { "title": "SBA: Open a business bank account", "url": "https://www.sba.gov/counseling/launch-your-business/#bank-account" },
+    "sba_insurance": { "title": "SBA: Get business insurance", "url": "https://www.sba.gov/counseling/launch-your-business/#business-insurance" },
     "irs_sole_prop": { "title": "IRS: Sole proprietorships", "url": "https://www.irs.gov/businesses/small-businesses-self-employed/sole-proprietorships" },
-    "irs_partnership": { "title": "IRS: Partnerships", "url": "https://www.irs.gov/businesses/small-businesses-self-employed/partnerships" },
+    "irs_partnership": { "title": "IRS: Partnerships", "url": "https://www.irs.gov/businesses/partnerships" },
     "irs_llc": { "title": "IRS: Limited liability company (LLC)", "url": "https://www.irs.gov/businesses/small-businesses-self-employed/limited-liability-company-llc" },
     "irs_2553": { "title": "IRS: About Form 2553 (S corporation election)", "url": "https://www.irs.gov/forms-pubs/about-form-2553" }
   },
