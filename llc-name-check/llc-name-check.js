@@ -49,11 +49,21 @@
   function safeHttps(u) { return typeof u === "string" && /^https:\/\/[^\s"'<>]+$/.test(u) ? u : ""; }
   function slugify(name) { return String(name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
   function money(n) { return "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); }
+  function num(v) { return typeof v === "number" && isFinite(v) ? v : null; }
   function words(name) { return String(name || "").trim().split(/[\s,]+/).filter(Boolean); }
 
   // ---------- config ----------
   // Accepts the Free Tools format (a bare array of state rows) or the wrapped format
   // { feesVerified, updated, states: [...] }. Returns null when the payload is unusable.
+  function deepLinkOf(r) {
+    if (r.api_available) return "";
+    var t = String(r.deep_link_template || r.deep_link_template_or_null || "");
+    return t.indexOf("{name}") > -1 && safeHttps(t.replace("{name}", "NAME")) ? t : "";
+  }
+
+  // feesVerified (top level) is a kill switch: false hides every dollar amount. Otherwise each row's
+  // `verified` decides: verified rows show the fee and a CTA with the amount; unverified rows show the
+  // fee with a "confirm on the official site" note and a generic CTA.
   function normalizeConfig(raw) {
     var list = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.states) ? raw.states : null);
     if (!list) return null;
@@ -66,13 +76,16 @@
         code: code,
         name: String(r.state),
         slug: r.slug ? String(r.slug) : slugify(r.state),
-        fee: typeof r.filing_fee_usd === "number" && isFinite(r.filing_fee_usd) ? r.filing_fee_usd : null,
-        feeVerified: r.fee_verified !== false,
-        annualFee: typeof r.annual_report_fee_usd === "number" && isFinite(r.annual_report_fee_usd) ? r.annual_report_fee_usd : null,
+        fee: num(r.filing_fee_usd),
+        verified: r.verified === true,
+        annualFee: num(r.annual_report_fee_usd),
+        minTax: num(r.min_annual_tax_usd),
+        yearly: num(r.typical_yearly_cost_usd),
+        publicationNote: r.publication_note ? String(r.publication_note) : "",
         annualDue: r.annual_report_due ? String(r.annual_report_due) : null,
         publication: r.publication_required === true,
         searchUrl: safeHttps(r.search_url),
-        deepLink: (!r.api_available && safeHttps(String(r.deep_link_template_or_null || "").replace("{name}", "NAME")) && String(r.deep_link_template_or_null).indexOf("{name}") > -1) ? String(r.deep_link_template_or_null) : "",
+        deepLink: deepLinkOf(r),
         sourceUrl: safeHttps(r.source_url) || safeHttps(r.search_url),
         designators: Array.isArray(r.designators_allowed) && r.designators_allowed.length ? r.designators_allowed.map(String) : ["LLC", "L.L.C.", "Limited Liability Company"],
         restricted: Array.isArray(r.restricted_words) ? r.restricted_words.map(String) : []
@@ -81,7 +94,7 @@
     var codes = Object.keys(states);
     if (codes.length < 51) return null;
     return {
-      feesVerified: !Array.isArray(raw) && raw.feesVerified === true,
+      feesHidden: !Array.isArray(raw) && raw.feesVerified === false,
       updated: (!Array.isArray(raw) && raw.updated) ? String(raw.updated) : "",
       states: states,
       codes: codes.sort(function (a, b) { return states[a].name.localeCompare(states[b].name); })
@@ -96,20 +109,25 @@
       .finally(function () { if (t) clearTimeout(t); });
   }
 
+  // Filing fees always come from the bundled copy: it is the same file the Formation wizard (index.html
+  // STATES) and the server quote (netlify/lib/pricing.mjs) are generated from, so the CTA amount and the
+  // amount the wizard quotes can never differ. Everything else (rules, links, annual costs, notes) comes
+  // from the remote copy when it loads.
+  function withBundledFees(cfg, bundled) {
+    if (!bundled) return cfg;
+    cfg.codes.forEach(function (c) { if (bundled.states[c]) cfg.states[c].fee = bundled.states[c].fee; });
+    return cfg;
+  }
   function loadConfig() {
-    var sources = [root.LNC_CONFIG_URL || REMOTE_CONFIG_URL, BUNDLED_CONFIG_URL];
-    var i = 0;
-    function next() {
-      if (i >= sources.length) return Promise.reject(new Error("config unavailable"));
-      var url = sources[i++];
-      return fetchJson(url, 3500).then(function (raw) {
-        var cfg = normalizeConfig(raw);
-        if (!cfg) throw new Error("invalid config");
-        cfg.loadedFrom = url;
-        return cfg;
-      }).catch(function () { return next(); });
-    }
-    return next();
+    var remoteUrl = root.LNC_CONFIG_URL || REMOTE_CONFIG_URL;
+    var bundledP = fetchJson(BUNDLED_CONFIG_URL, 6000).then(normalizeConfig, function () { return null; });
+    var remoteP = fetchJson(remoteUrl, 3500).then(normalizeConfig, function () { return null; });
+    return Promise.all([remoteP, bundledP]).then(function (both) {
+      var remote = both[0], bundled = both[1];
+      if (remote) { remote.loadedFrom = remoteUrl; return withBundledFees(remote, bundled); }
+      if (bundled) { bundled.loadedFrom = BUNDLED_CONFIG_URL; return bundled; }
+      throw new Error("config unavailable");
+    });
   }
 
   // ---------- name rules (pure, no network) ----------
@@ -207,8 +225,8 @@
     return String(s || "").replace(/\([^)]*\$[^)]*\)/g, "").replace(/\$[\d,.]+\s*/g, "").replace(/\s+([,;.])/g, "$1").replace(/\s{2,}/g, " ").replace(/^[\s+,;]+|[\s+,;]+$/g, "").trim();
   }
 
-  function feeShown(cfg, st) { return !!(cfg.feesVerified && st.feeVerified && st.fee != null); }
-  function ctaLabel(cfg, st) { return feeShown(cfg, st) ? "File it free, pay only the " + st.name + " fee of " + money(st.fee) : "File it free, pay only the state fee"; }
+  function feeShown(cfg, st) { return !cfg.feesHidden && st.fee != null; }
+  function ctaLabel(cfg, st) { return feeShown(cfg, st) && st.verified ? "File it free, pay only the " + st.name + " fee of " + money(st.fee) : "File it free, pay only the state fee"; }
   function ctaHref(st, legalName) { return FILING_FLOW_URL + "?state=" + encodeURIComponent(st.code) + "&name=" + encodeURIComponent(legalName) + "&src=llc-name-check"; }
   function availabilityLink(st, core) {
     if (st.deepLink && core) return { url: st.deepLink.replace("{name}", encodeURIComponent(core)), prefilled: true };
@@ -255,18 +273,22 @@
     h += '<p class="lnc-small">' + (avail.prefilled ? "Opens the state's search with your name filled in." : "Opens the state's search in a new tab. We copy \"" + esc(r.core) + "\" to your clipboard so you can paste it.") + ' The state decides final approval when you file.</p></div>';
 
     // 3. State requirements
-    var feeTxt = feeShown(cfg, st) ? '<span class="lnc-price" id="lnc-fee">' + esc(money(st.fee)) + '</span>' : '<span id="lnc-fee">See state site</span>' + (st.sourceUrl ? ' <a target="_blank" rel="noopener" href="' + esc(st.sourceUrl) + '">' + esc(st.name) + ' source</a>' : "");
+    var src = st.sourceUrl ? ' <a target="_blank" rel="noopener" href="' + esc(st.sourceUrl) + '">' + esc(st.name) + ' source</a>' : "";
+    var confirm = '<br><span class="lnc-small lnc-confirm" data-confirm="1">Confirm on the official site.' + src + '</span>';
+    var show = feeShown(cfg, st);
+    var feeTxt = show ? '<span class="lnc-price" id="lnc-fee">' + esc(money(st.fee)) + '</span>' + (st.code === "TN" ? ' <span class="lnc-small">($50 per member, $300 minimum)</span>' : "") + (st.verified ? "" : confirm)
+      : '<span id="lnc-fee">See state site</span>' + src;
     var annual;
-    if ((!st.annualDue || /^none\b/i.test(st.annualDue)) && (st.annualFee === 0 || st.annualFee == null)) annual = "None listed for a standard LLC. Confirm on the state site.";
-    else {
-      var due = cfg.feesVerified ? (st.annualDue || "") : stripMoney(st.annualDue);
-      var amt = cfg.feesVerified && st.annualFee != null ? money(st.annualFee) : "fee: see state site";
-      annual = (due ? due + " · " : "") + amt;
-    }
+    if (!st.annualDue && !st.annualFee) annual = "None listed for a standard LLC. Confirm on the state site.";
+    else if (!show) annual = stripMoney(st.annualDue) + " · fee: see state site";
+    else annual = (st.annualDue || "") + (st.annualFee ? " · " + money(st.annualFee) : "");
+    var extra = "";
+    if (show && st.yearly != null) extra += '<div><dt>Yearly cost to keep it active</dt><dd id="lnc-yearly"><span class="lnc-price">' + esc(money(st.yearly)) + '</span> a year' + (st.verified ? "" : confirm) + '</dd></div>';
+    if (show && st.minTax) extra += '<div><dt>Minimum annual tax</dt><dd id="lnc-mintax"><span class="lnc-price">' + esc(money(st.minTax)) + '</span>, due every year even with no income. It\'s included in the yearly cost.</dd></div>';
     h += '<h3 class="lnc-h3">' + esc(st.name) + ' requirements</h3><dl class="lnc-dl">';
     h += '<div><dt>State filing fee</dt><dd>' + feeTxt + '<br><span class="lnc-small">Passed through at cost. Prep is free.</span></dd></div>';
-    h += '<div><dt>Annual report / franchise tax</dt><dd id="lnc-annual">' + esc(annual) + '</dd></div>';
-    h += '<div><dt>Publication</dt><dd id="lnc-publication">' + (st.publication ? "<strong>Required.</strong> " + esc(st.name) + " asks new LLCs to publish a notice of formation. Budget for newspaper costs." : "Not listed for " + esc(st.name) + ".") + '</dd></div>';
+    h += '<div><dt>Annual report / franchise tax</dt><dd id="lnc-annual">' + esc(annual) + '</dd></div>' + extra;
+    h += '<div><dt>Publication</dt><dd id="lnc-publication">' + (st.publication ? "<strong>Required.</strong> " + (st.publicationNote ? esc(st.publicationNote) : esc(st.name) + " asks new LLCs to publish a notice of formation. Budget for newspaper costs.") : "Not listed for " + esc(st.name) + ".") + '</dd></div>';
     h += '<div><dt>Registered agent</dt><dd>Every ' + esc(st.name) + ' LLC names a registered agent with a street address in ' + esc(st.name) + '. It can be you, a person you trust, or a company. You add it in the filing flow.</dd></div>';
     h += '</dl>';
 

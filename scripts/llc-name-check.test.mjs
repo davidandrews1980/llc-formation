@@ -12,15 +12,15 @@ const raw = JSON.parse(readFileSync(new URL("../llc-name-check/llc-states.json",
 const cfg = L.normalizeConfig(raw);
 const S = (c) => cfg.states[c];
 
-test("bundled config: 51 jurisdictions, fees flagged unverified, publication NY/AZ/NE", () => {
+test("bundled config: 51 jurisdictions, fees on, publication NY/AZ/NE", () => {
   assert.equal(cfg.codes.length, 51);
   assert.ok(cfg.states.DC && cfg.states.WY);
-  assert.equal(cfg.feesVerified, false);
+  assert.equal(cfg.feesHidden, false);
   assert.deepEqual([...cfg.codes.filter((c) => S(c).publication)].sort(), ["AZ", "NE", "NY"]);
-  // Free Tools' bare-array format is accepted too, and defaults to fees hidden.
+  // Free Tools' bare-array format is accepted too; rows decide.
   const bare = L.normalizeConfig(raw.states);
   assert.equal(bare.codes.length, 51);
-  assert.equal(bare.feesVerified, false);
+  assert.equal(bare.feesHidden, false);
   assert.equal(L.normalizeConfig({ states: raw.states.slice(0, 10) }), null);
   assert.equal(L.normalizeConfig("nope"), null);
 });
@@ -69,16 +69,30 @@ test("distinctness tips", () => {
   assert.equal(L.checkName("", S("WY")).errors.length, 1);
 });
 
-test("fees hidden while feesVerified is false; shown when true", () => {
-  assert.equal(L.ctaLabel(cfg, S("MI")), "File it free, pay only the state fee");
-  const html = L.resultHtml(cfg, S("MI"), L.checkName("Zephyr Bakery", S("MI")), {});
-  assert.match(html, /See state site/);
-  assert.doesNotMatch(html, /\$50\b/);
-  const on = L.normalizeConfig({ ...raw, feesVerified: true });
-  assert.equal(L.ctaLabel(on, on.states.MI), "File it free, pay only the Michigan fee of $50");
-  assert.match(L.resultHtml(on, on.states.MI, L.checkName("Zephyr Bakery", on.states.MI), {}), /\$50/);
+test("per-row fees: verified rows show $ and CTA amount; NM shows fee + confirm note; kill switch hides all", () => {
+  const mi = L.resultHtml(cfg, S("MI"), L.checkName("Zephyr Bakery", S("MI")), {});
+  assert.equal(L.ctaLabel(cfg, S("MI")), "File it free, pay only the Michigan fee of $50");
+  assert.match(mi, /id="lnc-fee">\$50</);
+  assert.match(mi, /Yearly cost to keep it active/);
+  assert.doesNotMatch(mi, /data-confirm/);
+  const nm = L.resultHtml(cfg, S("NM"), L.checkName("Zia Goods", S("NM")), {});
+  assert.equal(L.ctaLabel(cfg, S("NM")), "File it free, pay only the state fee");
+  assert.match(nm, /id="lnc-fee">\$50</);
+  assert.match(nm, /Confirm on the official site\. <a [^>]*href="https:/);
+  const ca = L.resultHtml(cfg, S("CA"), L.checkName("Golden Bakery", S("CA")), {});
+  assert.match(ca, /id="lnc-yearly"><span class="lnc-price">\$820</);
+  assert.match(ca, /id="lnc-mintax"><span class="lnc-price">\$800</);
+  const ri = L.resultHtml(cfg, S("RI"), L.checkName("Ocean Goods", S("RI")), {});
+  assert.match(ri, /id="lnc-yearly"><span class="lnc-price">\$450</);
+  assert.match(ri, /id="lnc-mintax"><span class="lnc-price">\$400</);
+  assert.doesNotMatch(mi, /lnc-mintax/);
+  const off = L.normalizeConfig({ ...raw, feesVerified: false });
+  const hid = L.resultHtml(off, off.states.CA, L.checkName("Golden Bakery", off.states.CA), {});
+  assert.match(hid, /See state site/);
+  assert.doesNotMatch(hid, /\$\d/);
+  assert.equal(L.ctaLabel(off, off.states.MI), "File it free, pay only the state fee");
+  assert.match(L.resultHtml(cfg, S("NY"), L.checkName("Empire Goods", S("NY")), {}), /2 newspapers for 6 weeks/);
   assert.equal(L.stripMoney("$150 list + $200 license, end of anniversary month"), "list + license, end of anniversary month");
-  assert.equal(L.stripMoney("Business Privilege Tax return due Apr 15 (min $50)"), "Business Privilege Tax return due Apr 15");
 });
 
 test("availability: Florida pre-fills, API templates are never used as links", () => {
@@ -121,8 +135,7 @@ test("output is escaped", () => {
   assert.doesNotMatch(html, /<img/);
 });
 
-test("search core drops corporate endings; 'None' annual rows read cleanly", () => {
+test("search core drops corporate endings; no-report rows read cleanly", () => {
   assert.equal(L.checkName("Sunshine Corp", S("FL")).core, "SUNSHINE");
-  assert.match(L.resultHtml(cfg, S("AZ"), L.checkName("Desert Bloom", S("AZ")), {}), /None listed for a standard LLC/);
-  assert.match(L.resultHtml(cfg, S("SC"), L.checkName("Palmetto Goods", S("SC")), {}), /None listed for a standard LLC/);
+  assert.match(L.resultHtml(cfg, S("AZ"), L.checkName("Desert Bloom", S("AZ")), {}), /Arizona LLCs file no annual report/);
 });

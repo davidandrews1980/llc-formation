@@ -13,6 +13,17 @@ Results are shareable: `/llc-name-check?state=MI&name=Zephyr%20Bakery&online=1&m
 (answers are optional). The CTA opens the Formation wizard at `/#/form?state=MI&name=Zephyr%20Bakery%20LLC&src=llc-name-check`;
 `applyNameHandoff()` in `/index.html` puts the state and name into the draft once and opens the Name step.
 
+## Filing fees: one source for the name check, the wizard and the server
+
+`llc-name-check/llc-states.json` (the bundled copy) is the only source of state filing fees:
+
+- `node scripts/sync-state-fees.mjs` writes `filing_fee_usd` into the wizard table (`index.html` STATES.feeCents)
+  and the server quote (`netlify/lib/pricing.mjs`), and `typical_yearly_cost_usd` into STATES.annualCents.
+- `scripts/state-fees-parity.test.mjs` fails if the JSON, the wizard, the server quote or the name-check CTA differ.
+- The name check always takes filing fees from the bundled copy (other fields may come from `llc-config`), so the
+  CTA amount always equals what the wizard quotes. A filing-fee change therefore needs the bundled JSON + sync +
+  a deploy; everything else can go through `llc-config`.
+
 ## Updating the state data without a production deploy
 
 At page load the script tries, in order:
@@ -59,11 +70,13 @@ Either the bare array Free Tools sends (`[ {state, code, ...}, ... ]`, treated a
 }
 ```
 
-- **`feesVerified`** (top level): while `false`, every dollar amount is hidden. Fees show "See state site" with the
-  `source_url` link, annual-report text has dollar figures stripped, and the CTA reads
-  "File it free, pay only the state fee". Set it to `true` once the fees are checked; the CTA then reads
-  "File it free, pay only the Michigan fee of $50". A single state can still be held back with `"fee_verified": false`.
-- **`deep_link_template_or_null`**: a URL with `{name}` that opens the state's search pre-filled (Florida today).
+- **`feesVerified`** (top level) is a kill switch: `false` hides every dollar amount ("See state site" + source link,
+  generic CTA "File it free, pay only the state fee"). `true` (or a bare array) lets each row decide:
+  - `verified: true`: fee shown, CTA "File it free, pay only the Michigan fee of $50".
+  - `verified: false` (NM today): fee shown with "Confirm on the official site" and the `source_url` link; generic CTA.
+- `typical_yearly_cost_usd` shows as "Yearly cost to keep it active"; `min_annual_tax_usd` (> 0) shows as
+  "Minimum annual tax" (CA $800, RI $400). `publication_note` replaces the generic publication text.
+- **`deep_link_template`** / **`deep_link_template_or_null`**: a URL with `{name}` that opens the state's search pre-filled (Florida today).
   It's used only when `api_available` is `false`; open-data API templates (CO, CT, NY, OR, PA) are for the v2
   live lookup and are never shown as links.
 - **`restricted_words`**: any word listed gets flagged. Known words (Bank, Trust, Insurance, Corporation, Inc.,
