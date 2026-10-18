@@ -14,7 +14,25 @@
   status = 200
   force = true
 
+# Free LLC Name Check (static page in /llc-name-check/). Listed before the SPA catch-all.
+# Per-state pages later: add /llc-name-check/<slug>/index.html; Netlify serves existing files first.
+[[redirects]]
+  from = "/llc-name-check"
+  to = "/llc-name-check/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/llc-name-check/"
+  to = "/llc-name-check/index.html"
+  status = 200
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# The runtime config may change outside a deploy (llc-config branch), so the bundled copy is not cached long.
+[[headers]]
+  for = "/llc-name-check/llc-states.json"
+  [headers.values]
+    Cache-Control = "public, max-age=300"

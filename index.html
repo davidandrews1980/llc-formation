@@ -204,14 +204,17 @@ function route() {
 }
 function go(path) { location.hash = path; }
 
-function applyState(code) {
-  if (!BY[code]) return;
+function setStateFields(code) {
   const prev = draft.stateCode;
   draft.stateCode = code;
   draft.principal.state = code;
   draft.mailing.state = code;
   draft.ra.state = code;
   draft.members = draft.members.map(m => ({...m, state: (!m.state || m.state === prev) ? code : m.state}));
+}
+function applyState(code) {
+  if (!BY[code]) return;
+  setStateFields(code);
   persist();
   const r = route();
   if (r.path === "/form") {
@@ -228,6 +231,7 @@ function header(dark) {
     <div class="wrap top">
       <a class="brand" href="#/"><span class="mark">P</span> Pathway Formation</a>
       <nav class="nav">
+        <a href="/llc-name-check">Free LLC Name Check</a>
         <a href="#/form" class="${r.startsWith("/form")?"on":""}">Wizard</a>
         <a href="#/fees" class="${r==="/fees"?"on":""}">Fees</a>
         <a href="#/learn" class="${r==="/learn"?"on":""}">Guides</a>
@@ -241,9 +245,9 @@ function header(dark) {
 function footer() {
   return `<footer class="foot"><div class="wrap grid g3">
     <div><p style="font-family:Fraunces,serif;font-size:1.2rem;color:var(--ink)">Pathway Formation</p>
-      <p>Articles, an operating agreement, and a desk. State fees passed through at cost.</p><p class="tiny">Not legal advice. Not a licensed attorney.</p></div>
+      <p>Articles, an operating agreement, and a desk. State fees passed through at cost.</p><p class="tiny">Not a licensed attorney. Not legal advice.</p></div>
     <div><p class="kicker">On the site</p>
-      <p><a href="#/form">Formation wizard</a><br/><a href="#/fees">50-state fees</a><br/><a href="#/app">Customer desk</a><br/><a href="#/admin">Admin desk</a></p></div>
+      <p><a href="#/form">Formation wizard</a><br/><a href="/llc-name-check">Free LLC Name Check</a><br/><a href="#/fees">50-state fees</a><br/><a href="#/app">Customer desk</a><br/><a href="#/admin">Admin desk</a></p></div>
     <div><p class="kicker">Before you pay</p>
       <p>We prepare packets and file what you ask us to file. State fees change. Confirm on the official portal before you pay.</p></div>
   </div></footer>`;
@@ -259,6 +263,7 @@ function home() {
       <p class="lede">The wizard prepares your articles. You pay the state what the state charges. We file. Plain pricing, real timelines.</p>
       <div class="row">
         <a class="btn paper" href="#/form">Start the wizard</a>
+        <a class="btn pine" href="/llc-name-check" id="hero-name-check">Free LLC Name Check</a>
         <a class="btn ghost" href="#/fees" style="color:var(--paper);box-shadow:inset 0 0 0 1px rgba(251,248,241,.25)">50-state fee table</a>
       </div>
     </div>
@@ -294,8 +299,22 @@ function inp(label, key, extra="") {
   return `<label class="field"><span>${label}</span><input ${extra} value="${esc(key)}" /></label>`;
 }
 
+// Hand-off from the Free LLC Name Check (/llc-name-check): #/form?state=MI&name=Zephyr%20Bakery%20LLC
+// Applied once: the name and state go into the draft, the wizard opens on the Name step, and the
+// name is dropped from the URL so later edits are not overwritten.
+function applyNameHandoff(q) {
+  if (typeof q.name !== "string" || !q.name.trim()) return false;
+  if (q.state && BY[q.state]) setStateFields(q.state);
+  draft.llcName = q.name.replace(/\s+/g, " ").trim().slice(0, 200);
+  draft.step = 1;
+  persist();
+  history.replaceState(null, "", location.pathname + location.search + "#/form?state=" + draft.stateCode);
+  return true;
+}
+
 function wizard() {
-  const r = route();
+  let r = route();
+  if (applyNameHandoff(r.q)) r = route();
   if (r.q.state && BY[r.q.state] && r.q.state !== draft.stateCode) {
     applyState(r.q.state);
     return "";
