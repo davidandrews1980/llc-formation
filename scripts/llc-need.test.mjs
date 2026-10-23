@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 
 const src = readFileSync(new URL("../llc-name-check/llc-name-check.js", import.meta.url), "utf8");
-const ctx = { URLSearchParams, console };
+const ctx = { URLSearchParams, URL, console };
 vm.runInNewContext(src, ctx);
 const L = ctx.LNC;
 const rawRules = JSON.parse(readFileSync(new URL("../llc-name-check/llc-need-rules.json", import.meta.url), "utf8"));

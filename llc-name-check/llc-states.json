@@ -442,7 +442,7 @@
       "state": "District of Columbia",
       "code": "DC",
       "filing_fee_usd": 99,
-      "search_url": "https://boss.dc.gov/homepage/business-license-search",
+      "search_url": "https://boss.dc.gov/",
       "deep_link_template_or_null": null,
       "api_available": false,
       "notes": "No documented free API. Use a deep link to the official search. Scraping not recommended; check the ToS/robots.txt (not verified per state). | Fees verified 2026-10-18 on official source: Certificate of organization $99; biennial report $300 (every two years, so ~$150/yr). Walk-in filers charged $100 expedite.",
@@ -506,7 +506,9 @@
       "allowed_endings_source": "https://code.dccouncil.gov/us/dc/council/code/sections/29-103.02",
       "allowed_endings_verified": true,
       "restricted_words_scope": "common",
-      "annual_report_every_years": 2
+      "annual_report_every_years": 2,
+      "registry_note": "BOSS (formerly CorpOnline) is the DC Corporations Division system. Sign in with Access DC and open Business Filings Search to look up entity names.",
+      "registry_note_source": "https://dlcp.dc.gov/page/corporations-division-business-registration-faqs"
     },
     {
       "state": "Florida",

@@ -43,6 +43,9 @@
   };
   var KIND_LABEL = { approval: "Needs approval", license: "Needs a professional license", blocked: "Leave it out", government: "Leave it out", protected: "Needs authorization", review: "Check with the state" };
   var GENERIC = ["holdings", "holding", "services", "service", "group", "enterprises", "enterprise", "solutions", "consulting", "ventures", "partners", "company", "co", "management", "investments", "properties", "llc", "and", "of", "the", "business", "global", "international", "usa", "america", "american"];
+  // Every LLC ending some state accepts. One that is not valid in the chosen state is removed from the end
+  // as a whole phrase ("Ltd. Liability Co.", "LC") and replaced with that state's ending.
+  var KNOWN_ENDINGS = ["Limited Liability Company", "Limited-Liability Company", "Limited Liability Co.", "Limited-Liability Co.", "Ltd. Liability Company", "Ltd. Liability Co.", "Limited Company", "Limited Co.", "Ltd. Company", "Ltd. Co.", "LLC", "L.L.C.", "LC", "L.C."];
   var CORP_TAIL = ["inc", "incorporated", "corp", "corporation", "co", "company", "ltd", "limited"];
   // Used when a state's allowed endings are not verified yet; the card then says to confirm on the official site.
   var GENERIC_ENDINGS = ["Limited Liability Company", "LLC", "L.L.C."];
@@ -54,12 +57,22 @@
   function norm(s) { return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
   function safeHttps(u) { return typeof u === "string" && /^https:\/\/[^\s"'<>]+$/.test(u) ? u : ""; }
   // Official links only: .gov / .us hosts, plus the few state-run domains that use another TLD.
+  // Parsed with URL: https only, no user:password@, no port. Allowed: *.gov, *.state.XX.us, and the
+  // explicit list below. Bare .us is open registration, so it is not trusted on its own.
   var OFFICIAL_HOSTS = ["sunbiz.org", "njportal.com"];
-  function hostOf(u) { var m = /^https:\/\/([^\/?#:]+)/i.exec(String(u || "")); return m ? m[1].toLowerCase() : ""; }
+  function hostOf(u) {
+    var p;
+    try { p = new URL(String(u || "")); } catch (e) { return ""; }
+    if (p.protocol !== "https:" || p.username || p.password || p.port) return "";
+    if (/[@\\\s]/.test(String(u).split(/[?#]/)[0].slice(8))) return "";
+    return p.hostname.toLowerCase();
+  }
   function isOfficialUrl(u) {
+    if (typeof u !== "string") return false;
     var h = hostOf(u);
-    if (!h) return false;
-    if (/\.(gov|us)$/.test(h)) return true;
+    if (!h || !/^[a-z0-9.-]+$/.test(h)) return false;
+    if (/\.gov$/.test(h)) return true;
+    if (/(^|\.)state\.[a-z]{2}\.us$/.test(h)) return true;
     return OFFICIAL_HOSTS.some(function (d) { return h === d || h.slice(-(d.length + 1)) === "." + d; });
   }
   function official(u) { return isOfficialUrl(u) ? u : ""; }
@@ -78,6 +91,9 @@
   function slugify(name) { return String(name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
   function money(n) { return "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); }
   function num(v) { return typeof v === "number" && isFinite(v) ? v : null; }
+  var SYMBOLS = /[<>\u2122\u00ae\u00a9\u2190-\u2bff\u2600-\u27bf\ufe0f\u200d]|[\ud800-\udbff][\udc00-\udfff]/;
+  // "Name to file: X." without a double period when X ends in "L.L.C."
+  function endDot(s) { return /\.$/.test(s) ? "" : "."; }
   function words(name) { return String(name || "").trim().split(/[\s,]+/).filter(Boolean); }
 
   // ---------- config ----------
@@ -123,7 +139,8 @@
         minTax: num(r.min_annual_tax_usd),
         yearly: num(r.typical_yearly_cost_usd),
         publicationNote: r.publication_note ? String(r.publication_note) : "",
-        annualDue: r.annual_report_due ? String(r.annual_report_due) : null,
+        annualDue: r.annual_report_due && !/^none\.?$/i.test(String(r.annual_report_due).trim()) ? String(r.annual_report_due) : null,
+        noAnnual: /^none\.?$/i.test(String(r.annual_report_due || "").trim()) && !r.annual_report_fee_usd,
         everyYears: r.annual_report_every_years === 2 ? 2 : 1,
         publicationStatus: r.publication_status ? String(r.publication_status) : "",
         registryNote: r.registry_note ? String(r.registry_note) : "",
@@ -291,23 +308,36 @@
     return s.toUpperCase();
   }
 
-  var MAX_NAME = 200;
+  var MAX_NAME = 200, MAX_INPUT = 1000;
   function preferredEnding(st) { return st.designators.indexOf("LLC") > -1 ? "LLC" : st.designators[0]; }
 
   function checkName(rawName, st) {
     var name = cleanSpaces(rawName);
     var out = { name: name, legalName: name, designator: null, addDesignator: false, moveDesignator: false, removed: [], duplicateEnding: false, hits: [], tips: [], errors: [], core: "", blocked: false };
     if (name.length < 2) { out.errors.push("Type the business name you want."); return out; }
-    if (name.length > MAX_NAME) { out.errors.push("Names are limited to " + MAX_NAME + " characters here. Yours is " + name.length + ". Shorten it to continue."); return out; }
+    if (name.length > MAX_NAME) { out.errors.push("Names are limited to " + MAX_NAME + " characters here. Yours is " + name.length + (name.length >= MAX_INPUT ? " (the box holds " + MAX_INPUT + ", so longer text was cut)" : "") + ". Shorten it to continue."); return out; }
     out.hits = restrictedHits(name, st.restricted);
 
     // Build the name we'd file: drop corporate words (Inc, Corp, ...), symbols the states reject, a repeated
     // ending, and put exactly one allowed ending at the end.
     var w = words(cleanForFiling(name));
-    if (w.join(" ") !== name) out.removed.push({ word: "symbols", why: "emoji, ™ and < > are left out of the filed name" });
+    if (SYMBOLS.test(name)) out.removed.push({ word: "symbols", why: "emoji, ™ and < > are left out of the filed name" });
     var drop = {};
     out.hits.forEach(function (x) { if (x.kind === "blocked") (WORD_RULES[norm(x.word)] || { aliases: [norm(x.word)] }).aliases.forEach(function (al) { drop[al] = x.word; }); });
     var des = findDesignator(w.join(" "), st.designators);
+    if (!des || !des.atEnd) {
+      // An ending valid elsewhere but not here comes off as a whole phrase.
+      var other = KNOWN_ENDINGS.filter(function (e) { return !st.designators.some(function (d) { return norm(d) === norm(e); }); });
+      for (var k = Math.min(4, w.length - 1); k >= 1; k--) {
+        var tail = w.slice(w.length - k).join(" ");
+        if (other.some(function (e) { return norm(e) === norm(tail); })) {
+          out.removed.push({ word: tail.replace(/,+$/, ""), why: "it is not an LLC ending in " + st.name });
+          w = w.slice(0, w.length - k);
+          des = findDesignator(w.join(" "), st.designators);
+          break;
+        }
+      }
+    }
     out.designator = des;
     var ending = des ? des.written : "";
     var body = w.slice();
@@ -316,6 +346,11 @@
     // A second ending ("... LLC LLC") is removed.
     var again = findDesignator(body.join(" "), st.designators);
     while (again && again.atEnd && body.length > again.words) { out.duplicateEnding = true; body = body.slice(0, body.length - again.words); again = findDesignator(body.join(" "), st.designators); }
+    // "... Limited Liability Co. LLC": an ending from another state left in front of the real one goes too.
+    if (des) for (var kk = Math.min(4, body.length - 1); kk >= 1; kk--) {
+      var t2 = body.slice(body.length - kk).join(" ");
+      if (KNOWN_ENDINGS.some(function (e) { return norm(e) === norm(t2); })) { out.duplicateEnding = true; body = body.slice(0, body.length - kk); kk = Math.min(4, body.length - 1) + 1; }
+    }
     body = body.filter(function (t) { var k = norm(t); if (drop[k]) { out.removed.push({ word: t.replace(/[,.]+$/, ""), why: "it signals a corporation" }); return false; } return true; });
     if (!des) {
       // Trailing "Co." / "Ltd." etc. that is not a valid ending in this state goes, and we say so.
@@ -333,6 +368,9 @@
       if (out.core.replace(/\s/g, "").length <= 3) out.tips.push("Very short names and initials are often taken. A longer, specific name has a better chance.");
     }
     // Words that must come out (government) hold the CTA until the name is edited.
+    // Corporate words were taken out above; the removed note covers them, so no red row as well.
+    out.hits = out.hits.filter(function (x) { return x.kind !== "blocked"; });
+    out.needsApproval = out.hits.filter(function (x) { return x.kind === "approval" || x.kind === "license" || x.kind === "protected"; }).map(function (x) { return x.matched; });
     out.blocked = out.hits.some(function (x) { return x.kind === "government"; });
     if (/[^\x20-\x7E]/.test(name)) out.tips.push("Some states accept only standard letters, numbers and common punctuation. Swap characters like é for plain letters if the state asks.");
     out.tips.push("Adding \"The,\" punctuation, or a different ending like \"Inc.\" vs \"LLC\" usually doesn't make a name different enough. Change a real word instead.");
@@ -389,7 +427,7 @@
     var p = new URLSearchParams(search || "");
     var a = {};
     (questions || ANSWERS).forEach(function (x) { a[x[0]] = p.get(x[0]) === "1" || p.get(x[0]) === "yes"; });
-    return { state: (p.get("state") || "").toUpperCase(), name: (p.get("name") || "").slice(0, 400), answers: a, view: p.get("view") === "need" ? "need" : "" };
+    return { state: (p.get("state") || "").toUpperCase(), name: (p.get("name") || "").slice(0, MAX_INPUT), answers: a, view: p.get("view") === "need" ? "need" : "" };
   }
 
   // ---------- rendering ----------
@@ -440,10 +478,10 @@
     var endSrc = st.endingsVerified && st.endingsSource ? ' <a class="lnc-srcl" target="_blank" rel="noopener" href="' + esc(st.endingsSource) + '">' + esc(st.endingsCite || (st.name + " law")) + '</a>' : "";
     var endNote = st.endingsVerified ? '<br><span class="lnc-small" data-endings="verified">Accepted endings in ' + esc(st.name) + ': ' + esc(st.designators.join(", ").replace(/\.$/, "")) + '.' + endSrc + '</span>'
       : '<br><span class="lnc-small lnc-confirm" data-endings="generic">We check the standard endings (' + esc(st.designators.join(", ")) + '). ' + esc(st.name) + ' may accept others. Confirm on the official site.</span>';
-    r.removed.forEach(function (x) { h += '<li class="lnc-info" data-rule="removed" data-word="' + esc(String(x.word).toLowerCase()) + '"><strong>' + (x.word === "symbols" ? "Symbols removed." : '"' + esc(x.word) + '" removed.') + '</strong> ' + (x.word === "symbols" ? "Emoji, ™ and < > are left out of the filed name." : "We left it out because " + esc(x.why) + ".") + ' Name to file: <strong>' + esc(r.legalName) + '</strong>.</li>'; });
-    if (r.duplicateEnding) h += '<li class="lnc-info" data-rule="duplicate-ending"><strong>One ending is enough.</strong> We kept a single ending: <strong>' + esc(r.legalName) + '</strong>.</li>';
-    if (r.addDesignator) h += '<li class="lnc-info" data-rule="designator-added"><strong>Ending added.</strong> ' + esc(st.name) + ' LLC names end with an LLC designator. We\'ll add it for you: <strong>' + esc(r.legalName) + '</strong>.' + endNote + '</li>';
-    else if (r.moveDesignator) h += '<li class="lnc-warn" data-rule="designator-move"><strong>Move the ending.</strong> "' + esc(r.designator.written) + '" goes at the end: <strong>' + esc(r.legalName) + '</strong>.</li>';
+    r.removed.forEach(function (x) { h += '<li class="lnc-info" data-rule="removed" data-word="' + esc(String(x.word).toLowerCase()) + '"><strong>' + (x.word === "symbols" ? "Symbols removed." : 'Removed "' + esc(x.word) + '".') + '</strong> ' + (x.word === "symbols" ? "Emoji, ™ and < > are left out of the filed name." : "We left it out because " + esc(x.why) + ".") + ' Name to file: <strong>' + esc(r.legalName) + '</strong>' + endDot(r.legalName) + '</li>'; });
+    if (r.duplicateEnding) h += '<li class="lnc-info" data-rule="duplicate-ending"><strong>One ending is enough.</strong> We kept a single ending: <strong>' + esc(r.legalName) + '</strong>' + endDot(r.legalName) + '</li>';
+    if (r.addDesignator) h += '<li class="lnc-info" data-rule="designator-added"><strong>Ending added.</strong> ' + esc(st.name) + ' LLC names end with an LLC designator. We\'ll add it for you: <strong>' + esc(r.legalName) + '</strong>' + endDot(r.legalName) + endNote + '</li>';
+    else if (r.moveDesignator) h += '<li class="lnc-warn" data-rule="designator-move"><strong>Move the ending.</strong> "' + esc(r.designator.written) + '" goes at the end: <strong>' + esc(r.legalName) + '</strong>' + endDot(r.legalName) + '</li>';
     else h += '<li class="lnc-ok" data-rule="designator-ok"><strong>Ending looks right.</strong> "' + esc(r.designator.written) + '" is ' + (st.endingsVerified ? "an accepted ending in " + esc(st.name) : "a standard LLC ending") + '.' + endNote + '</li>';
     if (!r.hits.length) h += '<li class="lnc-ok" data-rule="words-ok"><strong>Common restricted words clear.</strong> Your name avoids the words we check in every state, such as Bank, Trust, Insurance, University and Inc. ' + (st.restrictedScope === "state" ? "" : esc(st.name) + ' may restrict other words. Confirm on the official site.') + '</li>';
     r.hits.forEach(function (x) {
@@ -465,7 +503,8 @@
     var feeTxt = show ? '<span class="lnc-price" id="lnc-fee">' + esc(money(st.fee)) + '</span>' + (st.code === "TN" ? ' <span class="lnc-small">($50 per member, $300 minimum)</span>' : "") + (st.verified ? "" : confirm)
       : '<span id="lnc-fee">See state site</span>' + src;
     var annual;
-    if (!st.annualDue && !st.annualFee) annual = "None listed for a standard LLC. Confirm on the state site.";
+    if (st.noAnnual) annual = show ? "$0, no annual report" + (st.verified ? "." : ". Confirm on the state site.") : "No annual report. Confirm on the state site.";
+    else if (!st.annualDue && !st.annualFee) annual = "None listed for a standard LLC. Confirm on the state site.";
     else if (!show) annual = stripMoney(st.annualDue) + " · fee: see state site";
     else annual = (st.annualDue || "") + (st.annualFee ? " · " + money(st.annualFee) + (st.everyYears === 2 && !/2 years|2nd year|bienn/i.test(st.annualDue || "") ? " every 2 years" : "") : "");
     var extra = "";
@@ -506,7 +545,7 @@
     var h = '<form class="lnc-card" id="lnc-form" novalidate>';
     h += '<div class="lnc-grid"><label class="lnc-field"><span>State</span><select id="lnc-state" required><option value="">Choose a state</option>';
     cfg.codes.forEach(function (c) { h += '<option value="' + c + '"' + (c === sel ? " selected" : "") + '>' + esc(cfg.states[c].name) + '</option>'; });
-    h += '</select></label><label class="lnc-field"><span>Business name</span><input id="lnc-name" maxlength="400" autocomplete="organization" placeholder="Zephyr Bakery" value="' + esc(name) + '"></label></div>';
+    h += '</select></label><label class="lnc-field"><span>Business name</span><input id="lnc-name" maxlength="' + MAX_INPUT + '" autocomplete="organization" placeholder="Zephyr Bakery" value="' + esc(name) + '"></label></div>';
     h += '<fieldset class="lnc-qs"><legend>Optional: a few quick questions</legend>';
     qs.forEach(function (x) { h += '<label class="lnc-q"><input type="checkbox" id="lnc-' + x[0] + '"' + (a[x[0]] ? " checked" : "") + '> <span>' + esc(x[1]) + '</span> <em>Yes</em></label>'; });
     h += '</fieldset><p class="lnc-err" id="lnc-err" aria-live="polite"></p><div class="lnc-row"><button class="lnc-btn" type="submit" id="lnc-go">Check my name</button>' + (cfg.need ? '<button class="lnc-btn lnc-btn-ghost" type="button" id="lnc-need-go">Do I need an LLC?</button>' : '') + '</div></form><div id="lnc-out"></div>';
@@ -576,7 +615,7 @@
     });
   }
 
-  var api = { normalizeConfig: normalizeConfig, checkName: checkName, findDesignator: findDesignator, restrictedHits: restrictedHits, coreName: coreName, nextSteps: nextSteps, stripMoney: stripMoney, ctaLabel: ctaLabel, ctaHref: ctaHref, availabilityLink: availabilityLink, shareQuery: shareQuery, parseQuery: parseQuery, normalizeNeedRules: normalizeNeedRules, validateConfig: validateConfig, isOfficialUrl: isOfficialUrl, cleanForFiling: cleanForFiling, loadConfig: loadConfig, evaluateNeed: evaluateNeed, needHtml: needHtml, needCardHtml: needCardHtml, questionsOf: questionsOf, REMOTE_NEED_RULES_URL: REMOTE_NEED_RULES_URL, BUNDLED_NEED_RULES_URL: BUNDLED_NEED_RULES_URL, resultHtml: resultHtml, feeShown: feeShown, mount: mount, REMOTE_CONFIG_URL: REMOTE_CONFIG_URL, BUNDLED_CONFIG_URL: BUNDLED_CONFIG_URL };
+  var api = { normalizeConfig: normalizeConfig, checkName: checkName, findDesignator: findDesignator, restrictedHits: restrictedHits, coreName: coreName, nextSteps: nextSteps, stripMoney: stripMoney, ctaLabel: ctaLabel, ctaHref: ctaHref, availabilityLink: availabilityLink, shareQuery: shareQuery, parseQuery: parseQuery, normalizeNeedRules: normalizeNeedRules, validateConfig: validateConfig, isOfficialUrl: isOfficialUrl, KNOWN_ENDINGS: KNOWN_ENDINGS, WORD_RULES: WORD_RULES, cleanForFiling: cleanForFiling, loadConfig: loadConfig, evaluateNeed: evaluateNeed, needHtml: needHtml, needCardHtml: needCardHtml, questionsOf: questionsOf, REMOTE_NEED_RULES_URL: REMOTE_NEED_RULES_URL, BUNDLED_NEED_RULES_URL: BUNDLED_NEED_RULES_URL, resultHtml: resultHtml, feeShown: feeShown, mount: mount, REMOTE_CONFIG_URL: REMOTE_CONFIG_URL, BUNDLED_CONFIG_URL: BUNDLED_CONFIG_URL };
   if (typeof module === "object" && module.exports) module.exports = api;
   root.LNC = api;
   if (root.document) {

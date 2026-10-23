@@ -20,6 +20,7 @@
 </script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type": "Question", "name": "Do I need an LLC?", "acceptedAnswer": {"@type": "Answer", "text": "Not always. The SBA notes you are automatically a sole proprietorship if you do business without registering another structure, and the IRS treats a one-owner LLC as a disregarded entity unless it elects otherwise (IRS). In the SBA comparison of business structures, LLC owners are not personally liable, while sole proprietors have unlimited personal liability (SBA). Tick the quick questions on this page and choose \"Do I need an LLC?\" for a verdict with links to the IRS and SBA sources."}},
 {"@type": "Question", "name": "How do I check if an LLC name is available?", "acceptedAnswer": {"@type": "Answer", "text": "Search your state's official business entity database, usually run by the Secretary of State. Our Free LLC Name Check checks your name against common state naming rules and sends you straight to the official search for your state."}},
 {"@type": "Question", "name": "Is the LLC name check free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Checking and prepping your name is free. When you form your LLC, you pay only the state's filing fee."}},
 {"@type": "Question", "name": "What does \"distinguishable\" mean for a business name?", "acceptedAnswer": {"@type": "Answer", "text": "Most states require your name to be \"distinguishable on the record\" from existing businesses. Adding \"The,\" punctuation, or a different ending like \"Inc.\" vs \"LLC\" usually doesn't make a name different enough. Change a real word instead."}},
@@ -68,6 +69,7 @@ a{color:inherit}button,select,input{font:inherit}button{cursor:pointer}
 .lnc-dl div{background:var(--paper);border-radius:.45rem;padding:.7rem .8rem}.lnc-dl dt{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mist)}.lnc-dl dd{margin:.25rem 0 0;font-size:.92rem}
 .lnc-dl a{color:var(--pine)}.lnc-price{font-weight:600;font-variant-numeric:tabular-nums}
 .lnc-disclaimer{margin-top:1.2rem}
+.lnc-card,#lnc-share-note,.lnc-h,.lnc-h3,.lnc-list li,.lnc-small,.lnc-dl dd{overflow-wrap:anywhere;word-break:break-word;min-width:0}
 .lnc-btn-off{background:var(--paper-2);color:var(--mist);cursor:not-allowed}
 .nav a,.brand{min-height:44px;display:inline-flex;align-items:center}
 .lnc-src a,.lnc-srcl,.lnc-dl a,.lnc-small a,.faq a,.foot a{display:inline-flex;align-items:center;min-height:44px}
@@ -82,7 +84,7 @@ section.faq{padding:2.5rem 0}.faq h2{font-size:1.8rem}.faq h3{font-size:1.1rem;m
 <header><div class="wrap top">
   <a class="brand" href="/#/"><span class="mark">P</span> Pathway Formation</a>
   <nav class="nav">
-    <a href="/llc-name-check" class="on" aria-current="page">Free LLC Name Check</a>
+    <a href="/llc-name-check/" class="on" aria-current="page">Free LLC Name Check</a>
     <a href="/#/form">Wizard</a>
     <a href="/#/fees">Fees</a>
     <a href="/#/learn">Guides</a>
@@ -91,7 +93,7 @@ section.faq{padding:2.5rem 0}.faq h2{font-size:1.8rem}.faq h3{font-size:1.1rem;m
 <main class="wrap">
   <section class="hero">
     <p class="kicker">Free tool · All 50 states + DC</p>
-    <h1>Check your LLC name against state rules</h1>
+    <h1>Free LLC Name Check: test your name against state rules</h1>
     <p class="lede">Pick your state and type your name. We check it against common state naming rules right in your browser, show what the state asks of a new LLC, and send you to the official registry search. When it looks good, file it free and pay only the state fee. Not sure you need an LLC yet? Answer the quick questions and get a verdict built from IRS and SBA facts.</p>
   </section>
 
@@ -101,7 +103,9 @@ section.faq{padding:2.5rem 0}.faq h2{font-size:1.8rem}.faq h3{font-size:1.1rem;m
   <section class="faq" id="faq">
     <!-- FAQ copy: gtm/free-tools/faq-llc-name-check.md (Free Tools agent, 2026-10-18). The FAQPage JSON-LD in <head> must match these questions and answers word for word (scripts/llc-seo.test.mjs checks it). -->
     <p class="kicker">FAQ</p>
-    <h2>Is your LLC name available? Quick answers.</h2>
+    <h2>Free LLC Name Check FAQ</h2>
+    <h3>Do I need an LLC?</h3>
+    <p>Not always. The SBA notes you are automatically a sole proprietorship if you do business without registering another structure, and the IRS treats a one-owner LLC as a disregarded entity unless it elects otherwise (<a href="https://www.irs.gov/businesses/small-businesses-self-employed/limited-liability-company-llc" target="_blank" rel="noopener">IRS</a>). In the SBA comparison of business structures, LLC owners are not personally liable, while sole proprietors have unlimited personal liability (<a href="https://www.sba.gov/counseling/launch-your-business/#business-structure" target="_blank" rel="noopener">SBA</a>). Tick the quick questions on this page and choose "Do I need an LLC?" for a verdict with links to the IRS and SBA sources.</p>
     <h3>How do I check if an LLC name is available?</h3>
     <p>Search your state's official business entity database, usually run by the Secretary of State. Our Free LLC Name Check checks your name against common state naming rules and sends you straight to the official search for your state.</p>
     <h3>Is the LLC name check free?</h3>
@@ -127,7 +131,7 @@ section.faq{padding:2.5rem 0}.faq h2{font-size:1.8rem}.faq h3{font-size:1.1rem;m
 <footer class="foot"><div class="wrap">
   <p style="font-family:Fraunces,serif;font-size:1.1rem;color:var(--ink);margin:0">Pathway Formation</p>
   <p>Free LLC prep. State fees passed through at cost. A John Gault &amp; Sons company.</p>
-  <p><a href="/#/form">Formation wizard</a> · <a href="/#/fees">50-state fees</a> · <a href="/llc-name-check">Free LLC Name Check</a></p>
+  <p><a href="/#/form">Formation wizard</a> · <a href="/#/fees">50-state fees</a> · <a href="/llc-name-check/">Free LLC Name Check</a></p>
   <p class="tiny">Not a licensed attorney. Not legal advice.</p>
 </div></footer>
 <script src="/llc-name-check/llc-name-check.js" defer></script>

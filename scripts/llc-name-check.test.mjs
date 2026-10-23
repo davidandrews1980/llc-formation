@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 
 const src = readFileSync(new URL("../llc-name-check/llc-name-check.js", import.meta.url), "utf8");
-const ctx = { URLSearchParams, console };
+const ctx = { URLSearchParams, URL, console };
 vm.runInNewContext(src, ctx);
 const L = ctx.LNC;
 const raw = JSON.parse(readFileSync(new URL("../llc-name-check/llc-states.json", import.meta.url), "utf8"));
@@ -41,7 +41,8 @@ test("designator present, missing, in the middle", () => {
   const inc = L.checkName("Zephyr Bakery Inc.", S("FL"));
   assert.equal(inc.addDesignator, true);
   assert.equal(inc.legalName, "Zephyr Bakery LLC");
-  assert.ok(inc.hits.some((h) => h.word === "Inc" && h.kind === "blocked"));
+  assert.ok(inc.removed.some((x) => x.word === "Inc." || x.word === "Inc"));
+  assert.ok(!inc.hits.some((h) => h.kind === "blocked")); // N6: removed note only, no red row
 });
 
 test("restricted words: approval vs blocked vs license", () => {
@@ -51,7 +52,7 @@ test("restricted words: approval vs blocked vs license", () => {
   assert.equal(kinds.trust, "approval");
   assert.equal(kinds.insurance, "approval");
   const c = L.checkName("Acme Corp LLC", S("CA"));
-  assert.ok(c.hits.some((h) => h.word === "Corporation" && h.kind === "blocked"));
+  assert.ok(c.removed.some((x) => x.word === "Corp"));
   const u = L.checkName("Motor City University Engineering Attorneys LLC", S("MI"));
   const k2 = Object.fromEntries(u.hits.map((h) => [h.word.toLowerCase(), h.kind]));
   assert.equal(k2.university, "approval");
@@ -138,4 +139,125 @@ test("output is escaped", () => {
 test("search core drops corporate endings; no-report rows read cleanly", () => {
   assert.equal(L.checkName("Sunshine Corp", S("FL")).core, "SUNSHINE");
   assert.match(L.resultHtml(cfg, S("AZ"), L.checkName("Desert Bloom", S("AZ")), {}), /Arizona LLCs file no annual report/);
+});
+
+// ---------- llc-preview-2 round ----------
+test("N2: official-link allowlist parses the host", () => {
+  for (const u of ["https://x.gov:pw@evil.com/", "https://x.gov@evil.com/", "https://evil.us/", "https://sos.ca.gov:8443/", "http://sos.ca.gov/", "https://evil.com/?x=.gov", "https://evil.com#.gov", "javascript:alert(1)", "https://sos.ca.gov.evil.com/", "https://mi.us/"])
+    assert.equal(L.isOfficialUrl(u), false, u);
+  for (const u of ["https://bizfileonline.sos.ca.gov/search/business", "https://arc-sos.state.al.us/", "https://www.sos.state.tx.us/", "https://search.sunbiz.org/x", "https://www.njportal.com/DOR/", "https://boss.dc.gov/"])
+    assert.equal(L.isOfficialUrl(u), true, u);
+  assert.equal(L.validateConfig(raw.states).length, 0);
+  const evil = JSON.parse(JSON.stringify(raw)); evil.states[0].search_url = "https://x.gov:pw@evil.com/";
+  assert.equal(L.normalizeConfig(evil, { strict: true }), null);
+});
+
+test("N3/N4 + Opti: foreign endings are replaced as a whole phrase", () => {
+  for (const c of ["NY", "PA", "MI", "TX", "FL", "DE"]) {
+    for (const n of ["Empire Ltd. Liability Co.", "Empire Limited Liability Co."]) {
+      const r = L.checkName(n, S(c));
+      assert.equal(r.legalName, "Empire LLC", c + " " + n);
+      assert.ok(r.removed.some((x) => /Liability Co/.test(x.word)), c + " note");
+    }
+  }
+  for (const c of ["CA", "NY", "FL", "DE"]) {
+    assert.equal(L.checkName("Empire LC", S(c)).legalName, "Empire LLC", c + " LC");
+    assert.equal(L.checkName("Empire L.C.", S(c)).legalName, "Empire LLC", c + " L.C.");
+  }
+  // Kept where the statute allows it (MI MCL 450.4204, TX BOC 5.056, CA 2 CCR 21000).
+  assert.equal(L.checkName("Golden LC", S("MI")).legalName, "Golden LC");
+  assert.equal(L.checkName("Lone Star L.C.", S("TX")).legalName, "Lone Star L.C.");
+  assert.equal(L.checkName("Golden Ltd. Liability Co.", S("CA")).legalName, "Golden Ltd. Liability Co.");
+  assert.equal(L.checkName("Empire Limited Company", S("NY")).legalName, "Empire LLC");
+  assert.equal(L.checkName("Empire Limited Liability Co. LLC", S("NY")).legalName, "Empire LLC");
+  assert.equal(L.checkName("Empire LC LLC", S("NY")).legalName, "Empire LLC");
+});
+
+test("N5: commas do not trigger 'Symbols removed', no double period", () => {
+  const r = L.checkName("Sweet Mae's Bakery, L.L.C.", S("MI"));
+  assert.equal(r.removed.length, 0);
+  assert.equal(r.legalName, "Sweet Mae's Bakery L.L.C.");
+  const h = L.resultHtml(cfg, S("MI"), L.checkName("Golden Coast, Inc., LLC", S("MI")), {});
+  assert.ok(!/Symbols removed/.test(h));
+  assert.ok(!/L\.L\.C\.<\/strong>\./.test(L.resultHtml(cfg, S("MI"), L.checkName("Zephyr Inc L.L.C.", S("MI")), {})));
+  assert.ok(L.checkName("Zap 🚀 Shop", S("MI")).removed.some((x) => x.word === "symbols"));
+});
+
+test("N6: removed corp word shows once, as typed", () => {
+  const r = L.checkName("Golden Corp", S("CA"));
+  assert.equal(r.legalName, "Golden LLC");
+  assert.equal(r.hits.filter((x) => x.kind === "blocked").length, 0);
+  const h = L.resultHtml(cfg, S("CA"), r, {});
+  assert.ok(/Removed "Corp"/.test(h));
+  assert.ok(!/Corporation": Leave it out/.test(h));
+  assert.ok(/Removed "Inc"/.test(L.resultHtml(cfg, S("CA"), L.checkName("Golden Coast Inc", S("CA")), {})));
+});
+
+test("N7: New Mexico annual row", () => {
+  const h = L.resultHtml(cfg, S("NM"), L.checkName("Mesa LLC", S("NM")), {});
+  assert.ok(/\$0, no annual report/.test(h));
+  assert.ok(!/id="lnc-annual">None</.test(h));
+});
+
+test("N8: 500 characters are counted as 500", () => {
+  const r = L.checkName("A".repeat(500), S("MI"));
+  assert.ok(/Yours is 500\./.test(r.errors[0]), r.errors[0]);
+  assert.equal(L.parseQuery("name=" + "b".repeat(700)).name.length, 700);
+});
+
+test("approval words are listed for the wizard", () => {
+  const r = L.checkName("Harbor Bank", S("CA"));
+  assert.equal(JSON.stringify(r.needsApproval), '["bank"]');
+  assert.equal(r.blocked, false);
+  assert.equal(L.checkName("Federal Street Bakery", S("CA")).blocked, true);
+});
+
+// ---------- wizard (index.html) uses the same engine (N9) ----------
+const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+const pick = (re) => { const m = re.exec(html); assert.ok(m, String(re)); return m[0]; };
+const wiz = { window: { LNC: L }, draft: { nameAck: "" }, BY: Object.fromEntries(cfg.codes.map((c) => [c, { name: S(c).name }])),
+  esc: (s) => String(s).replace(/[&<>"']/g, (c) => "&#" + c.charCodeAt(0) + ";") };
+vm.runInNewContext(pick(/const LLC_ENDINGS = .*;/) + "\n" + pick(/const CORP_WORDS = .*;/) + "\n" +
+  html.slice(html.indexOf("const COMMON_RESTRICTED"), html.indexOf("function canNext()")) +
+  "\nthis.nameIssue = nameIssue; this.needsAck = needsAck; this.approvalHtml = approvalHtml;", wiz);
+
+test("N9: wizard name step matches the checker", () => {
+  assert.equal(wiz.nameIssue("Zephyr Bakery LLC", "MI"), "");
+  assert.match(wiz.nameIssue("Federal Street Bakery LLC", "CA"), /Take out "Federal"/);
+  assert.match(wiz.nameIssue("Zap 🚀 Shop LLC", "CA"), /emoji/);
+  assert.match(wiz.nameIssue("Empire Limited Liability Co. LLC", "NY"), /Use one LLC ending. Try: Empire LLC/);
+  assert.match(wiz.nameIssue("Empire Ltd. Liability Co.", "NY"), /Take out "Ltd. Liability Co."/);
+  assert.match(wiz.nameIssue("Empire LC", "NY"), /Take out "LC".*Empire LLC/);
+  assert.equal(wiz.nameIssue("Golden LC", "MI"), "");
+  assert.ok(!/\.\.$/.test(wiz.nameIssue("Zephyr", "NY")), wiz.nameIssue("Zephyr", "NY"));
+});
+
+test("Opti: approval words need an acknowledgment in the wizard", () => {
+  for (const w of ["Bank", "Bancorp", "Insurance", "Trust", "Engineer", "Olympic", "University", "Attorney"]) {
+    const n = `Harbor ${w} LLC`;
+    wiz.draft.nameAck = "";
+    assert.equal(wiz.nameIssue(n, "CA"), "", n);
+    assert.equal(wiz.needsAck(n, "CA"), true, n);
+    assert.match(wiz.approvalHtml(n, "CA"), /id="name-ack"/);
+    wiz.draft.nameAck = n;
+    assert.equal(wiz.needsAck(n, "CA"), false, n);
+    assert.equal(wiz.needsAck(n + " Two", "CA"), true, "ack resets when the name changes");
+  }
+  assert.equal(wiz.needsAck("Harbor Bakery LLC", "CA"), false);
+  assert.equal(wiz.approvalHtml("Harbor Bakery LLC", "CA"), "");
+});
+
+test("pages: H1/FAQ copy, trailing-slash links, CSS fixes", () => {
+  const page = readFileSync(new URL("../llc-name-check/index.html", import.meta.url), "utf8");
+  assert.match(page, /<h1>Free LLC Name Check/);
+  assert.match(page, /<title>Free LLC Name Check/);
+  assert.match(page, /<h2>Free LLC Name Check FAQ<\/h2>/);
+  assert.match(page, /<h3>Do I need an LLC\?<\/h3>/);
+  assert.match(page, /"name": "Do I need an LLC\?"/);
+  assert.match(page, /overflow-wrap:anywhere/);
+  assert.ok(!/honest/i.test(page));
+  for (const f of [page, html]) assert.ok(!/href="\/llc-name-check"/.test(f));
+  assert.match(html, /input,select,textarea\{height:2\.75rem;min-height:44px/);
+  assert.ok(!/<main class="wrap" style="padding:2\.4rem 0/.test(html));
+  assert.equal(S("DC").searchUrl, "https://boss.dc.gov/");
 });

@@ -6,7 +6,7 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
-const ctx = { URLSearchParams, console };
+const ctx = { URLSearchParams, URL, console };
 vm.runInNewContext(read("llc-name-check/llc-name-check.js"), ctx);
 const L = ctx.LNC;
 const raw = JSON.parse(read("llc-name-check/llc-states.json"));
@@ -35,9 +35,9 @@ test("#1 a 'leave it out' government word holds the CTA until the name is edited
 test("#1 the wizard rejects corporate words, < >, and names without an allowed ending", () => {
   const src = read("index.html");
   const LLC_ENDINGS = JSON.parse(src.match(/const LLC_ENDINGS = (.*);\n/)[1]);
-  const body = src.match(/const CORP_WORDS = [\s\S]*?\n}\n/)[0];
+  const body = src.slice(src.indexOf("const CORP_WORDS = "), src.indexOf("function canNext()"));
   const BY = { CA: { name: "California" }, MI: { name: "Michigan" }, TX: { name: "Texas" }, NY: { name: "New York" } };
-  const nameIssue = new Function("LLC_ENDINGS", "BY", body + "return nameIssue;")(LLC_ENDINGS, BY);
+  const nameIssue = new Function("LLC_ENDINGS", "BY", "window", body + "return nameIssue;")(LLC_ENDINGS, BY, {});
   assert.match(nameIssue("Golden Coast Inc LLC", "CA"), /Take out "Inc"/);
   assert.match(nameIssue("Acme <b> LLC", "CA"), /< and >/);
   assert.match(nameIssue("Golden Coast", "CA"), /End the name with an LLC ending/);
@@ -111,7 +111,7 @@ test("#10 runtime config: only official links; a remote file with any other link
 
 test("#10 loadConfig falls back to the bundled copy when the remote file fails validation", async () => {
   const bad = JSON.parse(JSON.stringify(raw)); bad.states[0].source_url = "https://example.com/";
-  const c2 = { URLSearchParams, console, LNC_CONFIG_URL: "https://remote/x.json", LNC_NEED_RULES_URL: "https://remote/n.json", setTimeout, clearTimeout, AbortController,
+  const c2 = { URLSearchParams, URL, console, LNC_CONFIG_URL: "https://remote/x.json", LNC_NEED_RULES_URL: "https://remote/n.json", setTimeout, clearTimeout, AbortController,
     fetch: async (u) => ({ ok: true, json: async () => (u.startsWith("https://remote/x") ? bad : u.includes("need") ? JSON.parse(read("llc-name-check/llc-need-rules.json")) : raw) }) };
   vm.runInNewContext(read("llc-name-check/llc-name-check.js"), c2);
   const loaded = await c2.LNC.loadConfig();
@@ -132,7 +132,7 @@ test("SEO: canonical and sitemap use the trailing slash; FAQ JSON-LD matches the
   const page = read("llc-name-check/index.html");
   assert.match(page, /<link rel="canonical" href="https:\/\/pathwaydevs\.software\/llc-name-check\/"\/>/);
   assert.match(read("sitemap.xml"), /<loc>https:\/\/pathwaydevs\.software\/llc-name-check\/<\/loc>/);
-  assert.match(page, /<h1>Check your LLC name against state rules<\/h1>/);
+  assert.match(page, /<h1>Free LLC Name Check: test your name against state rules<\/h1>/);
   const desc = "Check your LLC name against state rules, see the fees, and open the official state search.";
   assert.ok(page.includes(`<meta name="description" content="${desc}"/>`));
   assert.ok(page.includes(`<meta property="og:description" content="${desc}"/>`));
@@ -142,6 +142,6 @@ test("SEO: canonical and sitemap use the trailing slash; FAQ JSON-LD matches the
   const sec = page.match(/<section class="faq" id="faq">([\s\S]*?)<\/section>/)[1];
   const txt = (s) => s.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
   const vis = [...sec.matchAll(/<h3>([\s\S]*?)<\/h3>\s*<p>([\s\S]*?)<\/p>/g)].map((m) => [txt(m[1]), txt(m[2])]);
-  assert.equal(vis.length, 10);
+  assert.equal(vis.length, 11);
   assert.deepEqual(ld.mainEntity.map((q) => [q.name, q.acceptedAnswer.text]), vis);
 });
