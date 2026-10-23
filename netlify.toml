@@ -1,5 +1,5 @@
 [build]
-  command = "true"
+  command = "node scripts/prerender.mjs"
   publish = "."
 
 [build.environment]
@@ -15,6 +15,46 @@
   force = true
 
 [[redirects]]
-  from = "/*"
+  from = "/fees"
+  to = "/llc-fees"
+  status = 301
+
+# SPA routes only. Static pages (/privacy, /terms, /contact, /llc-fees, /learn, robots.txt, sitemap.xml)
+# are real files and win over these rules. Anything else gets 404.html with a real 404 status.
+[[redirects]]
+  from = "/form"
   to = "/index.html"
   status = 200
+[[redirects]]
+  from = "/form/*"
+  to = "/index.html"
+  status = 200
+[[redirects]]
+  from = "/app"
+  to = "/index.html"
+  status = 200
+[[redirects]]
+  from = "/app/*"
+  to = "/index.html"
+  status = 200
+[[redirects]]
+  from = "/admin"
+  to = "/index.html"
+  status = 200
+[[redirects]]
+  from = "/login"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/admin"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+[[headers]]
+  for = "/app"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+[[headers]]
+  for = "/login"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
