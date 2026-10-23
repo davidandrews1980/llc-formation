@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /app
+Disallow: /login
+
+Sitemap: https://pathwaydevs.software/sitemap.xml

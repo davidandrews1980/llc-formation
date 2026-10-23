@@ -4,7 +4,25 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Pathway Formation — LLC filing desk</title>
-<meta name="description" content="Prepare articles of organization. Pay the state what the state charges. Pathway Devs files."/>
+<meta name="description" content="Prepare your LLC articles of organization and file in any state. You pay only for the filing and the add-ons you choose. Not a licensed attorney. Not legal advice."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://pathwaydevs.software/"/>
+<link rel="icon" href="/public/favicon.svg" type="image/svg+xml"/>
+<link rel="apple-touch-icon" href="/public/crest.jpg"/>
+<meta name="theme-color" content="#2c4a3e"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="Pathway Formation"/>
+<meta property="og:title" content="Pathway Formation — LLC filing desk"/>
+<meta property="og:description" content="Prepare your LLC articles and file in any state. You pay only for the filing and the add-ons you choose."/>
+<meta property="og:url" content="https://pathwaydevs.software/"/>
+<meta property="og:image" content="https://pathwaydevs.software/public/og-1200x630.jpg"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Pathway Formation — LLC filing desk"/>
+<meta name="twitter:description" content="Prepare your LLC articles and file in any state. You pay only for the filing and the add-ons you choose."/>
+<meta name="twitter:image" content="https://pathwaydevs.software/public/og-1200x630.jpg"/>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://pathwaydevs.software/#org","name":"John Gault & Sons","alternateName":["Pathway Formation","Pathway Devs"],"url":"https://pathwaydevs.software/","logo":"https://pathwaydevs.software/public/crest.jpg","email":"support@pathwaydevs.org","address":{"@type":"PostalAddress","streetAddress":"3933 S Lotz Rd, Suite 219","addressLocality":"Canton","addressRegion":"MI","postalCode":"48188","addressCountry":"US"}},{"@type":"WebSite","@id":"https://pathwaydevs.software/#site","url":"https://pathwaydevs.software/","name":"Pathway Formation","publisher":{"@id":"https://pathwaydevs.software/#org"}}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet"/>
 <style>
@@ -83,7 +101,7 @@ th{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mis
   <button type="button" class="pf-no" id="pf-consent-decline">Decline</button>
 </div>
 <script>
-const STATES = [{"code": "AL", "name": "Alabama", "feeCents": 20000, "expediteCents": 5000, "document": "Certificate of Formation", "agency": "AL Secretary of State", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "1–3 business days", "notes": "Name reservation is required before filing."}, {"code": "AK", "name": "Alaska", "feeCents": 25000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "AK DCCED (Corporations)", "annualCents": 10000, "annualCadence": "biennial", "annualDue": "January 2", "processing": "5–7 business days", "notes": "Biennial report $100."}, {"code": "AZ", "name": "Arizona", "feeCents": 5000, "expediteCents": 3500, "document": "Articles of Organization", "agency": "AZ Corporation Commission (eCorp)", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "5–10 business days", "notes": "No annual report for a standard LLC."}, {"code": "AR", "name": "Arkansas", "feeCents": 4500, "expediteCents": 5000, "document": "Certificate of Organization", "agency": "AR Secretary of State", "annualCents": 15000, "annualCadence": "annual", "annualDue": "May 1", "processing": "5–7 business days", "notes": "Online $45 / paper $50. Franchise tax $150/yr."}, {"code": "CA", "name": "California", "feeCents": 7000, "expediteCents": 35000, "document": "Articles of Organization (LLC-1)", "agency": "CA Secretary of State (bizfile)", "annualCents": 80000, "annualCadence": "annual", "annualDue": "15th day of 4th month", "processing": "Same day online", "notes": "$70 to file. $800 franchise tax is due in year one, plus a $20 Statement of Information within 90 days."}, {"code": "CO", "name": "Colorado", "feeCents": 5000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "CO Secretary of State", "annualCents": 2500, "annualCadence": "annual", "annualDue": "Anniversary month", "processing": "3–5 business days", "notes": "Online only. Periodic report $25."}, {"code": "CT", "name": "Connecticut", "feeCents": 12000, "expediteCents": 5000, "document": "Certificate of Organization", "agency": "CT Secretary of the State", "annualCents": 8000, "annualCadence": "annual", "annualDue": "April 1", "processing": "15–20 business days", "notes": "Annual report $80."}, {"code": "DE", "name": "Delaware", "feeCents": 11000, "expediteCents": 5000, "document": "Certificate of Formation", "agency": "DE Division of Corporations", "annualCents": 30000, "annualCadence": "annual", "annualDue": "June 1", "processing": "Same day", "notes": "$110 to file. Annual LLC tax $300 (no report). 1-hour and 24-hour expedite available."}, {"code": "DC", "name": "District of Columbia", "feeCents": 9900, "expediteCents": 10000, "document": "Articles of Organization (DLC-1)", "agency": "DC DLCP (CorpOnline)", "annualCents": 30000, "annualCadence": "biennial", "annualDue": "April 1", "processing": "5–7 business days", "notes": "Biennial report $300."}, {"code": "FL", "name": "Florida", "feeCents": 12500, "expediteCents": 5000, "document": "Articles of Organization", "agency": "FL Dept. of State (Sunbiz)", "annualCents": 13875, "annualCadence": "annual", "annualDue": "May 1", "processing": "2–3 business days", "notes": "$100 filing + $25 registered-agent designation. Annual report $138.75."}, {"code": "GA", "name": "Georgia", "feeCents": 10000, "expediteCents": 10000, "document": "Articles of Organization", "agency": "GA Secretary of State (eCorp)", "annualCents": 5000, "annualCadence": "annual", "annualDue": "April 1", "processing": "2–5 business days", "notes": "Online $100. Annual registration $50."}, {"code": "HI", "name": "Hawaii", "feeCents": 5000, "expediteCents": 2500, "document": "Articles of Organization (LLC-1)", "agency": "HI DCCA (Hawaii Business Express)", "annualCents": 1500, "annualCadence": "annual", "annualDue": "End of anniversary quarter", "processing": "1–2 business days", "notes": "Annual report about $15."}, {"code": "ID", "name": "Idaho", "feeCents": 10000, "expediteCents": 4000, "document": "Certificate of Organization", "agency": "ID Secretary of State (SOSBiz)", "annualCents": 0, "annualCadence": "annual", "annualDue": "Last day of anniversary month", "processing": "Same day", "notes": "Annual report required, $0 filing fee."}, {"code": "IL", "name": "Illinois", "feeCents": 15000, "expediteCents": 5000, "document": "Articles of Organization (LLC-5.5)", "agency": "IL Secretary of State", "annualCents": 7500, "annualCadence": "annual", "annualDue": "Month before anniversary", "processing": "1–2 business days", "notes": "Annual report $75."}, {"code": "IN", "name": "Indiana", "feeCents": 9500, "expediteCents": 2500, "document": "Articles of Organization", "agency": "IN Secretary of State (INBiz)", "annualCents": 3200, "annualCadence": "biennial", "annualDue": "End of anniversary month", "processing": "1–2 business days", "notes": "Biennial business entity report ~$32 online."}, {"code": "IA", "name": "Iowa", "feeCents": 5000, "expediteCents": 5000, "document": "Certificate of Organization", "agency": "IA Secretary of State", "annualCents": 3000, "annualCadence": "biennial", "annualDue": "April 1 (odd years)", "processing": "1 business day", "notes": "Biennial report $30 online."}, {"code": "KS", "name": "Kansas", "feeCents": 16000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "KS Secretary of State", "annualCents": 5000, "annualCadence": "annual", "annualDue": "April 15", "processing": "1–2 business days", "notes": "Online fee near $85–$165 depending on portal. Annual $50."}, {"code": "KY", "name": "Kentucky", "feeCents": 4000, "expediteCents": 4000, "document": "Articles of Organization", "agency": "KY Secretary of State", "annualCents": 1500, "annualCadence": "annual", "annualDue": "June 30", "processing": "5–10 business days", "notes": "Lowest standard filing fee in the U.S."}, {"code": "LA", "name": "Louisiana", "feeCents": 10000, "expediteCents": 3000, "document": "Articles of Organization", "agency": "LA Secretary of State (geauxBIZ)", "annualCents": 3500, "annualCadence": "annual", "annualDue": "Anniversary date", "processing": "2–4 business days", "notes": "Annual report ~$35."}, {"code": "ME", "name": "Maine", "feeCents": 17500, "expediteCents": 5000, "document": "Certificate of Formation (MLLC-6)", "agency": "ME Secretary of State", "annualCents": 8500, "annualCadence": "annual", "annualDue": "June 1", "processing": "5–7 business days", "notes": "Annual report $85."}, {"code": "MD", "name": "Maryland", "feeCents": 10000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "MD SDAT", "annualCents": 30000, "annualCadence": "annual", "annualDue": "April 15", "processing": "3–5 business days", "notes": "Personal property return / annual report $300."}, {"code": "MA", "name": "Massachusetts", "feeCents": 50000, "expediteCents": 50000, "document": "Certificate of Organization", "agency": "MA Secretary of the Commonwealth", "annualCents": 50000, "annualCadence": "annual", "annualDue": "Anniversary date", "processing": "1–2 business days", "notes": "Highest standard LLC filing fee in the U.S. Annual $500."}, {"code": "MI", "name": "Michigan", "feeCents": 5000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "MI LARA, Corporations Division", "annualCents": 2500, "annualCadence": "annual", "annualDue": "February 15", "processing": "3–5 business days", "notes": "$50 to file. Annual statement $25."}, {"code": "MN", "name": "Minnesota", "feeCents": 15500, "expediteCents": 5000, "document": "Articles of Organization", "agency": "MN Secretary of State", "annualCents": 0, "annualCadence": "annual", "annualDue": "December 31", "processing": "3–5 business days", "notes": "Annual renewal required, $0 fee."}, {"code": "MS", "name": "Mississippi", "feeCents": 5000, "expediteCents": 4000, "document": "Certificate of Formation", "agency": "MS Secretary of State", "annualCents": 0, "annualCadence": "annual", "annualDue": "April 15", "processing": "2–4 business days", "notes": "Annual report required, typically $0."}, {"code": "MO", "name": "Missouri", "feeCents": 5000, "expediteCents": 2000, "document": "Articles of Organization", "agency": "MO Secretary of State", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "3–5 business days", "notes": "Online $50. No annual report for a standard LLC."}, {"code": "MT", "name": "Montana", "feeCents": 3500, "expediteCents": 2000, "document": "Articles of Organization", "agency": "MT Secretary of State", "annualCents": 2000, "annualCadence": "annual", "annualDue": "April 15", "processing": "3–5 business days", "notes": "Cheapest standard filing fee. Annual report often $20."}, {"code": "NE", "name": "Nebraska", "feeCents": 10000, "expediteCents": 5000, "document": "Certificate of Organization", "agency": "NE Secretary of State", "annualCents": 1300, "annualCadence": "biennial", "annualDue": "April 1 (odd years)", "processing": "2–4 business days", "notes": "Biennial report ~$13–$25."}, {"code": "NV", "name": "Nevada", "feeCents": 42500, "expediteCents": 12500, "document": "Articles of Organization", "agency": "NV Secretary of State", "annualCents": 35000, "annualCadence": "annual", "annualDue": "End of anniversary month", "processing": "1–2 business days", "notes": "Typical initial outlay: $75 articles + $150 initial list + $200 state business license."}, {"code": "NH", "name": "New Hampshire", "feeCents": 10000, "expediteCents": 5000, "document": "Certificate of Formation", "agency": "NH Secretary of State (QuickStart)", "annualCents": 10000, "annualCadence": "annual", "annualDue": "April 1", "processing": "3–5 business days", "notes": "Annual report $100."}, {"code": "NJ", "name": "New Jersey", "feeCents": 12500, "expediteCents": 5000, "document": "Certificate of Formation", "agency": "NJ Treasury (DORES)", "annualCents": 7500, "annualCadence": "annual", "annualDue": "Anniversary month", "processing": "1–3 business days", "notes": "Annual report $75."}, {"code": "NM", "name": "New Mexico", "feeCents": 5000, "expediteCents": 15000, "document": "Articles of Organization", "agency": "NM Secretary of State", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "5–7 business days", "notes": "Online only. No annual report."}, {"code": "NY", "name": "New York", "feeCents": 20000, "expediteCents": 7500, "document": "Articles of Organization", "agency": "NY Department of State", "annualCents": 900, "annualCadence": "biennial", "annualDue": "Anniversary month", "processing": "3–5 business days", "notes": "Publication in two newspapers is required within 120 days — budget extra, especially in NYC."}, {"code": "NC", "name": "North Carolina", "feeCents": 12500, "expediteCents": 10000, "document": "Articles of Organization", "agency": "NC Secretary of State", "annualCents": 20000, "annualCadence": "annual", "annualDue": "April 15", "processing": "5–7 business days", "notes": "Annual report $200."}, {"code": "ND", "name": "North Dakota", "feeCents": 13500, "expediteCents": 5000, "document": "Articles of Organization", "agency": "ND Secretary of State (FirstStop)", "annualCents": 5000, "annualCadence": "annual", "annualDue": "November 15", "processing": "3–5 business days", "notes": "Annual report $50."}, {"code": "OH", "name": "Ohio", "feeCents": 9900, "expediteCents": 10000, "document": "Articles of Organization", "agency": "OH Secretary of State", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "2–4 business days", "notes": "No annual report for a standard LLC."}, {"code": "OK", "name": "Oklahoma", "feeCents": 10000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "OK Secretary of State", "annualCents": 2500, "annualCadence": "annual", "annualDue": "Anniversary", "processing": "3–5 business days", "notes": "Annual certificate $25."}, {"code": "OR", "name": "Oregon", "feeCents": 10000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "OR Secretary of State", "annualCents": 10000, "annualCadence": "annual", "annualDue": "Anniversary", "processing": "1–3 business days", "notes": "Annual report $100."}, {"code": "PA", "name": "Pennsylvania", "feeCents": 12500, "expediteCents": 10000, "document": "Certificate of Organization", "agency": "PA Department of State", "annualCents": 700, "annualCadence": "annual", "annualDue": "April 15", "processing": "5–7 business days", "notes": "Decennial report $70 every 10 years in addition to tax filings."}, {"code": "RI", "name": "Rhode Island", "feeCents": 15000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "RI Department of State", "annualCents": 5000, "annualCadence": "annual", "annualDue": "November 1", "processing": "3–5 business days", "notes": "Annual report $50."}, {"code": "SC", "name": "South Carolina", "feeCents": 11000, "expediteCents": 2500, "document": "Articles of Organization", "agency": "SC Secretary of State", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "2–4 business days", "notes": "No annual report for a standard LLC. Tax returns still apply."}, {"code": "SD", "name": "South Dakota", "feeCents": 15000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "SD Secretary of State", "annualCents": 5000, "annualCadence": "annual", "annualDue": "First day of anniversary month", "processing": "2–4 business days", "notes": "Annual report $50."}, {"code": "TN", "name": "Tennessee", "feeCents": 30000, "expediteCents": 10000, "document": "Articles of Organization", "agency": "TN Secretary of State (TNBEAR)", "annualCents": 30000, "annualCadence": "annual", "annualDue": "April 1", "processing": "3–5 business days", "notes": "$50 per member, $300 minimum / $3,000 maximum. Quote uses the $300 floor."}, {"code": "TX", "name": "Texas", "feeCents": 30000, "expediteCents": 2500, "document": "Certificate of Formation", "agency": "TX Secretary of State (SOSDirect)", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "5–7 business days", "notes": "No SOS annual report. Franchise tax still applies if above the no-tax-due threshold."}, {"code": "UT", "name": "Utah", "feeCents": 5900, "expediteCents": 7500, "document": "Certificate of Organization", "agency": "UT Division of Corporations", "annualCents": 1800, "annualCadence": "annual", "annualDue": "Anniversary month", "processing": "3–5 business days", "notes": "Annual renewal ~$18."}, {"code": "VT", "name": "Vermont", "feeCents": 15500, "expediteCents": 5000, "document": "Articles of Organization", "agency": "VT Secretary of State", "annualCents": 4500, "annualCadence": "annual", "annualDue": "April 15", "processing": "3–5 business days", "notes": "Annual report $45."}, {"code": "VA", "name": "Virginia", "feeCents": 10000, "expediteCents": 10000, "document": "Articles of Organization", "agency": "VA SCC (CIS)", "annualCents": 5000, "annualCadence": "annual", "annualDue": "Last day of anniversary month", "processing": "1–3 business days", "notes": "Annual registration $50."}, {"code": "WA", "name": "Washington", "feeCents": 20000, "expediteCents": 5000, "document": "Certificate of Formation", "agency": "WA Secretary of State (CCFS)", "annualCents": 6000, "annualCadence": "annual", "annualDue": "End of anniversary month", "processing": "2–4 business days", "notes": "Online $200. Annual report $60."}, {"code": "WV", "name": "West Virginia", "feeCents": 10000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "WV Secretary of State", "annualCents": 2500, "annualCadence": "annual", "annualDue": "July 1", "processing": "3–5 business days", "notes": "Annual report $25."}, {"code": "WI", "name": "Wisconsin", "feeCents": 13000, "expediteCents": 2500, "document": "Articles of Organization", "agency": "WI DFI", "annualCents": 2500, "annualCadence": "annual", "annualDue": "End of anniversary quarter", "processing": "5–7 business days", "notes": "Online $130. Annual report $25."}, {"code": "WY", "name": "Wyoming", "feeCents": 10000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "WY Secretary of State (WyoBiz)", "annualCents": 6000, "annualCadence": "annual", "annualDue": "First day of anniversary month", "processing": "1–3 business days", "notes": "Annual report $60."}];
+const STATES = [{"code": "AL", "name": "Alabama", "feeCents": 20000, "expediteCents": 5000, "document": "Certificate of Formation", "agency": "AL Secretary of State", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "1–3 business days", "notes": "Name reservation is required before filing."}, {"code": "AK", "name": "Alaska", "feeCents": 25000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "AK DCCED (Corporations)", "annualCents": 10000, "annualCadence": "biennial", "annualDue": "January 2", "processing": "5–7 business days", "notes": "Biennial report $100."}, {"code": "AZ", "name": "Arizona", "feeCents": 5000, "expediteCents": 3500, "document": "Articles of Organization", "agency": "AZ Corporation Commission (eCorp)", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "5–10 business days", "notes": "No annual report for a standard LLC."}, {"code": "AR", "name": "Arkansas", "feeCents": 4500, "expediteCents": 5000, "document": "Certificate of Organization", "agency": "AR Secretary of State", "annualCents": 15000, "annualCadence": "annual", "annualDue": "May 1", "processing": "5–7 business days", "notes": "Online $45 / paper $50. Franchise tax $150/yr."}, {"code": "CA", "name": "California", "feeCents": 7000, "expediteCents": 35000, "document": "Articles of Organization (LLC-1)", "agency": "CA Secretary of State (bizfile)", "annualCents": 80000, "annualCadence": "annual", "annualDue": "15th day of 4th month", "processing": "Same day online", "notes": "$70 to file. $800 franchise tax is due in year one, plus a $20 Statement of Information within 90 days."}, {"code": "CO", "name": "Colorado", "feeCents": 5000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "CO Secretary of State", "annualCents": 2500, "annualCadence": "annual", "annualDue": "Anniversary month", "processing": "3–5 business days", "notes": "Online only. Periodic report $25."}, {"code": "CT", "name": "Connecticut", "feeCents": 12000, "expediteCents": 5000, "document": "Certificate of Organization", "agency": "CT Secretary of the State", "annualCents": 8000, "annualCadence": "annual", "annualDue": "April 1", "processing": "15–20 business days", "notes": "Annual report $80."}, {"code": "DE", "name": "Delaware", "feeCents": 11000, "expediteCents": 5000, "document": "Certificate of Formation", "agency": "DE Division of Corporations", "annualCents": 30000, "annualCadence": "annual", "annualDue": "June 1", "processing": "Same day", "notes": "$110 to file. Annual LLC tax $300 (no report). 1-hour and 24-hour expedite available."}, {"code": "DC", "name": "District of Columbia", "feeCents": 9900, "expediteCents": 10000, "document": "Articles of Organization (DLC-1)", "agency": "DC DLCP (CorpOnline)", "annualCents": 30000, "annualCadence": "biennial", "annualDue": "April 1", "processing": "5–7 business days", "notes": "Biennial report $300."}, {"code": "FL", "name": "Florida", "feeCents": 12500, "expediteCents": 5000, "document": "Articles of Organization", "agency": "FL Dept. of State (Sunbiz)", "annualCents": 13875, "annualCadence": "annual", "annualDue": "May 1", "processing": "2–3 business days", "notes": "$100 filing + $25 registered-agent designation. Annual report $138.75."}, {"code": "GA", "name": "Georgia", "feeCents": 10000, "expediteCents": 10000, "document": "Articles of Organization", "agency": "GA Secretary of State (eCorp)", "annualCents": 5000, "annualCadence": "annual", "annualDue": "April 1", "processing": "2–5 business days", "notes": "Online $100. Annual registration $50."}, {"code": "HI", "name": "Hawaii", "feeCents": 5000, "expediteCents": 2500, "document": "Articles of Organization (LLC-1)", "agency": "HI DCCA (Hawaii Business Express)", "annualCents": 1500, "annualCadence": "annual", "annualDue": "End of anniversary quarter", "processing": "1–2 business days", "notes": "Annual report about $15."}, {"code": "ID", "name": "Idaho", "feeCents": 10000, "expediteCents": 4000, "document": "Certificate of Organization", "agency": "ID Secretary of State (SOSBiz)", "annualCents": 0, "annualCadence": "annual", "annualDue": "Last day of anniversary month", "processing": "Same day", "notes": "Annual report required, $0 filing fee."}, {"code": "IL", "name": "Illinois", "feeCents": 15000, "expediteCents": 5000, "document": "Articles of Organization (LLC-5.5)", "agency": "IL Secretary of State", "annualCents": 7500, "annualCadence": "annual", "annualDue": "Month before anniversary", "processing": "1–2 business days", "notes": "Annual report $75."}, {"code": "IN", "name": "Indiana", "feeCents": 9500, "expediteCents": 2500, "document": "Articles of Organization", "agency": "IN Secretary of State (INBiz)", "annualCents": 3200, "annualCadence": "biennial", "annualDue": "End of anniversary month", "processing": "1–2 business days", "notes": "Biennial business entity report ~$32 online."}, {"code": "IA", "name": "Iowa", "feeCents": 5000, "expediteCents": 5000, "document": "Certificate of Organization", "agency": "IA Secretary of State", "annualCents": 3000, "annualCadence": "biennial", "annualDue": "April 1 (odd years)", "processing": "1 business day", "notes": "Biennial report $30 online."}, {"code": "KS", "name": "Kansas", "feeCents": 16000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "KS Secretary of State", "annualCents": 5000, "annualCadence": "annual", "annualDue": "April 15", "processing": "1–2 business days", "notes": "Online fee near $85–$165 depending on portal. Annual $50."}, {"code": "KY", "name": "Kentucky", "feeCents": 4000, "expediteCents": 4000, "document": "Articles of Organization", "agency": "KY Secretary of State", "annualCents": 1500, "annualCadence": "annual", "annualDue": "June 30", "processing": "5–10 business days", "notes": "One of the lowest standard filing fees in the U.S."}, {"code": "LA", "name": "Louisiana", "feeCents": 10000, "expediteCents": 3000, "document": "Articles of Organization", "agency": "LA Secretary of State (geauxBIZ)", "annualCents": 3500, "annualCadence": "annual", "annualDue": "Anniversary date", "processing": "2–4 business days", "notes": "Annual report ~$35."}, {"code": "ME", "name": "Maine", "feeCents": 17500, "expediteCents": 5000, "document": "Certificate of Formation (MLLC-6)", "agency": "ME Secretary of State", "annualCents": 8500, "annualCadence": "annual", "annualDue": "June 1", "processing": "5–7 business days", "notes": "Annual report $85."}, {"code": "MD", "name": "Maryland", "feeCents": 10000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "MD SDAT", "annualCents": 30000, "annualCadence": "annual", "annualDue": "April 15", "processing": "3–5 business days", "notes": "Personal property return / annual report $300."}, {"code": "MA", "name": "Massachusetts", "feeCents": 50000, "expediteCents": 50000, "document": "Certificate of Organization", "agency": "MA Secretary of the Commonwealth", "annualCents": 50000, "annualCadence": "annual", "annualDue": "Anniversary date", "processing": "1–2 business days", "notes": "Highest standard LLC filing fee in the U.S. Annual $500."}, {"code": "MI", "name": "Michigan", "feeCents": 5000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "MI LARA, Corporations Division", "annualCents": 2500, "annualCadence": "annual", "annualDue": "February 15", "processing": "3–5 business days", "notes": "$50 to file. Annual statement $25 (drops to $15 after Sept 30, 2027)."}, {"code": "MN", "name": "Minnesota", "feeCents": 15500, "expediteCents": 5000, "document": "Articles of Organization", "agency": "MN Secretary of State", "annualCents": 0, "annualCadence": "annual", "annualDue": "December 31", "processing": "3–5 business days", "notes": "Annual renewal required, $0 fee."}, {"code": "MS", "name": "Mississippi", "feeCents": 5000, "expediteCents": 4000, "document": "Certificate of Formation", "agency": "MS Secretary of State", "annualCents": 0, "annualCadence": "annual", "annualDue": "April 15", "processing": "2–4 business days", "notes": "Annual report required, typically $0."}, {"code": "MO", "name": "Missouri", "feeCents": 5000, "expediteCents": 2000, "document": "Articles of Organization", "agency": "MO Secretary of State", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "3–5 business days", "notes": "Online $50. No annual report for a standard LLC."}, {"code": "MT", "name": "Montana", "feeCents": 3500, "expediteCents": 2000, "document": "Articles of Organization", "agency": "MT Secretary of State", "annualCents": 2000, "annualCadence": "annual", "annualDue": "April 15", "processing": "3–5 business days", "notes": "One of the lowest standard filing fees in the U.S. Annual report often $20."}, {"code": "NE", "name": "Nebraska", "feeCents": 10000, "expediteCents": 5000, "document": "Certificate of Organization", "agency": "NE Secretary of State", "annualCents": 1300, "annualCadence": "biennial", "annualDue": "April 1 (odd years)", "processing": "2–4 business days", "notes": "Biennial report ~$13–$25."}, {"code": "NV", "name": "Nevada", "feeCents": 42500, "expediteCents": 12500, "document": "Articles of Organization", "agency": "NV Secretary of State", "annualCents": 35000, "annualCadence": "annual", "annualDue": "End of anniversary month", "processing": "1–2 business days", "notes": "Typical initial outlay: $75 articles + $150 initial list + $200 state business license."}, {"code": "NH", "name": "New Hampshire", "feeCents": 10000, "expediteCents": 5000, "document": "Certificate of Formation", "agency": "NH Secretary of State (QuickStart)", "annualCents": 10000, "annualCadence": "annual", "annualDue": "April 1", "processing": "3–5 business days", "notes": "Annual report $100."}, {"code": "NJ", "name": "New Jersey", "feeCents": 12500, "expediteCents": 5000, "document": "Certificate of Formation", "agency": "NJ Treasury (DORES)", "annualCents": 7500, "annualCadence": "annual", "annualDue": "Anniversary month", "processing": "1–3 business days", "notes": "Annual report $75."}, {"code": "NM", "name": "New Mexico", "feeCents": 5000, "expediteCents": 15000, "document": "Articles of Organization", "agency": "NM Secretary of State", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "5–7 business days", "notes": "Online only. No annual report."}, {"code": "NY", "name": "New York", "feeCents": 20000, "expediteCents": 7500, "document": "Articles of Organization", "agency": "NY Department of State", "annualCents": 900, "annualCadence": "biennial", "annualDue": "Anniversary month", "processing": "3–5 business days", "notes": "Publication in two newspapers is required within 120 days — budget extra, especially in NYC."}, {"code": "NC", "name": "North Carolina", "feeCents": 12500, "expediteCents": 10000, "document": "Articles of Organization", "agency": "NC Secretary of State", "annualCents": 20000, "annualCadence": "annual", "annualDue": "April 15", "processing": "5–7 business days", "notes": "Annual report $200."}, {"code": "ND", "name": "North Dakota", "feeCents": 13500, "expediteCents": 5000, "document": "Articles of Organization", "agency": "ND Secretary of State (FirstStop)", "annualCents": 5000, "annualCadence": "annual", "annualDue": "November 15", "processing": "3–5 business days", "notes": "Annual report $50."}, {"code": "OH", "name": "Ohio", "feeCents": 9900, "expediteCents": 10000, "document": "Articles of Organization", "agency": "OH Secretary of State", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "2–4 business days", "notes": "No annual report for a standard LLC."}, {"code": "OK", "name": "Oklahoma", "feeCents": 10000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "OK Secretary of State", "annualCents": 2500, "annualCadence": "annual", "annualDue": "Anniversary", "processing": "3–5 business days", "notes": "Annual certificate $25."}, {"code": "OR", "name": "Oregon", "feeCents": 10000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "OR Secretary of State", "annualCents": 10000, "annualCadence": "annual", "annualDue": "Anniversary", "processing": "1–3 business days", "notes": "Annual report $100."}, {"code": "PA", "name": "Pennsylvania", "feeCents": 12500, "expediteCents": 10000, "document": "Certificate of Organization", "agency": "PA Department of State", "annualCents": 700, "annualCadence": "annual", "annualDue": "April 15", "processing": "5–7 business days", "notes": "Decennial report $70 every 10 years in addition to tax filings."}, {"code": "RI", "name": "Rhode Island", "feeCents": 15000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "RI Department of State", "annualCents": 5000, "annualCadence": "annual", "annualDue": "November 1", "processing": "3–5 business days", "notes": "Annual report $50."}, {"code": "SC", "name": "South Carolina", "feeCents": 11000, "expediteCents": 2500, "document": "Articles of Organization", "agency": "SC Secretary of State", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "2–4 business days", "notes": "No annual report for a standard LLC. Tax returns still apply."}, {"code": "SD", "name": "South Dakota", "feeCents": 15000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "SD Secretary of State", "annualCents": 5000, "annualCadence": "annual", "annualDue": "First day of anniversary month", "processing": "2–4 business days", "notes": "Annual report $50."}, {"code": "TN", "name": "Tennessee", "feeCents": 30000, "expediteCents": 10000, "document": "Articles of Organization", "agency": "TN Secretary of State (TNBEAR)", "annualCents": 30000, "annualCadence": "annual", "annualDue": "April 1", "processing": "3–5 business days", "notes": "$50 per member, $300 minimum / $3,000 maximum. Quote uses the $300 floor."}, {"code": "TX", "name": "Texas", "feeCents": 30000, "expediteCents": 2500, "document": "Certificate of Formation", "agency": "TX Secretary of State (SOSDirect)", "annualCents": 0, "annualCadence": "none", "annualDue": "n/a", "processing": "5–7 business days", "notes": "No SOS annual report. Franchise tax still applies if above the no-tax-due threshold."}, {"code": "UT", "name": "Utah", "feeCents": 5900, "expediteCents": 7500, "document": "Certificate of Organization", "agency": "UT Division of Corporations", "annualCents": 1800, "annualCadence": "annual", "annualDue": "Anniversary month", "processing": "3–5 business days", "notes": "Annual renewal ~$18."}, {"code": "VT", "name": "Vermont", "feeCents": 15500, "expediteCents": 5000, "document": "Articles of Organization", "agency": "VT Secretary of State", "annualCents": 4500, "annualCadence": "annual", "annualDue": "April 15", "processing": "3–5 business days", "notes": "Annual report $45."}, {"code": "VA", "name": "Virginia", "feeCents": 10000, "expediteCents": 10000, "document": "Articles of Organization", "agency": "VA SCC (CIS)", "annualCents": 5000, "annualCadence": "annual", "annualDue": "Last day of anniversary month", "processing": "1–3 business days", "notes": "Annual registration $50."}, {"code": "WA", "name": "Washington", "feeCents": 20000, "expediteCents": 5000, "document": "Certificate of Formation", "agency": "WA Secretary of State (CCFS)", "annualCents": 6000, "annualCadence": "annual", "annualDue": "End of anniversary month", "processing": "2–4 business days", "notes": "Online $200. Annual report $60."}, {"code": "WV", "name": "West Virginia", "feeCents": 10000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "WV Secretary of State", "annualCents": 2500, "annualCadence": "annual", "annualDue": "July 1", "processing": "3–5 business days", "notes": "Annual report $25."}, {"code": "WI", "name": "Wisconsin", "feeCents": 13000, "expediteCents": 2500, "document": "Articles of Organization", "agency": "WI DFI", "annualCents": 2500, "annualCadence": "annual", "annualDue": "End of anniversary quarter", "processing": "5–7 business days", "notes": "Online $130. Annual report $25."}, {"code": "WY", "name": "Wyoming", "feeCents": 10000, "expediteCents": 5000, "document": "Articles of Organization", "agency": "WY Secretary of State (WyoBiz)", "annualCents": 6000, "annualCadence": "annual", "annualDue": "First day of anniversary month", "processing": "1–3 business days", "notes": "Annual report $60."}];
 const BY = Object.fromEntries(STATES.map(s => [s.code, s]));
 const QUICK = ["CA","DE","FL","MI","NV","NY","TX","WY"];
 const STEPS = ["State","Name","Office","Agent","Members","Company","Add-ons","Review"];
@@ -115,9 +133,10 @@ function canNext() {
   if (draft.step===1) return draft.llcName.trim().length>=3;
   if (draft.step===2) return !!(draft.principal.street && draft.principal.city && draft.principal.zip);
   if (draft.step===3) return !!(draft.ra.name && draft.ra.street && draft.ra.city && draft.ra.zip);
-  if (draft.step===4) return draft.members.every(m=>m.name.trim()) && !!draft.organizer.trim();
+  if (draft.step===4) return draft.members.every(m=>m.name.trim()) && !!draft.organizer.trim() && ownershipTotal()===100;
   return true;
 }
+function ownershipTotal() { return Math.round(draft.members.reduce((a,m)=>a+(Number(m.ownership)||0),0)*100)/100; }
 
 function annualLabel(st) {
   if (st.annualCadence === "none") return "No SOS annual report";
@@ -196,13 +215,37 @@ function applyDesk(data) {
   persist();
 }
 
+// Path routes (History API). Old #/ links are converted once on load.
+if (location.hash.startsWith("#/")) history.replaceState(null, "", location.hash.slice(1) || "/");
 function route() {
-  const h = (location.hash || "#/").replace(/^#/, "") || "/";
-  const [path, qs] = h.split("?");
-  const q = Object.fromEntries(new URLSearchParams(qs || ""));
-  return {path: path || "/", q};
+  const path = (location.pathname.replace(/\/+$/, "") || "/").replace(/^\/fees$/, "/llc-fees");
+  const q = Object.fromEntries(new URLSearchParams(location.search || ""));
+  return {path, q};
 }
-function go(path) { location.hash = path; }
+function go(path) { history.pushState(null, "", path); render(); window.scrollTo(0, 0); }
+const SITE = "https://pathwaydevs.software";
+const META = {
+  "/": ["Pathway Formation — LLC filing desk", "Prepare your LLC articles of organization and file in any state. You pay only for the filing and the add-ons you choose. Not a licensed attorney. Not legal advice."],
+  "/llc-fees": ["LLC Filing Fees by State (" + new Date().getFullYear() + ") — Pathway Formation", "State LLC filing fees, documents, agencies and typical processing times for all 50 states. Not a licensed attorney. Not legal advice."],
+  "/form": ["Form an LLC: Formation wizard — Pathway Formation", "Answer a few questions to prepare your articles of organization. You pay only for the filing and the add-ons you choose."],
+  "/learn": ["How Pathway Formation works — Guides", "How we prepare and file your LLC articles and operating agreement. Not a licensed attorney. Not legal advice."]
+};
+function setMeta(path) {
+  const m = META[path] || META["/"];
+  const priv = /^\/(app|admin|login)/.test(path);
+  const noindex = priv || path.startsWith("/form");
+  document.title = priv ? "Pathway Formation" : m[0];
+  const set = (sel, attr, val) => { const el = document.head.querySelector(sel); if (el) el.setAttribute(attr, val); };
+  set('meta[name="description"]', "content", m[1]);
+  set('meta[property="og:title"]', "content", m[0]);
+  set('meta[name="twitter:title"]', "content", m[0]);
+  set('meta[property="og:description"]', "content", m[1]);
+  set('meta[name="robots"]', "content", priv ? "noindex,nofollow" : noindex ? "noindex,follow" : "index,follow");
+  set('meta[name="twitter:description"]', "content", m[1]);
+  const canon = SITE + (META[path] ? (path === "/" ? "/" : path) : "/");
+  set('link[rel="canonical"]', "href", canon);
+  set('meta[property="og:url"]', "content", canon);
+}
 
 function applyState(code) {
   if (!BY[code]) return;
@@ -217,7 +260,7 @@ function applyState(code) {
   if (r.path === "/form") {
     const qs = new URLSearchParams(r.q);
     qs.set("state", code);
-    location.hash = "/form?" + qs.toString();
+    history.replaceState(null, "", "/form?" + qs.toString());
   }
   render();
 }
@@ -226,14 +269,13 @@ function header(dark) {
   const r = route().path;
   return `<header style="${dark ? "background:var(--ink);color:var(--paper)" : ""}">
     <div class="wrap top">
-      <a class="brand" href="#/"><span class="mark">P</span> Pathway Formation</a>
+      <a class="brand" href="/"><span class="mark">P</span> Pathway Formation</a>
       <nav class="nav">
-        <a href="#/form" class="${r.startsWith("/form")?"on":""}">Wizard</a>
-        <a href="#/fees" class="${r==="/fees"?"on":""}">Fees</a>
-        <a href="#/learn" class="${r==="/learn"?"on":""}">Guides</a>
-        <a href="#/app" class="${r.startsWith("/app")?"on":""}">Desk</a>
-        <a href="#/admin" class="${r.startsWith("/admin")?"on":""}">Admin</a>
-        ${session.name ? `<span class="tiny mist">${esc(session.name)}</span>` : `<a href="#/login">Sign in</a>`}
+        <a href="/form" class="${r.startsWith("/form")?"on":""}">Wizard</a>
+        <a href="/llc-fees" class="${r==="/llc-fees"?"on":""}">Fees</a>
+        <a href="/learn" class="${r==="/learn"?"on":""}">Guides</a>
+        <a href="/app" class="${r.startsWith("/app")?"on":""}">Desk</a>
+        ${session.name ? `<span class="tiny mist">${esc(session.name)}</span>` : `<a href="/login">Sign in</a>`}
       </nav>
     </div>
   </header>`;
@@ -241,9 +283,10 @@ function header(dark) {
 function footer() {
   return `<footer class="foot"><div class="wrap grid g3">
     <div><p style="font-family:Fraunces,serif;font-size:1.2rem;color:var(--ink)">Pathway Formation</p>
-      <p>Articles, an operating agreement, and a desk. State fees passed through at cost.</p><p class="tiny">Not legal advice. Not a licensed attorney.</p></div>
+      <p>Articles, an operating agreement, and a desk. State fees passed through at cost.</p><p class="tiny">Not a licensed attorney. Not legal advice.</p>
+      <p class="tiny">Pathway Formation · Pathway Devs, a department of John Gault & Sons<br/>3933 S Lotz Rd, Suite 219, Canton, MI 48188<br/><a href="mailto:support@pathwaydevs.org">support@pathwaydevs.org</a><br/>© ${new Date().getFullYear()} John Gault & Sons</p></div>
     <div><p class="kicker">On the site</p>
-      <p><a href="#/form">Formation wizard</a><br/><a href="#/fees">50-state fees</a><br/><a href="#/app">Customer desk</a><br/><a href="#/admin">Admin desk</a></p></div>
+      <p><a href="/form">Formation wizard</a><br/><a href="/llc-fees">50-state fees</a><br/><a href="/app">Customer desk</a><br/><a href="/contact">Contact</a><br/><a href="/privacy">Privacy Policy</a><br/><a href="/terms">Terms of Service</a></p></div>
     <div><p class="kicker">Before you pay</p>
       <p>We prepare packets and file what you ask us to file. State fees change. Confirm on the official portal before you pay.</p></div>
   </div></footer>`;
@@ -258,8 +301,8 @@ function home() {
       <h1>Make the company official. Keep the fees clear.</h1>
       <p class="lede">The wizard prepares your articles. You pay the state what the state charges. We file. Plain pricing, real timelines.</p>
       <div class="row">
-        <a class="btn paper" href="#/form">Start the wizard</a>
-        <a class="btn ghost" href="#/fees" style="color:var(--paper);box-shadow:inset 0 0 0 1px rgba(251,248,241,.25)">50-state fee table</a>
+        <a class="btn paper" href="/form">Start the wizard</a>
+        <a class="btn ghost" href="/llc-fees" style="color:var(--paper);box-shadow:inset 0 0 0 1px rgba(251,248,241,.25)">50-state fee table</a>
       </div>
     </div>
     <aside class="ink-card">
@@ -272,20 +315,20 @@ function home() {
     <p class="kicker">How it works</p>
     <h2 style="font-size:2rem;margin-top:.4rem">Three steps. Then the desk.</h2>
     <div class="grid g3" style="margin-top:1.6rem">
-      ${[["01","Answer the wizard","State, name, address, your own registered agent, members."],["02","Pay for the filing","You pay only for the filing and the add-ons you choose. State fee, pass-through. Optional EIN, extra OA pages, reminders, expedite. The articles themselves are free."],["03","We file. You keep the vault.","The packet lands on the admin desk. You get the documents and the calendar. The $10/month Command plan is an optional paid add-on."]].map(([n,t,d])=>`<div class="card"><p style="font-family:Fraunces,serif;font-size:1.6rem;color:var(--pine)">${n}</p><h3 style="margin-top:.6rem">${t}</h3><p class="small mist">${d}</p></div>`).join("")}
+      ${[["01","Answer the wizard","State, name, address, your own registered agent, members."],["02","Pay for the filing","You pay only for the filing and the add-ons you choose. State fee, pass-through. Optional EIN, extra OA pages, reminders, expedite. The articles themselves are free."],["03","We file. Your documents are on your desk.","We prepare and file your packet. Your documents are on your desk. The Command desk (vault, simple books, invoices) is an optional $10/month add-on, off by default."]].map(([n,t,d])=>`<div class="card"><p style="font-family:Fraunces,serif;font-size:1.6rem;color:var(--pine)">${n}</p><h3 style="margin-top:.6rem">${t}</h3><p class="small mist">${d}</p></div>`).join("")}
     </div>
   </div></section>
   <section style="background:var(--cream)"><div class="wrap pad">
     <p class="kicker">On the menu</p>
     <h2 style="font-size:2rem;margin:.4rem 0 1.4rem">In. Out. Priced in the open.</h2>
     <div class="grid g2">
-      ${[["Articles + operating agreement","Wizard prepares the packet. Simple OA is free through three pages, then $2 a page. You name your own registered agent."],["EIN, banks, and the desk","$99 to prepare the EIN. Optional paid add-on: Command desk, $10/month: vault, simple books, invoices, and partner links."],["Compliance reminders","$99 a year puts annual reports, quarterly estimates, and year-end on your calendar."]].map(([t,b])=>`<div class="card"><h3>${t}</h3><p class="small mist" style="margin-top:.5rem">${b}</p></div>`).join("")}
+      ${[["Articles + operating agreement","Wizard prepares the packet. Simple OA is free through three pages, then $2 a page. You name your own registered agent."],["EIN, banks, and the desk","$99 to prepare the EIN. Optional paid add-on: Command desk, $10/month: vault, simple books, invoices."],["Compliance reminders","$99 a year puts annual reports, quarterly estimates, and year-end on your calendar."]].map(([t,b])=>`<div class="card"><h3>${t}</h3><p class="small mist" style="margin-top:.5rem">${b}</p></div>`).join("")}
     </div>
   </div></section>
   <section class="pad"><div class="wrap">
-    <div style="display:flex;justify-content:space-between;align-items:end;gap:1rem"><h2 style="font-size:2rem">Cheapest states to file, this year</h2><a href="#/fees" class="small" style="color:var(--pine)">Full table</a></div>
+    <div style="display:flex;justify-content:space-between;align-items:end;gap:1rem"><h2 style="font-size:2rem">Cheapest states to file in ${new Date().getFullYear()}</h2><a href="/llc-fees" class="small" style="color:var(--pine)">Full table</a></div>
     <div class="grid g4" style="margin-top:1.4rem">
-      ${cheap.map(s=>`<a class="card" href="#/form?state=${s.code}" style="text-decoration:none"><p class="kicker">${s.code}</p><p style="font-family:Fraunces,serif;font-size:1.3rem;margin-top:.3rem">${s.name}</p><p class="price" style="margin-top:.8rem;font-weight:600">${money(s.feeCents)}</p><p class="tiny mist">${s.processing}</p></a>`).join("")}
+      ${cheap.map(s=>`<a class="card" href="/form?state=${s.code}" style="text-decoration:none"><p class="kicker">${s.code}</p><p style="font-family:Fraunces,serif;font-size:1.3rem;margin-top:.3rem">${s.name}</p><p class="price" style="margin-top:.8rem;font-weight:600">${money(s.feeCents)}</p><p class="tiny mist">${s.processing}</p></a>`).join("")}
     </div>
   </div></section>` + footer();
 }
@@ -306,7 +349,7 @@ function wizard() {
     if (draft.step===1) return draft.llcName.trim().length>=3;
     if (draft.step===2) return draft.principal.street && draft.principal.city && draft.principal.zip;
     if (draft.step===3) return draft.ra.name && draft.ra.street && draft.ra.city && draft.ra.zip;
-    if (draft.step===4) return draft.members.every(m=>m.name.trim()) && draft.organizer.trim();
+    if (draft.step===4) return draft.members.every(m=>m.name.trim()) && draft.organizer.trim() && ownershipTotal()===100;
     return true;
   };
   const locked = (name, code) => `<div class="field"><span>State</span><div class="lock">${esc(name)} · ${code} <button class="tiny" type="button" data-act="back-state" style="border:0;background:none;color:var(--pine);text-decoration:underline">Change</button></div></div>`;
@@ -374,7 +417,7 @@ function wizard() {
   }
   if (draft.step===4) {
     body += `<h2 style="font-size:1.7rem">Members</h2>
-      <p class="small mist">Ownership should total 100. ${st.code==="TN"?"Tennessee charges $50 per member, $300 minimum.":""}</p>
+      <p class="small mist">Ownership must total 100%. <strong id="own-total" class="${ownershipTotal()===100?"":"warn"}">Current total: ${ownershipTotal()}%</strong> ${st.code==="TN"?"Tennessee charges $50 per member, $300 minimum.":""}</p>
       ${draft.members.map((m,i)=>`<div class="card" style="margin-top:1rem">
         <div class="grid g2">
           <label class="field"><span>Name</span><input data-mem="${i}" data-k="name" value="${esc(m.name)}"/></label>
@@ -431,6 +474,7 @@ function wizard() {
       </div>
       <p class="small mist" style="margin-top:1rem">Submitting saves your order, sends it to our desk, and takes you to our secure Stripe payment page. Card details go to Stripe, not this page. Nothing is filed with the state until we confirm your payment.</p>
       <p class="small mist" style="margin-top:.5rem"><strong>Not a licensed attorney. Not legal advice.</strong></p>
+      <p class="small mist" style="margin-top:.5rem">By submitting you agree to the <a href="/terms" target="_blank" rel="noopener">Terms of Service</a> and acknowledge the <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</p>
       <p class="warn small" id="order-err"></p>
       <p class="small" style="margin-top:.8rem"><strong>Please pay the exact amount shown for your filing and add-ons.</strong></p>
       <button class="btn" data-act="place" style="margin-top:.4rem">Submit order and pay · ${money(q.due)}</button>`;
@@ -457,9 +501,7 @@ function wizard() {
           <p class="tiny mist">Filing in ${esc(st.name)}</p>
           <div class="small" style="margin-top:1rem">
             <div style="display:flex;justify-content:space-between"><span>State fee</span><span class="price">${money(q.fee)}</span></div>
-            ${q.ein?`<div style="display:flex;justify-content:space-between"><span>EIN</span><span>${money(q.ein)}</span></div>`:""}
-            ${q.cmd?`<div style="display:flex;justify-content:space-between"><span>Command (mo 1)</span><span>${money(q.cmd)}</span></div>`:""}
-            ${q.rem?`<div style="display:flex;justify-content:space-between"><span>Reminders</span><span>${money(q.rem)}</span></div>`:""}
+            ${[["State expedite",q.expSt],["Expedite handling",q.expSv],["EIN",q.ein],["Extra OA pages",q.oa],["Reminders",q.rem],["Command (mo 1)",q.cmd],["Website (mo 1)",q.web]].filter(([,v])=>v).map(([k,v])=>`<div style="display:flex;justify-content:space-between"><span>${k}</span><span>${money(v)}</span></div>`).join("")}
           </div>
         </div>
       </aside>
@@ -471,7 +513,7 @@ function fees() {
   return header(false)+`<main class="wrap pad"><p class="kicker">50 states</p><h1 style="font-size:2rem">What the state charges</h1>
     <p class="small mist">Pass-through at cost.</p>
     <div style="overflow:auto;margin-top:1.4rem"><table><thead><tr><th>State</th><th>Fee</th><th>Document</th><th>Agency</th><th>Processing</th><th></th></tr></thead><tbody>
-    ${STATES.map(s=>`<tr><td>${s.name}</td><td class="price">${money(s.feeCents)}</td><td>${esc(s.document)}</td><td>${esc(s.agency)}</td><td>${esc(s.processing)}</td><td><a href="#/form?state=${s.code}" style="color:var(--pine)">File here</a></td></tr>`).join("")}
+    ${STATES.map(s=>`<tr><td>${s.name}</td><td class="price">${money(s.feeCents)}</td><td>${esc(s.document)}</td><td>${esc(s.agency)}</td><td>${esc(s.processing)}</td><td><a href="/form?state=${s.code}" style="color:var(--pine)">File here</a></td></tr>`).join("")}
     </tbody></table></div></main>`+footer();
 }
 
@@ -483,10 +525,10 @@ function learn() {
       <li>You name your own registered agent; we put it on the packet.</li>
       <li>Expedite puts your packet at the front of our queue.</li>
       <li>Compliance reminders keep annual reports and tax dates on your calendar.</li>
-      <li>Partner banks are linked from the desk so you can open an account fast.</li>
+      <li>Your desk keeps your documents and filing dates in one place.</li>
     </ul>
     <p class="small mist">Keep the books. Keep the calendar.</p>
-    <a class="btn" href="#/form" style="margin-top:1rem">Start the wizard</a>
+    <a class="btn" href="/form" style="margin-top:1rem">Start the wizard</a>
   </main>`+footer();
 }
 
@@ -496,7 +538,7 @@ function deskPage() {
   const mine = orders;
   return header(false)+`<main class="wrap pad">
     <p class="kicker">Customer desk</p><h1 style="font-size:2rem">Command</h1>
-    <p class="small mist">Documents, reminders, and the partners we can actually send you to. $10 a month covers this desk.</p>${payNote?`<p class="small" style="color:var(--pine)">${esc(payNote)}</p>`:""}${deskNote?`<p class="warn small">${esc(deskNote)}</p>`:""}
+    <p class="small mist">Your orders and documents. ${draft.command?"":"Add the optional Command desk (vault, simple books, invoices) for $10/month."}</p>${payNote?`<p class="small" style="color:var(--pine)">${esc(payNote)}</p>`:""}${deskNote?`<p class="warn small">${esc(deskNote)}</p>`:""}
     <div class="grid g3" style="margin-top:1.4rem">
       <div class="card"><p class="kicker">Orders</p><p style="font-family:Fraunces,serif;font-size:2rem">${mine.length}</p></div>
       <div class="card"><p class="kicker">Quoted, unpaid</p><p style="font-family:Fraunces,serif;font-size:2rem">${money(mine.filter(o=>o.status!=="paid").reduce((a,o)=>a+o.due,0))}</p></div>
@@ -507,7 +549,7 @@ function deskPage() {
       <div><span class="badge ${esc(o.status)}">${esc(statusLabel(o.status))}</span>
         ${o.status!=="paid"?`<button class="btn" data-pay="${esc(o.id)}" style="height:2.2rem;margin-left:.5rem">Pay</button>`:""}
         ${o.status!=="paid"?`<p class="tiny" style="margin-top:.4rem"><strong>Please pay the exact amount shown for your filing and add-ons.</strong></p>`:""}
-      </div></div>`).join(""):`<div class="card mist">No formations yet. <a href="#/form" style="color:var(--pine)">Open the wizard</a>.</div>`}</div>
+      </div></div>`).join(""):`<div class="card mist">No formations yet. <a href="/form" style="color:var(--pine)">Open the wizard</a>.</div>`}</div>
   </main>`+footer();
 }
 
@@ -515,8 +557,8 @@ function admin() {
   if (!isOperator) {
     return header(false)+`<main class="wrap pad" style="max-width:32rem">
       <p class="kicker">Admin desk</p><h1 style="font-size:2rem">Operator key required</h1>
-      <p class="small mist">The queue is only shown after the server checks your operator key against OPERATOR_KEY. If OPERATOR_KEY is not set on the site, admin stays off.</p>${deskNote?`<p class="warn small">${esc(deskNote)}</p>`:""}
-      <a class="btn" href="#/login" style="margin-top:1rem">Sign in as operator</a>
+      <p class="small mist">This area is for staff.</p>${deskNote?`<p class="warn small">${esc(deskNote)}</p>`:""}
+      <a class="btn" href="/login?staff=1" style="margin-top:1rem">Staff sign in</a>
     </main>`+footer();
   }
   const open = queue.filter(q=>q.status!=="filed" && q.status!=="cancelled").length;
@@ -532,7 +574,7 @@ function admin() {
       <div class="card"><p class="kicker">Orders</p><p style="font-family:Fraunces,serif;font-size:2rem">${orders.length}</p></div>
     </div>
     <div class="card" style="margin-top:1.2rem"><h3>Payments</h3>
-      <p class="small mist">Submitting an order saves it, emails it to the desk inbox, and sends the customer to the Stripe payment link, where they type the amount. Orders show the quoted total and stay "awaiting payment" until you record the paid amount and mark them paid here (needs OPERATOR_KEY). The page cannot mark itself paid.</p>
+      <p class="small mist">Submitting an order saves it, emails it to the desk inbox, and sends the customer to the Stripe payment link, Orders show the quoted total and stay "awaiting payment" until you record the paid amount and mark them paid here.</p>
     </div>
     <h3 style="margin-top:1.6rem">Orders</h3>
     ${orders.length?orders.map(o=>`<div class="card" style="margin-top:.6rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap">
@@ -553,9 +595,9 @@ function login() {
   return header(false)+`<main class="wrap pad" style="max-width:28rem">
     <p class="kicker">Sign in</p><h1 style="font-size:2rem">The desk is on the server</h1>
     <p class="small mist">Your name stays in this browser. The order itself is written to the formation desk.</p>
-    <label class="field"><span>Name</span><input id="nm" value="${esc(session.name)}" placeholder="David"/></label>
-    <label class="small" style="display:flex;gap:.5rem;margin-top:1rem"><input type="checkbox" id="as-admin" ${session.role==="admin"?"checked":""}/> Admin desk</label>
-    <label class="field" style="margin-top:.8rem"><span>Operator key</span><input id="op-key" type="password" value="${esc(session.operatorKey||"")}" placeholder="Matches OPERATOR_KEY on Netlify"/><span class="tiny mist">Required for the admin desk. Customers leave this blank.</span></label>
+    <label class="field"><span>Name</span><input id="nm" value="${esc(session.name)}" placeholder="Your name"/></label>
+    ${route().q.staff || session.role==="admin" ? `<label class="small" style="display:flex;gap:.5rem;margin-top:1rem"><input type="checkbox" id="as-admin" ${session.role==="admin"?"checked":""}/> Staff desk</label>
+    <label class="field" style="margin-top:.8rem"><span>Staff key</span><input id="op-key" type="password" value="${esc(session.operatorKey||"")}" placeholder="Staff key"/></label>` : ""}
     <button class="btn" data-act="signin" style="margin-top:1rem">Continue</button>
   </main>`+footer();
 }
@@ -646,7 +688,7 @@ function bind() {
       return;
     }
     harvest();
-    if (["ein","exp","rem","cmd","web","oa"].includes(t.id)) render();
+    if (["ein","exp","rem","cmd","web","oa"].includes(t.id) || t.dataset.k === "ownership") render();
   });
   app.addEventListener("input", (e) => {
     if (e.target.id === "filing-state") return;
@@ -692,7 +734,8 @@ function bind() {
     if (act === "place") placeOrder();
     if (act === "signin") {
       session.name = document.getElementById("nm").value.trim() || "Guest";
-      session.role = document.getElementById("as-admin").checked ? "admin" : "customer";
+      const asAdmin = document.getElementById("as-admin");
+      session.role = asAdmin && asAdmin.checked ? "admin" : "customer";
       const keyEl = document.getElementById("op-key");
       if (keyEl) session.operatorKey = keyEl.value;
       persist();
@@ -708,16 +751,24 @@ function render() {
   let html = "";
   if (path === "/" || path === "") html = home();
   else if (path.startsWith("/form")) html = wizard();
-  else if (path.startsWith("/fees")) html = fees();
+  else if (path.startsWith("/llc-fees")) html = fees();
   else if (path.startsWith("/learn")) html = learn();
   else if (path.startsWith("/app")) html = deskPage();
   else if (path.startsWith("/admin")) html = admin();
   else if (path.startsWith("/login")) html = login();
   else html = home();
+  setMeta(path);
   root.innerHTML = html;
 }
 
-window.addEventListener("hashchange", render);
+window.addEventListener("popstate", render);
+document.addEventListener("click", (e) => {
+  const a = e.target.closest("a[href^='/']");
+  if (!a || a.target || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+  const u = new URL(a.href);
+  if (!/^\/(form|llc-fees|fees|learn|app|admin|login)?$/.test(u.pathname.replace(/\/+$/, "") || "/") && u.pathname !== "/") return;
+  e.preventDefault(); go(u.pathname + u.search);
+});
 bind();
 // Google Analytics (GA4). Nothing is loaded, requested or fired until the visitor clicks Accept.
 // The choice is stored in localStorage under pf_cookie_consent ("accepted" | "declined").
