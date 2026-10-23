@@ -19,12 +19,8 @@
   to = "/llc-fees"
   status = 301
 
-# SPA routes only. Static pages (/privacy, /terms, /contact, /llc-fees, /learn, robots.txt, sitemap.xml)
+# SPA routes only. Static pages (/form, /privacy, /terms, /contact, /llc-fees, /learn, robots.txt, sitemap.xml)
 # are real files and win over these rules. Anything else gets 404.html with a real 404 status.
-[[redirects]]
-  from = "/form"
-  to = "/index.html"
-  status = 200
 [[redirects]]
   from = "/form/*"
   to = "/index.html"

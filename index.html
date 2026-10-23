@@ -227,19 +227,21 @@ const SITE = "https://pathwaydevs.software";
 const META = {
   "/": ["Pathway Formation — LLC filing desk", "Prepare your LLC articles of organization and file in any state. You pay only for the filing and the add-ons you choose. Not a licensed attorney. Not legal advice."],
   "/llc-fees": ["LLC Filing Fees by State (" + new Date().getFullYear() + ") — Pathway Formation", "State LLC filing fees, documents, agencies and typical processing times for all 50 states. Not a licensed attorney. Not legal advice."],
-  "/form": ["Form an LLC — Formation wizard — Pathway Formation", "Answer a few questions to prepare your articles of organization. You pay only for the filing and the add-ons you choose."],
+  "/form": ["Form an LLC: Formation wizard — Pathway Formation", "Answer a few questions to prepare your articles of organization. You pay only for the filing and the add-ons you choose."],
   "/learn": ["How Pathway Formation works — Guides", "How we prepare and file your LLC articles and operating agreement. Not a licensed attorney. Not legal advice."]
 };
 function setMeta(path) {
   const m = META[path] || META["/"];
   const priv = /^\/(app|admin|login)/.test(path);
+  const noindex = priv || path.startsWith("/form");
   document.title = priv ? "Pathway Formation" : m[0];
   const set = (sel, attr, val) => { const el = document.head.querySelector(sel); if (el) el.setAttribute(attr, val); };
   set('meta[name="description"]', "content", m[1]);
   set('meta[property="og:title"]', "content", m[0]);
   set('meta[name="twitter:title"]', "content", m[0]);
   set('meta[property="og:description"]', "content", m[1]);
-  set('meta[name="robots"]', "content", priv ? "noindex,nofollow" : "index,follow");
+  set('meta[name="robots"]', "content", priv ? "noindex,nofollow" : noindex ? "noindex,follow" : "index,follow");
+  set('meta[name="twitter:description"]', "content", m[1]);
   const canon = SITE + (META[path] ? (path === "/" ? "/" : path) : "/");
   set('link[rel="canonical"]', "href", canon);
   set('meta[property="og:url"]', "content", canon);
