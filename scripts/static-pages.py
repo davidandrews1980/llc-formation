@@ -74,8 +74,7 @@ import os
 def page(path, title, desc, body, robots="index,follow"):
     canon = f'<link rel="canonical" href="https://pathwaydevs.software/{path}"/><meta property="og:url" content="https://pathwaydevs.software/{path}"/>' if path else ""
     html = HEAD.format(title=title, desc=desc, robots=robots, canon=canon) + body + FOOT
-    out = f"{path}/index.html" if path else "404.html"
-    if path: os.makedirs(path, exist_ok=True)
+    out = f"{path}.html" if path else "404.html"
     open(out, "w").write(html)
 page("privacy", "Privacy Policy", "How Pathway Formation (John Gault & Sons) collects and uses information.", PRIVACY)
 page("terms", "Terms of Service", "Terms for the Pathway Formation LLC document preparation and filing service.", TERMS)

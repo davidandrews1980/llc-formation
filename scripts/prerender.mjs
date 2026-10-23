@@ -1,7 +1,7 @@
-// Build step (netlify.toml): writes llc-fees/index.html and learn/index.html as copies of index.html
+// Build step (netlify.toml): writes llc-fees.html and learn.html as copies of index.html
 // with page-specific meta and static content in #app, so crawlers see the copy without running JS.
 // The SPA script re-renders #app on load as usual.
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 const src = readFileSync("index.html", "utf8");
 const STATES = JSON.parse(src.match(/const STATES = (\[.*?\]);/)[1]);
 const money = c => "$" + (c / 100).toLocaleString("en-US", { minimumFractionDigits: c % 100 ? 2 : 0, maximumFractionDigits: 2 });
@@ -17,8 +17,7 @@ function page(path, title, desc, body) {
     .replace(/(<link rel="canonical" href=")[^"]*/, `$1https://pathwaydevs.software/${path}`)
     .replace(/(<meta property="og:url" content=")[^"]*/, `$1https://pathwaydevs.software/${path}`)
     .replace('<div id="app"></div>', `<div id="app"><main class="wrap pad">${body}<p class="tiny">Not a licensed attorney. Not legal advice.</p></main></div>`);
-  mkdirSync(path, { recursive: true });
-  writeFileSync(`${path}/index.html`, h);
+  writeFileSync(`${path}.html`, h);
 }
 page("llc-fees", `LLC Filing Fees by State (${year}) — Pathway Formation`,
   "State LLC filing fees, documents, agencies and typical processing times for all 50 states. Not a licensed attorney. Not legal advice.",
